@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0d6663">
-  <link rel="apple-touch-icon" href="https://i.imgur.com/RPHGLkN.png">
-  <link rel="icon" type="image/png" href="https://i.imgur.com/RPHGLkN.png">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/gYGe5Lx.png">
+  <link rel="icon" type="image/png" href="https://i.imgur.com/gYGe5Lx.png">
   <title>Boletín La Eugenia</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; min-height: 100vh; background: #0d6663; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 28px 16px; }
     .logo-wrap img { width: 144px; height: auto; display: block; margin: 0 auto 8px; }
-    h1 { margin: 0 0 4px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+    h1 { margin: 0 0 0px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+    h2 { margin: 0 0 4px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; font-weight: 900; }
     .club-nombre { color: #fff; font-size: 14px; font-weight: 400; text-align: center; margin-bottom: 20px; }
     .card { background: #c4df57; border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; }
     .screen { display: none; }
@@ -70,13 +71,27 @@
     .confirm-titulo { color: #0d6663; font-family: Impact, sans-serif; font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
     .confirm-texto { color: #003a6b; font-size: 14px; text-align: center; line-height: 1.6; }
 
+    /* LISTA SUSCRIPTORES */
+    .lista-wrap { margin-bottom: 14px; }
+    .lista-seccion { margin-bottom: 10px; }
+    .lista-seccion-titulo { background: #edf1dc; border-radius: 10px 10px 0 0; padding: 8px 12px; font-size: 11px; font-weight: 900; color: #003a6b; text-transform: uppercase; }
+    .lista-seccion-items { background: #edf1dc; border-radius: 0 0 10px 10px; max-height: 180px; overflow-y: auto; }
+    .lista-seccion-vacia { padding: 8px 12px; font-size: 12px; color: #003a6b; opacity: 0.6; }
+
+    /* GESTIONAR PANEL */
+    .gestionar-toggle { background: #edf1dc; border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: #003a6b; font-size: 13px; font-weight: 700; }
+    .gestionar-panel { background: #e0d97a; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
+    .gestionar-panel.open { display: block; }
+
+    .btns-externos { display: none; width: 100%; max-width: 480px; }
     .btns-externos { display: none; width: 100%; max-width: 480px; }
     .btns-externos.visible { display: block; }
   </style>
 </head>
 <body>
-  <div class="logo-wrap"><img src="https://i.imgur.com/RPHGLkN.png" alt="Boletín La Eugenia"></div>
-  <h1>Boletín</h1>
+  <div class="logo-wrap"><img src="https://i.imgur.com/gYGe5Lx.png" alt="Boletín La Eugenia"></div>
+  <h1>#Boletín</h1>
+  <h2>Mensual</h2>
   <div class="club-nombre">Club de Campo La Eugenia</div>
 
   <div class="card">
@@ -87,7 +102,7 @@
       <div class="confirm-titulo">¡Suscripción confirmada!</div>
       <div class="confirm-texto">A partir de ahora recibirás la cuota social mensual y otras novedades del club directamente en tu correo.</div>
       <div class="confirm-texto" style="margin-top:10px;">Podés darte de baja cuando quieras desde el mismo mail.</div>
-      <button class="btn-solid" style="margin-top:24px;" onclick="volverPublico()">Volver al inicio</button>
+      <a class="btn-solid" style="margin-top:24px;" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
     </div>
 
     <!-- BAJA -->
@@ -133,36 +148,40 @@
         <div class="stat-box"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total</div></div>
       </div>
 
-      <div class="lista-toggle" onclick="toggleLista()" id="listaToggle">
-        <span id="listaTitulo">Ver suscriptores</span>
-        <span id="listaFlecha">▼</span>
+      <div class="lista-wrap" id="listaWrap">
+        <div class="lista-seccion" id="secActivos"></div>
+        <div class="lista-seccion" id="secPendientes"></div>
+        <div class="lista-seccion" id="secBajas"></div>
       </div>
-      <div class="suscriptor-list" id="listaSuscriptores"></div>
 
       <hr class="divider">
-      <div class="section-title">Agregar suscriptor</div>
-      <span class="field-label">Nombre y apellido / Razón social</span>
-      <input type="text" id="adminNombre" placeholder="Ej: María González">
-      <span class="field-label">Email *</span>
-      <input type="email" id="adminEmail" placeholder="email@ejemplo.com">
-      <div class="loading" id="loadingAdmin"></div>
-      <div class="msg-box" id="msgAdmin"></div>
-      <button class="btn-solid" onclick="agregarManual()">Agregar</button>
+      <div class="gestionar-toggle" onclick="toggleGestionar()">
+        <span>Agregar o Quitar Suscriptor</span>
+        <span id="gestionarFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="gestionarPanel">
+        <p style="color:#003a6b;font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este método no requiere confirmación del email — el suscriptor queda activo de inmediato.</p>
+        <span class="field-label">Nombre y apellido / Razón social</span>
+        <input type="text" id="adminNombre" placeholder="Ej: María González">
+        <span class="field-label">Email *</span>
+        <input type="email" id="adminEmail" placeholder="email@ejemplo.com">
+        <div class="loading" id="loadingAdmin"></div>
+        <div class="msg-box" id="msgAdmin"></div>
+        <button class="btn-solid" onclick="agregarManual()">Agregar suscriptor</button>
+        <div style="border-top:1px solid #b5cc4a;margin:16px 0;"></div>
+        <span class="field-label">Email a desuscribir</span>
+        <input type="email" id="bajaManualEmail" placeholder="email@ejemplo.com">
+        <div class="loading" id="loadingBajaManual"></div>
+        <div class="msg-box" id="msgBajaManual"></div>
+        <button class="btn-outline" onclick="desuscribirManual()">Quitar suscriptor</button>
+      </div>
 
       <hr class="divider">
-      <div class="section-title">Desuscribir manualmente</div>
-      <span class="field-label">Email a desuscribir</span>
-      <input type="email" id="bajaManualEmail" placeholder="email@ejemplo.com">
-      <div class="loading" id="loadingBajaManual"></div>
-      <div class="msg-box" id="msgBajaManual"></div>
-      <button class="btn-outline" onclick="desuscribirManual()">Dar de baja</button>
-
-      <hr class="divider">
-      <div class="section-title">Enviar cuota social</div>
-      <p style="color:#003a6b;font-size:13px;margin:0 0 10px;">Envía la cuota vigente del DASHBOARD a todos los suscriptores activos.</p>
+      <div class="section-title">Enviar #BoletínMensual</div>
+      <p style="color:#003a6b;font-size:13px;margin:0 0 10px;">Envía a todos los suscriptores activos el #BoletínMensual del mes con la cuota vigente en el DASHBOARD.</p>
       <div class="loading" id="loadingMensual"></div>
       <div class="msg-box" id="msgMensual"></div>
-      <button class="btn-azul" onclick="enviarMensual()">Enviar cuota social (manual)</button>
+      <button class="btn-azul" onclick="enviarMensual()">Enviar manualmente #BoletínMensual</button>
 
       <hr class="divider">
       <div class="section-title">Comunicado libre</div>
@@ -179,8 +198,13 @@
       <button class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
 
       <hr class="divider">
-      <div class="section-title">Historial de envíos</div>
-      <div id="logEnvios" style="background:#edf1dc;border-radius:14px;padding:12px;font-size:12px;color:#003a6b;line-height:1.6;">Cargando...</div>
+      <div class="gestionar-toggle" onclick="toggleHistorial()">
+        <span>Historial de envíos</span>
+        <span id="historialFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="historialPanel" style="display:none;">
+        <div id="logEnvios" style="font-size:12px;color:#003a6b;line-height:1.6;">Cargando...</div>
+      </div>
 
       <hr class="divider">
       <button class="btn-outline" onclick="cerrarAdmin()">Volver al inicio</button>
@@ -273,11 +297,20 @@ function verificarPin() {
 }
 document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verificarPin(); });
 
-function toggleLista() {
-  const lista = document.getElementById('listaSuscriptores');
-  const flecha = document.getElementById('listaFlecha');
-  lista.classList.toggle('open');
-  flecha.innerText = lista.classList.contains('open') ? '▲' : '▼';
+function toggleGestionar() {
+  const panel = document.getElementById('gestionarPanel');
+  const flecha = document.getElementById('gestionarFlecha');
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open');
+  flecha.innerText = isOpen ? '▼' : '▲';
+}
+
+function toggleHistorial() {
+  const panel = document.getElementById('historialPanel');
+  const flecha = document.getElementById('historialFlecha');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  flecha.innerText = isOpen ? '▼' : '▲';
 }
 
 async function llamarScript(params) {
@@ -335,20 +368,31 @@ async function cargarSuscriptores() {
     document.getElementById('statPendientes').innerText = r.pendientes || 0;
     document.getElementById('statBajas').innerText = r.bajas;
     document.getElementById('statTotal').innerText = r.total;
-    document.getElementById('listaTitulo').innerText = `Ver suscriptores (${r.total})`;
-    const lista = document.getElementById('listaSuscriptores');
-    if (!r.suscriptores || r.suscriptores.length === 0) {
-      lista.innerHTML = '<div style="padding:10px;text-align:center;color:#003a6b;font-size:13px;">Sin suscriptores aún.</div>';
-      return;
+
+    const activos = r.suscriptores.filter(s => s.estado === 'activo');
+    const pendientes = r.suscriptores.filter(s => s.estado === 'pendiente');
+    const bajas = r.suscriptores.filter(s => s.estado === 'baja');
+
+    function renderSeccion(id, titulo, items, badgeClass, badgeLabel) {
+      const el = document.getElementById(id);
+      if (items.length === 0) { el.innerHTML = ''; return; }
+      el.innerHTML = `
+        <div class="lista-seccion-titulo">${titulo} (${items.length})</div>
+        <div class="lista-seccion-items">
+          ${items.map(s => `
+            <div class="suscriptor-item" style="padding:6px 12px;">
+              <span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${s.nombre ? s.nombre + ' — ' : ''}${s.email}</span>
+              <span class="badge-${badgeClass}" style="flex-shrink:0;margin-left:8px;">${badgeLabel}</span>
+            </div>`).join('')}
+        </div>`;
     }
-    lista.innerHTML = r.suscriptores.map(s =>
-      `<div class="suscriptor-item">
-        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${s.nombre ? s.nombre + ' — ' : ''}${s.email}</span>
-        <span class="badge-${s.estado}" style="flex-shrink:0;margin-left:8px;">${s.estado === 'activo' ? 'Activo' : s.estado === 'pendiente' ? 'Pendiente' : 'Baja'}</span>
-      </div>`
-    ).join('');
+
+    renderSeccion('secActivos', 'Activos', activos, 'activo', 'Activo');
+    renderSeccion('secPendientes', 'Pendientes', pendientes, 'pendiente', 'Pendiente');
+    renderSeccion('secBajas', 'Bajas', bajas, 'baja', 'Baja');
+
   } catch(e) {
-    document.getElementById('listaSuscriptores').innerHTML = '<div style="color:#c0392b;font-size:13px;padding:10px;">Error cargando lista.</div>';
+    document.getElementById('secActivos').innerHTML = '<div style="color:#c0392b;font-size:13px;padding:10px;">Error cargando lista.</div>';
   }
 }
 
@@ -385,7 +429,7 @@ async function desuscribirManual() {
 }
 
 async function enviarMensual() {
-  if (!confirm('⚠️ Estás por enviar el valor de la cuota social a todos los suscriptores activos.\n\n¿Confirmás el envío?')) return;
+  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente.\n\n¿Confirmás el envío?')) return;
   document.getElementById('loadingMensual').innerText = 'Enviando...';
   try {
     const r = await llamarScript({ accion: 'enviarMensual' });
@@ -436,12 +480,30 @@ async function cargarLog() {
     const r = await llamarScript({ accion: 'logEnvios' });
     const el = document.getElementById('logEnvios');
     if (!r.envios || r.envios.length === 0) { el.innerText = 'Sin envíos registrados aún.'; return; }
-    el.innerHTML = r.envios.slice(0, 10).map(e =>
-      `<div style="padding:5px 0;border-bottom:1px solid #c4df57;">
-        <strong>${e.tipo}</strong> — ${e.asunto} <span style="opacity:0.6;">(${e.cantidad} dest.)</span><br>
-        <span style="font-size:11px;opacity:0.6;">${new Date(e.fecha).toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
-      </div>`
-    ).join('');
+
+    // Agrupar por año
+    const porAnio = {};
+    r.envios.forEach(e => {
+      const fecha = new Date(e.fecha);
+      const anio = fecha.getFullYear();
+      if (!porAnio[anio]) porAnio[anio] = [];
+      porAnio[anio].push(e);
+    });
+
+    el.innerHTML = Object.keys(porAnio).sort((a,b) => b-a).map(anio => `
+      <div style="font-weight:900;color:#0d6663;margin:8px 0 4px;font-size:13px;">${anio}</div>
+      ${porAnio[anio].map(e => {
+        const fecha = new Date(e.fecha);
+        const fechaStr = fecha.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'}) + ', ' + fecha.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+        const tipo = e.tipo === 'mensual' ? 'mensual-auto' : e.tipo;
+        const esAuto = e.tipo === 'mensual-auto';
+        const tag = esAuto ? '<span style="color:#1e8449;font-size:10px;">(Automático)</span>' : '<span style="color:#2471a3;font-size:10px;">(Manual)</span>';
+        return `<div style="padding:5px 0;border-bottom:1px solid #c4df57;font-size:12px;">
+          #BoletínMensual — Cuota Social — ${e.asunto.replace('Cuota social — ','')} ${tag}<br>
+          <span style="opacity:0.6;font-size:11px;">${fechaStr}</span>
+        </div>`;
+      }).join('')}
+    `).join('');
   } catch(e) {
     document.getElementById('logEnvios').innerText = 'Error cargando historial.';
   }
