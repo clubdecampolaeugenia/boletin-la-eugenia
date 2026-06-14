@@ -11,18 +11,30 @@
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; min-height: 100vh; background: #0d6663; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 28px 16px; }
-    .logo-wrap img { width: 120px; height: auto; display: block; margin: 0 auto 8px; }
+    .logo-wrap img { width: 144px; height: auto; display: block; margin: 0 auto 8px; }
     h1 { margin: 0 0 4px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
     .club-nombre { color: #fff; font-size: 14px; font-weight: 400; text-align: center; margin-bottom: 20px; letter-spacing: 0.5px; }
     .card { background: #c4df57; border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; }
     .screen { display: none; }
     .screen.active { display: block; }
-    .intro { color: #003a6b; font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 20px; }
+    .intro { color: #003a6b; font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 6px; }
+    .intro-baja { color: #003a6b; font-size: 13px; line-height: 1.6; text-align: center; margin-bottom: 20px; opacity: 0.8; }
     .field-label { color: #003a6b; font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; display: block; }
     input[type=text], input[type=email], textarea { width: 100%; border: 2px solid #0d6663; border-radius: 14px; padding: 12px; background: #edf1dc; color: #003a6b; font-family: 'Roboto', sans-serif; font-size: 15px; outline: none; }
+    input.error { border-color: #c0392b; }
     textarea { min-height: 100px; resize: vertical; }
     .btn-solid { display: block; width: 100%; padding: 14px; border-radius: 24px; border: none; background: #0d6663; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; text-decoration: none; }
-    .btn-susc { display: block; width: 100%; padding: 14px; border-radius: 12px; border: none; background: #003a6b; color: #fff; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; }
+    .btn-susc {
+      display: block; width: 100%; padding: 14px; border-radius: 12px;
+      border: 2px solid #003a6b; background: transparent; color: #003a6b;
+      font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900;
+      text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center;
+      animation: destello 2s ease-in-out infinite;
+    }
+    @keyframes destello {
+      0%, 100% { box-shadow: 0 0 0px rgba(0,58,107,0); }
+      50% { box-shadow: 0 0 12px rgba(0,58,107,0.5), 0 0 24px rgba(0,58,107,0.2); }
+    }
     .btn-ghost { display: block; width: 100%; padding: 10px; border-radius: 24px; border: none; background: transparent; color: #0d6663; font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 4px; text-align: center; }
     .btn-errata { display: block; width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #c0392b; background: transparent; color: #c0392b; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
     .btn-cgv { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: none; background: #0a4f4d; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 14px; text-align: center; text-decoration: none; letter-spacing: 0.5px; }
@@ -45,6 +57,9 @@
     .msg-box.ok { border: 2px solid #1e8449; color: #1e8449; }
     .msg-box.err { border: 2px solid #c0392b; color: #c0392b; }
     .loading { text-align: center; color: #003a6b; font-size: 13px; font-weight: 700; min-height: 18px; margin: 8px 0; }
+    .confirm-icon { font-size: 60px; text-align: center; margin-bottom: 16px; }
+    .confirm-titulo { color: #0d6663; font-family: Impact, sans-serif; font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
+    .confirm-texto { color: #003a6b; font-size: 14px; text-align: center; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -53,17 +68,30 @@
   <div class="club-nombre">Club de Campo La Eugenia</div>
 
   <div class="card">
+
+    <!-- SCREEN: CONFIRMACIÓN -->
+    <div class="screen" id="screenConfirmado">
+      <div class="confirm-icon">✅</div>
+      <div class="confirm-titulo">¡Suscripción confirmada!</div>
+      <div class="confirm-texto">A partir de ahora recibirás la cuota social mensual y otras novedades del club directamente en tu correo.</div>
+      <div class="confirm-texto" style="margin-top:12px;">Podés darte de baja cuando quieras desde el mismo mail.</div>
+      <button class="btn-solid" style="margin-top:24px;" onclick="volverPublico()">Volver al inicio</button>
+    </div>
+
+    <!-- SCREEN: SUSCRIPCIÓN -->
     <div class="screen active" id="screenPublico">
-      <div class="intro">Recibí la cuota social mensual y otras novedades del club directamente en tu correo. Podés darte de baja cuando quieras desde el mismo mail.</div>
+      <div class="intro">Recibí la cuota social mensual y otras novedades del club directamente en tu correo.</div>
+      <div class="intro-baja">Podés darte de baja cuando quieras desde el mismo mail.</div>
       <span class="field-label">Nombre y apellido / Razón social *</span>
-      <input type="text" id="suscNombre" placeholder="Ej: María González" onblur="capitalizarNombre(this)">
+      <input type="text" id="suscNombre" placeholder="Ej: María González" onblur="capitalizarNombre(this)" oninput="filtrarNombre(this)">
       <span class="field-label">Email *</span>
-      <input type="email" id="suscEmail" placeholder="tu@email.com">
+      <input type="email" id="suscEmail" placeholder="tu@email.com" oninput="validarEmail(this)">
       <div class="loading" id="loadingSusc"></div>
       <div class="msg-box" id="msgSusc"></div>
       <button class="btn-susc" onclick="suscribir()">Suscribirme</button>
     </div>
 
+    <!-- SCREEN: PIN -->
     <div class="screen" id="screenPin">
       <div class="pin-label">PIN de administración</div>
       <input class="pin-input" type="password" inputmode="numeric" maxlength="4" id="pinInput" placeholder="····">
@@ -72,6 +100,7 @@
       <button class="btn-ghost" onclick="volverPublico()">Cancelar</button>
     </div>
 
+    <!-- SCREEN: ADMIN -->
     <div class="screen" id="screenAdmin">
       <div class="stat-row">
         <div class="stat-box"><div class="stat-num" id="statActivos">—</div><div class="stat-label">Activos</div></div>
@@ -115,6 +144,7 @@
       <hr class="divider">
       <button class="btn-ghost" onclick="cerrarAdmin()">Cerrar sesión</button>
     </div>
+
   </div>
 
   <a class="btn-cgv" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
@@ -124,8 +154,38 @@
 const PIN = '1112';
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhPg43JwP_WH7qhq-kPT9n3EFJZ7SJby0iVBo1uzHIRz3vAZbYN9kMzH1SgWxOe1CY/exec';
 
+// Detectar token en URL al cargar
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (token) confirmarToken(token);
+});
+
+async function confirmarToken(token) {
+  document.getElementById('loadingSusc') && (document.getElementById('loadingSusc').innerText = 'Confirmando suscripción...');
+  try {
+    const r = await llamarScript({ accion: 'confirmar', token });
+    if (r.ok) {
+      mostrarScreen('screenConfirmado');
+    } else {
+      mostrarScreen('screenPublico');
+    }
+  } catch(e) {
+    mostrarScreen('screenPublico');
+  }
+}
+
 function capitalizarNombre(input) {
   input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function filtrarNombre(input) {
+  input.value = input.value.replace(/[0-9]/g, '');
+}
+
+function validarEmail(input) {
+  const esValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  input.classList.toggle('error', input.value.length > 0 && !esValido);
 }
 
 function mostrarScreen(id) {
@@ -153,13 +213,11 @@ async function llamarScript(params) {
     const url = new URL(SCRIPT_URL);
     Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
     url.searchParams.append('callback', callbackName);
-
     window[callbackName] = function(data) {
       delete window[callbackName];
       document.body.removeChild(script);
       resolve(data);
     };
-
     const script = document.createElement('script');
     script.src = url.toString();
     script.onerror = () => resolve({ ok: false, mensaje: 'Error de conexión.' });
@@ -179,7 +237,7 @@ async function suscribir() {
   const email = document.getElementById('suscEmail').value.trim();
   const nombre = document.getElementById('suscNombre').value.trim();
   if (!nombre) { mostrarMsg('msgSusc', 'Ingresá tu nombre, apellido o razón social.', 'err'); return; }
-  if (!email) { mostrarMsg('msgSusc', 'Ingresá tu email.', 'err'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc', 'Ingresá un email válido.', 'err'); return; }
   document.getElementById('loadingSusc').innerText = 'Procesando...';
   try {
     const r = await llamarScript({ accion: 'suscribir', email, nombre });
