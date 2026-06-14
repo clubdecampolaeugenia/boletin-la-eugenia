@@ -151,7 +151,6 @@
         <div class="stat-box"><div class="stat-num" id="statActivos">—</div><div class="stat-label">Activos</div></div>
         <div class="stat-box"><div class="stat-num" id="statPendientes">—</div><div class="stat-label">Pendientes</div></div>
         <div class="stat-box"><div class="stat-num" id="statBajas">—</div><div class="stat-label">Bajas</div></div>
-        <div class="stat-box"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total</div></div>
       </div>
 
       <div class="lista-wrap" id="listaWrap">
@@ -214,7 +213,7 @@
 
       <hr class="divider">
       <div class="gestionar-toggle" onclick="toggleHistorial()">
-        <span>Historial de envíos</span>
+        <span>Últimos 5 #BoletinesMensuales enviados</span>
         <span id="historialFlecha">▼</span>
       </div>
       <div class="gestionar-panel" id="historialPanel" style="display:none;">
@@ -389,7 +388,7 @@ async function cargarSuscriptores() {
     document.getElementById('statActivos').innerText = r.activos;
     document.getElementById('statPendientes').innerText = r.pendientes || 0;
     document.getElementById('statBajas').innerText = r.bajas;
-    document.getElementById('statTotal').innerText = r.total;
+
 
     const activos = r.suscriptores.filter(s => s.estado === 'activo');
     const pendientes = r.suscriptores.filter(s => s.estado === 'pendiente');
