@@ -11,67 +11,36 @@
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; min-height: 100vh; background: #0d6663; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 28px 16px; }
-
     .logo-wrap img { width: 120px; height: auto; display: block; margin: 0 auto 8px; }
     h1 { margin: 0 0 4px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
     .club-nombre { color: #fff; font-size: 14px; font-weight: 400; text-align: center; margin-bottom: 20px; letter-spacing: 0.5px; }
-
-    /* CARD */
     .card { background: #c4df57; border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; }
-
-    /* SCREENS */
     .screen { display: none; }
     .screen.active { display: block; }
-
-    /* INTRO TEXT */
     .intro { color: #003a6b; font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 20px; }
-
-    /* FORM */
     .field-label { color: #003a6b; font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; display: block; }
-    input[type=text], input[type=email], textarea {
-      width: 100%; border: 2px solid #0d6663; border-radius: 14px; padding: 12px;
-      background: #edf1dc; color: #003a6b; font-family: 'Roboto', sans-serif; font-size: 15px; outline: none;
-    }
+    input[type=text], input[type=email], textarea { width: 100%; border: 2px solid #0d6663; border-radius: 14px; padding: 12px; background: #edf1dc; color: #003a6b; font-family: 'Roboto', sans-serif; font-size: 15px; outline: none; }
     textarea { min-height: 100px; resize: vertical; }
-
-    /* BUTTONS inside card */
     .btn-solid { display: block; width: 100%; padding: 14px; border-radius: 24px; border: none; background: #0d6663; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; text-decoration: none; }
     .btn-susc { display: block; width: 100%; padding: 14px; border-radius: 12px; border: none; background: #003a6b; color: #fff; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; }
-    .btn-outline { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid #0d6663; background: transparent; color: #0d6663; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
     .btn-ghost { display: block; width: 100%; padding: 10px; border-radius: 24px; border: none; background: transparent; color: #0d6663; font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 4px; text-align: center; }
     .btn-errata { display: block; width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #c0392b; background: transparent; color: #c0392b; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
-
-    /* BUTTONS outside card */
     .btn-cgv { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: none; background: #0a4f4d; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 14px; text-align: center; text-decoration: none; letter-spacing: 0.5px; }
     .btn-admin { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid #c4df57; background: transparent; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; letter-spacing: 0.5px; }
-
-    /* ADMIN link */
-    .admin-link { text-align: center; margin-top: 20px; }
-    .admin-link button { background: none; border: none; color: #fff; font-size: 10px; opacity: 0.3; cursor: pointer; font-family: 'Roboto', sans-serif; }
-    .admin-link button:hover { opacity: 0.6; }
-
-    /* PIN */
     .pin-label { text-align: center; color: #003a6b; font-size: 13px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
     .pin-input { display: block; width: 100%; text-align: center; font-size: 28px; font-weight: 900; letter-spacing: 12px; border: 2px solid #0d6663; border-radius: 16px; padding: 12px; background: #edf1dc; color: #003a6b; outline: none; margin-bottom: 12px; }
     .pin-error { text-align: center; color: #c0392b; font-size: 13px; font-weight: 700; min-height: 18px; margin-bottom: 8px; }
-
-    /* STATS */
     .stat-row { display: flex; gap: 10px; margin-bottom: 16px; }
     .stat-box { flex: 1; background: #edf1dc; border-radius: 14px; padding: 14px; text-align: center; }
     .stat-num { font-size: 28px; font-weight: 900; color: #0d6663; }
     .stat-label { font-size: 11px; font-weight: 700; color: #003a6b; text-transform: uppercase; }
-
-    /* LIST */
     .suscriptor-list { max-height: 200px; overflow-y: auto; background: #edf1dc; border-radius: 14px; padding: 10px; margin-bottom: 14px; }
     .suscriptor-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #c4df57; font-size: 13px; color: #003a6b; }
     .suscriptor-item:last-child { border-bottom: none; }
     .badge-activo { background: #d5f5e3; color: #1e8449; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
     .badge-baja { background: #fdebd0; color: #a04000; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
-
     .divider { border: none; border-top: 1.5px solid #b5cc4a; margin: 18px 0; }
     .section-title { color: #003a6b; font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
-
-    /* MSG */
     .msg-box { background: #edf1dc; border-radius: 14px; padding: 12px 14px; color: #003a6b; font-size: 14px; text-align: center; display: none; margin-top: 10px; }
     .msg-box.ok { border: 2px solid #1e8449; color: #1e8449; }
     .msg-box.err { border: 2px solid #c0392b; color: #c0392b; }
@@ -79,14 +48,11 @@
   </style>
 </head>
 <body>
-
   <div class="logo-wrap"><img src="https://i.imgur.com/RPHGLkN.png" alt="Boletín La Eugenia"></div>
   <h1>Boletín</h1>
   <div class="club-nombre">Club de Campo La Eugenia</div>
 
   <div class="card">
-
-    <!-- SCREEN: SUSCRIPCIÓN -->
     <div class="screen active" id="screenPublico">
       <div class="intro">Recibí la cuota social mensual y otras novedades del club directamente en tu correo. Podés darte de baja cuando quieras desde el mismo mail.</div>
       <span class="field-label">Nombre y apellido / Razón social *</span>
@@ -98,7 +64,6 @@
       <button class="btn-susc" onclick="suscribir()">Suscribirme</button>
     </div>
 
-    <!-- SCREEN: PIN -->
     <div class="screen" id="screenPin">
       <div class="pin-label">PIN de administración</div>
       <input class="pin-input" type="password" inputmode="numeric" maxlength="4" id="pinInput" placeholder="····">
@@ -107,18 +72,15 @@
       <button class="btn-ghost" onclick="volverPublico()">Cancelar</button>
     </div>
 
-    <!-- SCREEN: ADMIN -->
     <div class="screen" id="screenAdmin">
       <div class="stat-row">
         <div class="stat-box"><div class="stat-num" id="statActivos">—</div><div class="stat-label">Activos</div></div>
         <div class="stat-box"><div class="stat-num" id="statBajas">—</div><div class="stat-label">Bajas</div></div>
         <div class="stat-box"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total</div></div>
       </div>
-
       <div class="suscriptor-list" id="listaSuscriptores">
         <div style="text-align:center;color:#003a6b;font-size:13px;">Cargando...</div>
       </div>
-
       <hr class="divider">
       <div class="section-title">Agregar manualmente</div>
       <span class="field-label">Nombre (opcional)</span>
@@ -128,14 +90,12 @@
       <div class="loading" id="loadingAdmin"></div>
       <div class="msg-box" id="msgAdmin"></div>
       <button class="btn-solid" onclick="agregarManual()">Agregar</button>
-
       <hr class="divider">
       <div class="section-title">Boletín mensual</div>
       <p style="color:#003a6b;font-size:13px;margin:0 0 10px;">Envía la cuota vigente a todos los suscriptores activos.</p>
       <div class="loading" id="loadingMensual"></div>
       <div class="msg-box" id="msgMensual"></div>
       <button class="btn-solid" onclick="enviarMensual()">Enviar boletín del mes</button>
-
       <hr class="divider">
       <div class="section-title">Comunicado libre</div>
       <span class="field-label">Asunto</span>
@@ -145,7 +105,6 @@
       <div class="loading" id="loadingComm"></div>
       <div class="msg-box" id="msgComm"></div>
       <button class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
-
       <hr class="divider">
       <div class="section-title" style="color:#c0392b;">Fe de erratas</div>
       <p style="color:#003a6b;font-size:13px;margin:0 0 10px;">Enviá una corrección sobre la cuota informada.</p>
@@ -153,24 +112,21 @@
       <div class="loading" id="loadingErrata"></div>
       <div class="msg-box" id="msgErrata"></div>
       <button class="btn-errata" onclick="enviarErrata()">Enviar fe de erratas</button>
-
       <hr class="divider">
       <button class="btn-ghost" onclick="cerrarAdmin()">Cerrar sesión</button>
     </div>
-
   </div>
 
   <a class="btn-cgv" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
-
   <button class="btn-admin" onclick="mostrarPin()">Administración</button>
 
 <script>
 const PIN = '1112';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhPg43JwP_WH7qhq-kPT9n3EFJZ7SJby0iVBo1uzHIRz3vAZbYN9kMzH1SgWxOe1CY/exec';
 
 function capitalizarNombre(input) {
   input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
 }
-const SCRIPT_URL = 'TU_APPS_SCRIPT_URL_AQUI';
 
 function mostrarScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -192,10 +148,23 @@ function verificarPin() {
 document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verificarPin(); });
 
 async function llamarScript(params) {
-  const url = new URL(SCRIPT_URL);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
-  const resp = await fetch(url);
-  return await resp.json();
+  return new Promise((resolve) => {
+    const callbackName = 'cb_' + Date.now();
+    const url = new URL(SCRIPT_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
+    url.searchParams.append('callback', callbackName);
+
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+
+    const script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = () => resolve({ ok: false, mensaje: 'Error de conexión.' });
+    document.body.appendChild(script);
+  });
 }
 
 function mostrarMsg(id, texto, tipo) {
