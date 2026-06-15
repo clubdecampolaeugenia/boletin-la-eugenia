@@ -14,7 +14,6 @@ const WA_RAUL = "https://wa.me/5493764603432";
 const URL_CGV = "https://clubdecampolaeugenia.taplink.site/";
 const URL_TESORERIA = "https://clubdecampolaeugenia.github.io/tesoreria-la-eugenia/";
 const URL_BOLETIN = "https://clubdecampolaeugenia.github.io/boletin-la-eugenia/";
-const URL_CUOTA = "https://clubdecampolaeugenia.github.io/cuota-la-eugenia/";
 const SHEET_CUOTA_ID = "1BaK9rg7FAsnWtZ5uPmB0GV-ri9bZoUYGifbQPjqcHMA";
 const WA_NUMERO = "5493764113300";
 const WA_APIKEY = "5116671";
@@ -98,3 +97,628 @@ function obtenerCuota() {
 function enviarWhatsApp(mensaje) {
   try {
     const url = 'https://api.callmebot.com/whatsapp.php?phone=' + WA_NUMERO +
+      '&text=' + encodeURIComponent(mensaje) + '&apikey=' + WA_APIKEY;
+    const resp = UrlFetchApp.fetch(url);
+    return resp.getResponseCode() === 200;
+  } catch(e) {
+    return false;
+  }
+}
+
+// ============================================================
+// MAIL DE ALERTA SI FALLA WHATSAPP
+// ============================================================
+function mailAlertaFalloWA(mensajeWA, dia) {
+  const fecha = new Date().toLocaleDateString('es-AR');
+  const prompt = '"El sistema automático del #BoletínMensual de La Eugenia no pudo enviar el mensaje de WhatsApp del día ' + fecha + '. La causa más probable es que CallMeBot cambió su número de registro o que la API key dejó de ser válida. Necesito instrucciones para reactivar CallMeBot y el código actualizado del script."';
+  const cuerpo =
+`⚠️ FALLO EN ENVÍO DE WHATSAPP — #BoletínMensual ${fecha}
+
+El sistema intentó enviar el mensaje de WhatsApp del día ${fecha} pero no pudo completarlo.
+El boletín mensual NO fue afectado — solo falló el aviso por WhatsApp.
+
+────────────────────────────
+MENSAJE PARA COPIAR AL GRUPO MANUALMENTE:
+
+${mensajeWA}
+
+────────────────────────────
+PARA RESOLVER EL FALLO CON CLAUDE:
+
+Pegá esto en Claude:
+${prompt}
+
+────────────────────────────
+No conteste este mensaje.`;
+
+  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '⚠️ Fallo WhatsApp — #BoletínMensual ' + fecha, body: cuerpo, name: NOMBRE_CLUB });
+}
+
+// ============================================================
+// DÍA 26 — RECORDATORIO CD
+// ============================================================
+function recordatorioDia26() {
+  const cuota = obtenerCuota();
+  const mensajeWA =
+`*Para conocimiento de la Comisión Directiva:*
+
+#BoletínMensual
+Estado: 🟡 En proceso de confirmación
+
+————
+Cuota social ${cuota.periodo}
+
+🏡 ${cuota.lote.replace('$', '$ ')}
+🏘️ ${cuota.adicional.replace('$', '$ ')}
+
+————
+Base de cálculo:
+- IPC ${cuota.mesIpc}: ${cuota.ipc}
+- Porcentaje fijo CD: ${cuota.pctFijo}
+- Ajuste total aplicado: ${cuota.ajusteTotal}
+
+————
+Reaccioná a este mensaje con 👍 para ratificar o escribí si hay alguna modificación.
+
+🔔 El boletín se publicará automáticamente el día 1º.
+
+LA EUGE informa 📣`;
+
+  const waOk = enviarWhatsApp(mensajeWA);
+  if (!waOk) mailAlertaFalloWA(mensajeWA, '26');
+
+  const cuerpoMail =
+`Este es un mensaje del sistema destinado a reportar el cálculo automático realizado para la cuota de ${cuota.periodo}. Si necesitara modificación debe realizarse antes del 28. De no necesitar modificación, debe omitir hacer alguna intervención.
+
+La fecha de publicación en la web será el 28 y el 1º del mes entrante se divulgará por #BoletínMensual vía email y grupo oficial de WhatsApp.
+
+────────────────────────────
+Cuota social ${cuota.periodo}
+
+🏡 ${cuota.lote}
+🏘️ ${cuota.adicional}
+
+────────────────────────────
+Base de cálculo:
+- IPC ${cuota.mesIpc}: ${cuota.ipc}
+- Porcentaje fijo CD: ${cuota.pctFijo}
+- Ajuste total aplicado: ${cuota.ajusteTotal}
+
+────────────────────────────
+No conteste este mensaje.`;
+
+  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '🟡 #BoletínMensual — Cuota en proceso de confirmación', body: cuerpoMail, name: NOMBRE_CLUB });
+}
+
+// ============================================================
+// DÍA 28 — CONFIRMACIÓN
+// ============================================================
+function confirmacionDia28() {
+  const cuota = obtenerCuota();
+  const mensajeWA =
+`*Para conocimiento de la Comisión Directiva:*
+
+#BoletínMensual
+Estado: 🟢 Publicado y listo para difusión
+
+————
+Cuota social ${cuota.periodo}
+
+🏡 ${cuota.lote.replace('$', '$ ')}
+🏘️ ${cuota.adicional.replace('$', '$ ')}
+
+🔔 El boletín se enviará automáticamente por mail a todos los suscriptos y se compartirá en el grupo oficial de difusión el día 1º.
+
+LA EUGE informa 📣`;
+
+  const waOk = enviarWhatsApp(mensajeWA);
+  if (!waOk) mailAlertaFalloWA(mensajeWA, '28');
+
+  const cuerpoMail =
+`Este es un mensaje del sistema confirmando que la cuota social de ${cuota.periodo} ha sido publicada en la web y se encuentra lista para su difusión el 1º del mes entrante.
+
+De haberse realizado alguna modificación manual, verificar que el valor publicado en la web sea el correcto antes del día 1º.
+
+────────────────────────────
+Cuota social ${cuota.periodo}
+
+🏡 ${cuota.lote}
+🏘️ ${cuota.adicional}
+
+────────────────────────────
+Base de cálculo:
+- IPC ${cuota.mesIpc}: ${cuota.ipc}
+- Porcentaje fijo CD: ${cuota.pctFijo}
+- Ajuste total aplicado: ${cuota.ajusteTotal}
+
+────────────────────────────
+No conteste este mensaje.`;
+
+  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '🟢 #BoletínMensual — Cuota confirmada y lista para difusión', body: cuerpoMail, name: NOMBRE_CLUB });
+}
+
+// ============================================================
+// DÍA 1 — ENVÍO AUTOMÁTICO
+// ============================================================
+function enviarMensualAutomatico() {
+  enviarMensualConOrigen('automatico');
+  const cuota = obtenerCuota();
+  const mensajeWA =
+`#BoletínMensual
+
+Estimados socios,
+
+La cuota social correspondiente a ${cuota.periodo} ya está disponible:
+
+🏡 ${cuota.lote.replace('$', '$ ')}
+🏘️ ${cuota.adicional.replace('$', '$ ')}
+
+————
+Datos para transferencia:
+Titular: ${NOMBRE_CLUB}
+Alias: ${ALIAS}
+CBU: ${CBU}
+CUIT: ${CUIT}
+
+————
+Consultas sobre pagos o estado de cuenta:
+📞 Raúl O. Toloza: ${TEL_RAUL}
+💬 ${WA_RAUL}
+
+————
+Movimiento de Tesorería — último período disponible:
+📊 ${URL_TESORERIA}
+
+————
+Centro de Gestión Vecinal:
+🌐 ${URL_CGV}
+
+————
+LA EUGE informa 📣`;
+
+  const waOk = enviarWhatsApp(mensajeWA);
+  if (!waOk) mailAlertaFalloWA(mensajeWA, '1');
+}
+
+// ============================================================
+// ENVIAR MENSUAL
+// ============================================================
+function enviarMensual() {
+  return enviarMensualConOrigen('manual');
+}
+
+function enviarMensualConOrigen(origen) {
+  origen = origen || 'manual';
+  const cuota = obtenerCuota();
+  if (!cuota.periodo) return { ok: false, mensaje: 'No se pudo obtener la cuota del DASHBOARD.' };
+  const destinatarios = obtenerActivos();
+  if (destinatarios.length === 0) return { ok: false, mensaje: 'No hay suscriptores activos.' };
+  const asunto = 'Cuota social — ' + cuota.periodo;
+  for (let i = 0; i < destinatarios.length; i++) {
+    const emailDest = destinatarios[i];
+    const cuerpo = armarCuerpoMensual(cuota).replace('EMAIL_PLACEHOLDER', encodeURIComponent(emailDest));
+    MailApp.sendEmail({ to: emailDest, subject: asunto, body: cuerpo, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
+    if (i < destinatarios.length - 1) Utilities.sleep(1000);
+  }
+  registrarEnvio('mensual', asunto, destinatarios.length, origen);
+  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '✅ Boletín enviado — ' + cuota.periodo, body: 'El boletín mensual fue enviado.\n\nPeríodo: ' + cuota.periodo + '\nDestinatarios: ' + destinatarios.length + '\nOrigen: ' + origen + '\nFecha: ' + new Date().toLocaleString('es-AR') + '\n\n' + NOMBRE_CLUB, name: NOMBRE_CLUB });
+  return { ok: true, mensaje: 'Boletín enviado a ' + destinatarios.length + ' suscriptores.' };
+}
+
+function armarCuerpoMensual(cuota) {
+  return `Estimados socios,
+
+Nos comunicamos para informarles que la cuota social correspondiente a ${cuota.periodo} ya está disponible:
+
+🏡 ${cuota.lote}
+🏘️ ${cuota.adicional} (si corresponde)
+
+──────────────────────────
+Datos para transferencia:
+Titular: ${NOMBRE_CLUB}
+Alias: ${ALIAS}
+CBU: ${CBU}
+CUIT: ${CUIT}
+
+──────────────────────────
+Consultas sobre pagos o estado de cuenta:
+📞 Raúl O. Toloza: ${TEL_RAUL}
+💬 WhatsApp: ${WA_RAUL}
+
+──────────────────────────
+Movimiento de Tesorería — último período disponible:
+📊 ${URL_TESORERIA}
+
+──────────────────────────
+Centro de Gestión Vecinal:
+🌐 ${URL_CGV}
+
+──────────────────────────
+Para dejar de recibir este boletín hacé clic aquí:
+${URL_BOLETIN}?baja=1&email=EMAIL_PLACEHOLDER
+
+Atentos saludos,
+${NOMBRE_CLUB}`;
+}
+
+// ============================================================
+// COMUNICADO LIBRE
+// ============================================================
+function enviarComunicado(asunto, cuerpo) {
+  if (!asunto || !cuerpo) return { ok: false, mensaje: 'Asunto y mensaje son requeridos.' };
+  const destinatarios = obtenerActivos();
+  if (destinatarios.length === 0) return { ok: false, mensaje: 'No hay suscriptores activos.' };
+  const cuerpoCompleto = cuerpo + '\n\n──────────────────────────\nPara dejar de recibir el boletín: ' + URL_BOLETIN + '\n\nAtentos saludos,\n' + NOMBRE_CLUB;
+  enviarEnTandas(destinatarios, asunto, cuerpoCompleto);
+  registrarEnvio('comunicado', asunto, destinatarios.length, 'manual');
+  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '✅ Comunicado enviado — ' + asunto, body: 'Comunicado enviado.\n\nAsunto: ' + asunto + '\nDestinatarios: ' + destinatarios.length + '\nFecha: ' + new Date().toLocaleString('es-AR') + '\n\n' + NOMBRE_CLUB, name: NOMBRE_CLUB });
+  return { ok: true, mensaje: 'Comunicado enviado a ' + destinatarios.length + ' suscriptores.' };
+}
+
+// ============================================================
+// SUSCRIBIR
+// ============================================================
+function suscribir(email, nombre) {
+  if (!email || !email.includes('@')) return { ok: false, mensaje: 'Email inválido.' };
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_SUSC);
+  const datos = hoja.getDataRange().getValues();
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][0].toString().toLowerCase() === email.toLowerCase()) {
+      if (datos[i][3] === true) return { ok: false, mensaje: 'Este email ya está suscripto.' };
+      if (datos[i][3] === 'pendiente') {
+        enviarConfirmacion(email, nombre || datos[i][1], datos[i][5]);
+        return { ok: true, mensaje: 'Tenemos registro de un pedido de suscripción pendiente de confirmación. Te lo reenviamos por si hubo algún error.' };
+      }
+      if (datos[i][3] === false || datos[i][3] === 'FALSE' || datos[i][3] === '') {
+        const token = Utilities.getUuid();
+        hoja.getRange(i + 1, 4).setValue('pendiente');
+        hoja.getRange(i + 1, 6).setValue(token);
+        enviarConfirmacion(email, nombre || datos[i][1], token);
+        return { ok: true, mensaje: 'Te enviamos un mail de confirmación. Revisá tu casilla.' };
+      }
+    }
+  }
+  const token = Utilities.getUuid();
+  hoja.appendRow([email, nombre, new Date(), 'pendiente', 'web', token]);
+  enviarConfirmacion(email, nombre, token);
+  return { ok: true, mensaje: 'Te enviamos un mail de confirmación. Revisá tu casilla.' };
+}
+
+function enviarConfirmacion(email, nombre, token) {
+  const urlConfirm = URL_BOLETIN + '?token=' + token;
+  const cuerpo = 'Hola' + (nombre ? ' ' + nombre : '') + ',\n\nRecibimos tu solicitud para suscribirte al #BoletínMensual de La Eugenia Club de Campo.\n\nPara confirmar tu suscripción hacé clic en el siguiente enlace:\n' + urlConfirm + '\n\nSi no solicitaste esta suscripción, ignorá este mensaje.\n\nAtentos saludos,\n' + NOMBRE_CLUB;
+  MailApp.sendEmail({ to: email, subject: 'Confirmá tu suscripción — #BoletínMensual La Eugenia', body: cuerpo, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
+}
+
+// ============================================================
+// CONFIRMAR
+// ============================================================
+function confirmar(token) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_SUSC);
+  const datos = hoja.getDataRange().getValues();
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][5] === token) {
+      hoja.getRange(i + 1, 4).setValue(true);
+      return { ok: true, mensaje: '¡Suscripción confirmada! A partir de ahora recibirás el boletín mensual.' };
+    }
+  }
+  return { ok: false, mensaje: 'Token inválido o ya confirmado.' };
+}
+
+// ============================================================
+// BAJA
+// ============================================================
+function baja(email) {
+  if (!email) return { ok: false, mensaje: 'Email requerido.' };
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_SUSC);
+  const datos = hoja.getDataRange().getValues();
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][0].toString().toLowerCase() === email.toLowerCase()) {
+      if (datos[i][3] === false) return { ok: false, mensaje: 'Este email ya estaba dado de baja.' };
+      hoja.getRange(i + 1, 4).setValue(false);
+      return { ok: true, mensaje: 'Te diste de baja correctamente. Lamentamos verte partir.' };
+    }
+  }
+  return { ok: false, mensaje: 'No encontramos ese email en la lista.' };
+}
+
+// ============================================================
+// LISTAR
+// ============================================================
+function listar() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_SUSC);
+  const datos = hoja.getDataRange().getValues();
+  let activos = 0, bajas = 0, pendientes = 0;
+  const suscriptores = [];
+  for (let i = 1; i < datos.length; i++) {
+    const email = datos[i][0];
+    const nombre = datos[i][1];
+    const estado = datos[i][3];
+    if (!email) continue;
+    let estadoTexto;
+    if (estado === true) { activos++; estadoTexto = 'activo'; }
+    else if (estado === 'pendiente') { pendientes++; estadoTexto = 'pendiente'; }
+    else { bajas++; estadoTexto = 'baja'; }
+    suscriptores.push({ email, nombre, estado: estadoTexto });
+  }
+  suscriptores.sort((a, b) => (a.nombre || a.email).localeCompare(b.nombre || b.email));
+  return { ok: true, activos, bajas, pendientes, total: activos + bajas + pendientes, suscriptores };
+}
+
+// ============================================================
+// AGREGAR MANUAL
+// ============================================================
+function agregarManual(email, nombre) {
+  if (!email || !email.includes('@')) return { ok: false, mensaje: 'Email inválido.' };
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_SUSC);
+  const datos = hoja.getDataRange().getValues();
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][0].toString().toLowerCase() === email.toLowerCase()) {
+      if (datos[i][3] === true) return { ok: false, mensaje: 'Este email ya está activo.' };
+      hoja.getRange(i + 1, 4).setValue(true);
+      return { ok: true, mensaje: 'Suscriptor reactivado.' };
+    }
+  }
+  hoja.appendRow([email, nombre, new Date(), true, 'manual', '']);
+  return { ok: true, mensaje: 'Suscriptor agregado correctamente.' };
+}
+
+// ============================================================
+// LOG
+// ============================================================
+function logEnvios() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_LOG);
+  if (!hoja) return { ok: true, envios: [] };
+  const datos = hoja.getDataRange().getValues();
+  const envios = [];
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][0]) envios.push({ fecha: datos[i][0], tipo: datos[i][1], asunto: datos[i][2], cantidad: datos[i][3], origen: datos[i][4] || 'manual' });
+  }
+  return { ok: true, envios: envios.reverse() };
+}
+
+function registrarEnvio(tipo, asunto, cantidad, origen) {
+  origen = origen || 'manual';
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = ss.getSheetByName(HOJA_LOG);
+  if (!hoja) {
+    hoja = ss.insertSheet(HOJA_LOG);
+    hoja.getRange("A1:E1").setValues([["FECHA","TIPO","ASUNTO","DESTINATARIOS","ORIGEN"]]);
+    hoja.getRange("A1:E1").setFontWeight("bold");
+  }
+  hoja.appendRow([new Date(), tipo, asunto, cantidad, origen]);
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function obtenerActivos() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hoja = ss.getSheetByName(HOJA_SUSC);
+  const datos = hoja.getDataRange().getValues();
+  const activos = [];
+  for (let i = 1; i < datos.length; i++) {
+    if (datos[i][0] && datos[i][3] === true) activos.push(datos[i][0]);
+  }
+  return activos;
+}
+
+function enviarEnTandas(destinatarios, asunto, cuerpo) {
+  for (let i = 0; i < destinatarios.length; i++) {
+    MailApp.sendEmail({ to: destinatarios[i], subject: asunto, body: cuerpo, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
+    if (i < destinatarios.length - 1) Utilities.sleep(1000);
+  }
+}
+
+// ============================================================
+// CREAR TRIGGERS
+// ============================================================
+function crearTriggersBoletin() {
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (['recordatorioDia26','confirmacionDia28','enviarMensualAutomatico'].includes(t.getHandlerFunction())) {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  ScriptApp.newTrigger('recordatorioDia26').timeBased().onMonthDay(26).atHour(8).create();
+  ScriptApp.newTrigger('confirmacionDia28').timeBased().onMonthDay(28).atHour(8).create();
+  ScriptApp.newTrigger('enviarMensualAutomatico').timeBased().onMonthDay(1).atHour(10).create();
+  Logger.log('Triggers creados: día 26, 28 y 1.');
+}
+
+// ============================================================
+// IMPORTAR SUSCRIPTORES
+// ============================================================
+function importarSuscriptores() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hojaImportar = ss.getSheetByName("IMPORTAR");
+  if (!hojaImportar) { Logger.log('No se encontró la hoja IMPORTAR.'); return; }
+  const hojaSusc = ss.getSheetByName(HOJA_SUSC);
+  const datosImportar = hojaImportar.getDataRange().getValues();
+  const datosSusc = hojaSusc.getDataRange().getValues();
+  const emailsExistentes = new Set();
+  for (let i = 1; i < datosSusc.length; i++) {
+    if (datosSusc[i][0]) emailsExistentes.add(datosSusc[i][0].toString().toLowerCase());
+  }
+  let agregados = 0, omitidos = 0;
+  for (let i = 1; i < datosImportar.length; i++) {
+    const email = datosImportar[i][0] ? datosImportar[i][0].toString().trim() : '';
+    const nombre = datosImportar[i][1] ? datosImportar[i][1].toString().trim() : '';
+    if (!email || !email.includes('@')) { omitidos++; continue; }
+    if (emailsExistentes.has(email.toLowerCase())) { omitidos++; continue; }
+    hojaSusc.appendRow([email, nombre, new Date(), true, 'importacion', '']);
+    emailsExistentes.add(email.toLowerCase());
+    agregados++;
+  }
+  Logger.log('Importación completada. Agregados: ' + agregados + ' | Omitidos: ' + omitidos);
+}
+
+// ============================================================
+// LIMPIAR DATOS DE PRUEBA
+// ============================================================
+function limpiarDatosDePrueba() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hojaSupc = ss.getSheetByName(HOJA_SUSC);
+  if (hojaSupc && hojaSupc.getLastRow() > 1) hojaSupc.getRange(2, 1, hojaSupc.getLastRow() - 1, hojaSupc.getLastColumn()).clearContent();
+  const hojaLog = ss.getSheetByName(HOJA_LOG);
+  if (hojaLog && hojaLog.getLastRow() > 1) hojaLog.getRange(2, 1, hojaLog.getLastRow() - 1, hojaLog.getLastColumn()).clearContent();
+  const hojaImportar = ss.getSheetByName("IMPORTAR");
+  if (hojaImportar && hojaImportar.getLastRow() > 1) hojaImportar.getRange(2, 1, hojaImportar.getLastRow() - 1, hojaImportar.getLastColumn()).clearContent();
+  Logger.log('✅ Datos de prueba eliminados.');
+}
+
+// ============================================================
+// CREAR HOJA INSTRUCCIONES
+// ============================================================
+function crearHojaInstrucciones() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = ss.getSheetByName("INSTRUCCIONES");
+  if (hoja) ss.deleteSheet(hoja);
+  hoja = ss.insertSheet("INSTRUCCIONES");
+  ss.setActiveSheet(hoja);
+  ss.moveActiveSheet(1);
+
+  const data = [
+    ["#BOLETÍNMENSUAL — SISTEMA DE GESTIÓN", "", "", ""],
+    ["Club de Campo La Eugenia | Sistema CGV", "", "", ""],
+    ["", "", "", ""],
+    ["━━━ HOJAS DEL SISTEMA ━━━", "", "", ""],
+    ["", "", "", ""],
+    ["HOJA", "QUÉ ES", "SE PUEDE TOCAR", "OBSERVACIONES"],
+    ["INSTRUCCIONES", "Esta hoja. Guía de uso del sistema.", "Solo lectura", "No modificar"],
+    ["SUSCRIPTORES", "Lista de todos los suscriptores del boletín.", "⚠️ Con cuidado", "No borrar filas. Podés cambiar ACTIVO entre TRUE/FALSE/pendiente. No tocar columna TOKEN."],
+    ["IMPORTAR", "Hoja para carga masiva de emails.", "✅ Libre", "Col A: Email | Col B: Nombre (opcional). Pegá la lista desde fila 2 y ejecutá importarSuscriptores()."],
+    ["LOG_ENVIOS", "Historial de todos los envíos realizados.", "Solo lectura", "Se completa automáticamente. No modificar."],
+    ["", "", "", ""],
+    ["━━━ FLUJO MENSUAL ━━━", "", "", ""],
+    ["", "", "", ""],
+    ["DÍA", "QUÉ PASA", "ACCIÓN REQUERIDA", ""],
+    ["26 de cada mes", "El sistema envía WhatsApp y mail interno a la CD con el valor calculado para ratificar.", "Copiar el WhatsApp recibido y pegarlo en el grupo de la Comisión Directiva. La CD reacciona con 👍 o propone cambios.", ""],
+    ["28 de cada mes", "El sistema confirma que la cuota está publicada en la web.", "Copiar el WhatsApp recibido y pegarlo en el grupo oficial de difusión.", ""],
+    ["1 de cada mes", "El sistema envía automáticamente el #BoletínMensual por email a todos los suscriptores activos y manda un WhatsApp para compartir en el grupo oficial.", "Copiar el WhatsApp recibido y pegarlo en el grupo oficial de difusión.", ""],
+    ["", "", "", ""],
+    ["━━━ IMPORTAR SUSCRIPTORES ━━━", "", "", ""],
+    ["", "", "", ""],
+    ["Paso 1", "Abrí la hoja IMPORTAR", "", ""],
+    ["Paso 2", "Pegá los emails en columna A desde fila 2 (uno por fila)", "", ""],
+    ["Paso 3", "Pegá los nombres en columna B (opcional)", "", ""],
+    ["Paso 4", "Extensiones → Apps Script → seleccioná importarSuscriptores → ejecutá ▶️", "", ""],
+    ["Paso 5", "Revisá el Registro de ejecución para ver cuántos se agregaron", "", ""],
+    ["⚠️ IMPORTANTE", "Los emails ya existentes se ignoran automáticamente. No se duplican.", "", ""],
+    ["", "", "", ""],
+    ["━━━ CALLMEBOT — WHATSAPP AUTOMÁTICO ━━━", "", "", ""],
+    ["", "", "", ""],
+    ["¿Qué es?", "Servicio gratuito que envía WhatsApp automáticos desde el sistema.", "", ""],
+    ["Número registrado", "+54 9 3764 11-3300", "", ""],
+    ["API Key actual", "5116671", "", ""],
+    ["Número CallMeBot", "+34 623 78 64 49", "", ""],
+    ["", "", "", ""],
+    ["SI EL WHATSAPP DEJA DE LLEGAR:", "", "", ""],
+    ["Paso 1", "Verificá el número actual en: https://www.callmebot.com", "", ""],
+    ["Paso 2", "Guardá el nuevo número en la agenda", "", ""],
+    ["Paso 3", "Enviá por WhatsApp: I allow callmebot to send me messages", "", ""],
+    ["Paso 4", "Recibirás una nueva API key", "", ""],
+    ["Paso 5", "En Apps Script actualizá: const WA_APIKEY = 'NUEVA_KEY';", "", ""],
+    ["Paso 6", "Guardá y reimplementá", "", ""],
+    ["", "", "", ""],
+    ["━━━ SI ALGO FALLA ━━━", "", "", ""],
+    ["", "", "", ""],
+    ["PROBLEMA", "CAUSA MÁS PROBABLE", "QUÉ HACER", ""],
+    ["No llega WhatsApp", "CallMeBot cambió número o API key vencida", "Llegará un mail de alerta con el mensaje para copiar manualmente y un prompt para resolver con Claude.", ""],
+    ["No llega el mail del día 26 o 28", "Error en script o Gmail", "Apps Script → Ver → Registros de ejecución. Contactar soporte.", ""],
+    ["El boletín del día 1 no se envió", "Error en trigger", "Enviarlo manualmente desde el panel admin.", ""],
+    ["Valores de cuota incorrectos", "DASHBOARD no actualizado", "Verificar celdas A1, A2 y A3 del DASHBOARD en el sheet de cuota vigente.", ""],
+    ["", "", "", ""],
+    ["━━━ SOPORTE TÉCNICO CON CLAUDE ━━━", "", "", ""],
+    ["", "", "", ""],
+    ["PROMPT:", "Soy el administrador del #BoletínMensual del Club de Campo La Eugenia (Garupá, Misiones). Sistema: Google Apps Script + Google Sheets + GitHub Pages. [DESCRIBIR EL PROBLEMA]. Script en proyecto CGV_Boletin. Frontend: https://clubdecampolaeugenia.github.io/boletin-la-eugenia/", "", ""],
+  ];
+
+  hoja.getRange(1, 1, data.length, 4).setValues(data);
+  hoja.getRange("A1:D1").setBackground("#0d6663").setFontColor("#ffffff").setFontSize(14).setFontWeight("bold").merge();
+  hoja.getRange("A2:D2").setBackground("#0d6663").setFontColor("#c4df57").setFontSize(11).merge();
+  [4, 12, 19, 27, 40, 49].forEach(row => {
+    hoja.getRange(row, 1, 1, 4).setBackground("#003a6b").setFontColor("#c4df57").setFontWeight("bold").merge();
+  });
+  [6, 14, 42].forEach(row => {
+    hoja.getRange(row, 1, 1, 4).setBackground("#c4df57").setFontWeight("bold");
+  });
+  hoja.setColumnWidth(1, 200);
+  hoja.setColumnWidth(2, 350);
+  hoja.setColumnWidth(3, 220);
+  hoja.setColumnWidth(4, 250);
+  hoja.getRange("A1:D" + data.length).setWrap(true).setVerticalAlignment("top");
+  hoja.protect().setDescription("No modificar").setWarningOnly(true);
+  Logger.log('✅ Hoja INSTRUCCIONES creada.');
+}
+
+// ============================================================
+// CREAR HOJA SUSCRIPTORES
+// ============================================================
+function crearHojaSuscriptores() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = ss.getSheetByName(HOJA_SUSC);
+  if (!hoja) hoja = ss.insertSheet(HOJA_SUSC);
+  hoja.getRange("A1:F1").setValues([["EMAIL","NOMBRE","FECHA","ACTIVO","ORIGEN","TOKEN"]]);
+  hoja.getRange("A1:F1").setFontWeight("bold").setBackground("#003a6b").setFontColor("#c4df57");
+  hoja.setColumnWidth(1, 220); hoja.setColumnWidth(2, 150); hoja.setColumnWidth(3, 140);
+  hoja.setColumnWidth(4, 80); hoja.setColumnWidth(5, 80); hoja.setColumnWidth(6, 200);
+  Logger.log('✅ Hoja SUSCRIPTORES lista.');
+}
+
+// ============================================================
+// CREAR HOJA IMPORTAR
+// ============================================================
+function crearHojaImportar() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = ss.getSheetByName("IMPORTAR");
+  if (!hoja) hoja = ss.insertSheet("IMPORTAR");
+  hoja.getRange("A1:B1").setValues([["EMAIL *", "NOMBRE (opcional)"]]);
+  hoja.getRange("A1:B1").setFontWeight("bold").setBackground("#003a6b").setFontColor("#c4df57");
+  hoja.getRange("C1").setValue("← Pegá los datos desde la fila 2. Solo emails válidos. Los duplicados se ignoran.");
+  hoja.getRange("C1").setFontColor("#c0392b").setFontSize(10).setFontStyle("italic");
+  hoja.setColumnWidth(1, 250); hoja.setColumnWidth(2, 200); hoja.setColumnWidth(3, 380);
+  Logger.log('✅ Hoja IMPORTAR configurada.');
+}function testWhatsAppDia1() {
+  const cuota = obtenerCuota();
+  const mensajeWA =
+`#BoletínMensual
+
+Estimados socios,
+
+La cuota social correspondiente a ${cuota.periodo} ya está disponible:
+
+🏡 ${cuota.lote.replace('$', '$ ')}
+🏘️ ${cuota.adicional.replace('$', '$ ')}
+
+————
+Datos para transferencia:
+Titular: ${NOMBRE_CLUB}
+Alias: ${ALIAS}
+CBU: ${CBU}
+CUIT: ${CUIT}
+
+————
+Consultas sobre pagos o estado de cuenta:
+📞 Raúl O. Toloza: ${TEL_RAUL}
+💬 ${WA_RAUL}
+
+————
+Movimiento de Tesorería — último período disponible:
+📊 ${URL_TESORERIA}
+
+————
+Centro de Gestión Vecinal:
+🌐 ${URL_CGV}
+
+————
+LA EUGE informa 📣`;
+
+  const waOk = enviarWhatsApp(mensajeWA);
+  Logger.log(waOk ? '✅ WhatsApp enviado' : '❌ Falló el envío');
+}
