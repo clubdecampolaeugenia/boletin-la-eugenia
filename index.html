@@ -4,41 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0d6663">
-  <link rel="apple-touch-icon" href="https://i.imgur.com/NLVlUco.png">
-  <link rel="icon" type="image/png" href="https://i.imgur.com/NLVlUco.png">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/2jCxrty.png">
+  <link rel="icon" type="image/png" href="https://i.imgur.com/2jCxrty.png">
   <title>Boletín La Eugenia</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; min-height: 100vh; background: #0d6663; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 28px 16px; }
-    .logo-wrap img { width: 144px; height: auto; display: block; margin: 0 auto 8px; }
+
+    @keyframes fadeInScreen {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .logo-wrap img { width: 158px; height: auto; display: block; margin: 0 auto 8px; filter: drop-shadow(0 4px 7px rgba(0,0,0,0.35)); }
     h1 { margin: 0 0 0px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
     h2 { margin: 0 0 4px; color: #c4df57; font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; font-weight: 900; }
     .club-nombre { color: #fff; font-size: 14px; font-weight: 400; text-align: center; margin-bottom: 20px; }
-    .card { background: #c4df57; border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; }
+    .card { background: #c4df57; border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
     .screen { display: none; }
-    .screen.active { display: block; }
+    .screen.active { display: block; animation: fadeInScreen 0.3s ease-out; }
     .intro { color: #003a6b; font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 6px; }
     .intro-baja { color: #003a6b; font-size: 13px; text-align: center; margin-bottom: 20px; }
     .field-label { color: #003a6b; font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; display: block; }
     input[type=text], input[type=email], textarea { width: 100%; border: 2px solid #0d6663; border-radius: 14px; padding: 12px; background: #edf1dc; color: #003a6b; font-family: 'Roboto', sans-serif; font-size: 15px; outline: none; }
-    input.error { border-color: #c0392b; }
+    input.error { border-color: #c0392b; animation: shakeError 0.35s ease-in-out; }
     textarea { min-height: 100px; resize: vertical; }
 
+    .btn-solid, .btn-susc, .btn-azul, .btn-rojo, .btn-outline, .btn-cgv, .btn-admin {
+      transition: transform 0.08s, box-shadow 0.08s, background 0.15s, color 0.15s;
+    }
+    .btn-solid:active, .btn-susc:active, .btn-azul:active, .btn-rojo:active, .btn-outline:active, .btn-cgv:active, .btn-admin:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
     .btn-solid { display: block; width: 100%; padding: 14px; border-radius: 24px; border: none; background: #0d6663; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; text-decoration: none; }
+    .btn-solid:hover { background: #0a3d3b; }
     .btn-susc { display: block; width: 100%; padding: 14px; border-radius: 24px; border: none; background: #003a6b; color: #fff; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; }
+    .btn-susc:hover { background: #002a4d; }
     .btn-azul { display: block; width: 100%; padding: 14px; border-radius: 24px; border: none; background: #003a6b; color: #fff; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-azul:hover { background: #002a4d; }
     .btn-rojo { display: block; width: 100%; padding: 14px; border-radius: 24px; border: none; background: #c0392b; color: #fff; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-rojo:hover { background: #a5281b; }
     .btn-outline { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid #0d6663; background: transparent; color: #0d6663; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-outline:hover { background: #0d6663; color: #c4df57; }
     .btn-ghost { display: block; width: 100%; padding: 10px; border-radius: 24px; border: none; background: transparent; color: #0d6663; font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 4px; text-align: center; }
     .btn-cgv { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid #0e3e3d; background: #0e3e3d; color: #c4df57; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 14px; text-align: center; text-decoration: none; }
+    .btn-cgv:hover { background: #0a302f; }
     .btn-admin { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid #0e3e3d; background: transparent; color: #0e3e3d; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-admin:hover { background: #0e3e3d; color: #c4df57; }
 
     .msg-pendiente { background: #edf1dc; border: 2px solid #003a6b; border-radius: 24px; padding: 12px 14px; color: #003a6b; font-size: 14px; text-align: center; display: none; margin-top: 10px; animation: destelloAzul 2s ease-in-out infinite; }
     @keyframes destelloAzul { 0%,100%{box-shadow:0 0 0 rgba(0,58,107,0)} 50%{box-shadow:0 0 14px rgba(0,58,107,0.4)} }
 
     .pin-label { text-align: center; color: #003a6b; font-size: 13px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
     .pin-input { display: block; width: 100%; text-align: center; font-size: 28px; font-weight: 900; letter-spacing: 12px; border: 2px solid #0d6663; border-radius: 16px; padding: 12px; background: #edf1dc; color: #003a6b; outline: none; margin-bottom: 12px; }
+    .pin-input.error { animation: shakeError 0.35s ease-in-out; border-color: #c0392b; }
     .pin-error { text-align: center; color: #c0392b; font-size: 13px; font-weight: 700; min-height: 18px; margin-bottom: 8px; }
 
     .stat-row { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -67,7 +101,7 @@
     .preview-titulo { color: #003a6b; font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
     .preview-cuerpo { color: #003a6b; font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
 
-    .confirm-icon { font-size: 60px; text-align: center; margin-bottom: 16px; }
+    .confirm-icon { font-size: 60px; text-align: center; margin-bottom: 16px; animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .confirm-titulo { color: #0d6663; font-family: Impact, sans-serif; font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
     .confirm-texto { color: #003a6b; font-size: 14px; text-align: center; line-height: 1.6; }
 
@@ -79,23 +113,24 @@
     .lista-seccion-vacia { padding: 8px 12px; font-size: 12px; color: #003a6b; opacity: 0.6; }
 
     /* MINI TOGGLES SUSCRIPTORES */
-    .mini-toggle { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; background: #edf1dc; border-radius: 10px; margin-bottom: 2px; cursor: pointer; font-size: 11px; font-weight: 900; color: #0d6663; text-transform: uppercase; }
+    .mini-toggle { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; background: #edf1dc; border-radius: 10px; margin-bottom: 2px; cursor: pointer; font-size: 11px; font-weight: 900; color: #0d6663; text-transform: uppercase; transition: transform 0.08s; }
+    .mini-toggle:active { transform: scale(0.97); }
     .mini-flecha { font-size: 10px; opacity: 0.6; }
     .mini-panel { display: none; background: #edf1dc; border-radius: 0 0 10px 10px; max-height: 160px; overflow-y: auto; margin-bottom: 6px; }
     .mini-panel.open { display: block; }
 
     /* GESTIONAR PANEL */
-    .gestionar-toggle { background: #edf1dc; border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: #003a6b; font-size: 13px; font-weight: 700; }
+    .gestionar-toggle { background: #edf1dc; border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: #003a6b; font-size: 13px; font-weight: 700; transition: transform 0.08s; }
+    .gestionar-toggle:active { transform: scale(0.98); }
     .gestionar-panel { background: #e0d97a; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
     .gestionar-panel.open { display: block; }
 
-    .btns-externos { display: none; width: 100%; max-width: 480px; }
     .btns-externos { display: none; width: 100%; max-width: 480px; }
     .btns-externos.visible { display: block; }
   </style>
 </head>
 <body>
-  <div class="logo-wrap"><img src="https://i.imgur.com/NLVlUco.png" alt="Boletín La Eugenia"></div>
+  <div class="logo-wrap"><img src="https://i.imgur.com/2jCxrty.png" alt="Boletín La Eugenia"></div>
   <h1>#Boletín</h1>
   <h2>Mensual</h2>
   <div class="club-nombre">Club de Campo La Eugenia</div>
@@ -307,6 +342,9 @@ function verificarPin() {
   } else {
     document.getElementById('pinError').innerText = 'PIN incorrecto.';
     document.getElementById('pinInput').value = '';
+    const pinEl = document.getElementById('pinInput');
+    pinEl.classList.add('error');
+    setTimeout(() => pinEl.classList.remove('error'), 400);
   }
 }
 document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verificarPin(); });
@@ -363,8 +401,8 @@ function mostrarMsg(id, texto, tipo) {
 async function suscribir() {
   const email = document.getElementById('suscEmail').value.trim();
   const nombre = document.getElementById('suscNombre').value.trim();
-  if (!nombre) { mostrarMsg('msgSusc', 'Ingresá tu nombre, apellido o razón social.', 'err'); return; }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc', 'Ingresá un email válido.', 'err'); return; }
+  if (!nombre) { mostrarMsg('msgSusc', 'Ingresá tu nombre, apellido o razón social.', 'err'); marcarError('suscNombre'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc', 'Ingresá un email válido.', 'err'); marcarError('suscEmail'); return; }
   document.getElementById('loadingSusc').innerText = 'Procesando...';
   try {
     const r = await llamarScript({ accion: 'suscribir', email, nombre });
@@ -380,6 +418,12 @@ async function suscribir() {
     document.getElementById('loadingSusc').innerText = '';
     mostrarMsg('msgSusc', 'Error. Intentá de nuevo.', 'err');
   }
+}
+
+function marcarError(id) {
+  const el = document.getElementById(id);
+  el.classList.add('error');
+  setTimeout(() => el.classList.remove('error'), 400);
 }
 
 async function cargarSuscriptores() {
@@ -421,7 +465,7 @@ async function cargarSuscriptores() {
 async function agregarManual() {
   const email = document.getElementById('adminEmail').value.trim();
   const nombre = document.getElementById('adminNombre').value.trim();
-  if (!email) { mostrarMsg('msgAdmin', 'Ingresá el email.', 'err'); return; }
+  if (!email) { mostrarMsg('msgAdmin', 'Ingresá el email.', 'err'); marcarError('adminEmail'); return; }
   document.getElementById('loadingAdmin').innerText = 'Agregando...';
   try {
     const r = await llamarScript({ accion: 'agregarManual', email, nombre });
@@ -436,7 +480,7 @@ async function agregarManual() {
 
 async function desuscribirManual() {
   const email = document.getElementById('bajaManualEmail').value.trim();
-  if (!email) { mostrarMsg('msgBajaManual', 'Ingresá el email.', 'err'); return; }
+  if (!email) { mostrarMsg('msgBajaManual', 'Ingresá el email.', 'err'); marcarError('bajaManualEmail'); return; }
   if (!confirm(`¿Dar de baja a ${email}?`)) return;
   document.getElementById('loadingBajaManual').innerText = 'Procesando...';
   try {
