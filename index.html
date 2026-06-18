@@ -210,6 +210,7 @@
         <div class="stat-box"><div class="stat-num" id="statPendientes">—</div><div class="stat-label">Pendientes</div></div>
         <div class="stat-box"><div class="stat-num" id="statBajas">—</div><div class="stat-label">Bajas</div></div>
       </div>
+      <div id="statOrigen" style="text-align:center; color:var(--petroleo); font-size:11px; font-weight:700; margin:-10px 0 16px; opacity:0.8;"></div>
 
       <div class="lista-wrap" id="listaWrap">
         <div class="mini-toggle" onclick="toggleMini('secActivos','flechaActivos')">
@@ -456,6 +457,9 @@ async function cargarSuscriptores() {
     document.getElementById('statPendientes').innerText = r.pendientes || 0;
     document.getElementById('statBajas').innerText = r.bajas;
 
+    const web = r.activosWeb || 0;
+    const manual = r.activosManual || 0;
+    document.getElementById('statOrigen').innerText = `${web} vía web · ${manual} manual/importación`;
 
     const activos = r.suscriptores.filter(s => s.estado === 'activo');
     const pendientes = r.suscriptores.filter(s => s.estado === 'pendiente');
@@ -466,13 +470,20 @@ async function cargarSuscriptores() {
     document.getElementById('labelPendientes').innerText = `Pendientes (${pendientes.length})`;
     document.getElementById('labelBajas').innerText = `Bajas (${bajas.length})`;
 
+    function origenAbrev(origen) {
+      if (origen === 'web') return 'W';
+      if (origen === 'importacion') return 'I';
+      return 'M';
+    }
+
     function renderMini(id, items, badgeClass, badgeLabel) {
       const el = document.getElementById(id);
       if (items.length === 0) { el.innerHTML = '<div style="padding:6px 12px;font-size:11px;opacity:0.6;">Sin registros.</div>'; return; }
       el.innerHTML = items.map(s => `
         <div class="suscriptor-item" style="padding:5px 12px;">
           <span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-size:11px;">${s.nombre ? s.nombre + ' — ' : ''}${s.email}</span>
-          <span class="badge-${badgeClass}" style="flex-shrink:0;margin-left:6px;font-size:9px;">${badgeLabel}</span>
+          <span style="flex-shrink:0;margin-left:6px;font-size:9px;opacity:0.55;font-weight:900;" title="${s.origen}">${origenAbrev(s.origen)}</span>
+          <span class="badge-${badgeClass}" style="flex-shrink:0;margin-left:4px;font-size:9px;">${badgeLabel}</span>
         </div>`).join('');
     }
 
