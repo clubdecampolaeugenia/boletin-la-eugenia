@@ -134,11 +134,16 @@
     .mini-panel { display: none; background: var(--blanco); border-radius: 0 0 10px 10px; max-height: 160px; overflow-y: auto; margin-bottom: 6px; }
     .mini-panel.open { display: block; }
 
-    .gestionar-toggle { background: var(--blanco); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--negro); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
+    .gestionar-toggle { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--negro); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
     .gestionar-toggle:active { transform: scale(0.98); }
-    .gestionar-panel { background: var(--blanco); border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
+    .gestionar-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
     .gestionar-panel.open { display: block; }
     .gestionar-panel .field-label { color: var(--petroleo); }
+
+    .prueba-toggle { background: var(--petroleo); border: 2px solid var(--lima); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--lima); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
+    .prueba-toggle:active { transform: scale(0.98); }
+    .prueba-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
+    .prueba-panel.open { display: block; }
 
     .btns-externos { display: none; width: 100%; max-width: 480px; margin-top: 36px; }
     .btns-externos.visible { display: block; }
@@ -263,42 +268,64 @@
       </div>
 
       <hr class="divider">
-      <div class="section-title">Novedades del próximo boletín</div>
-      <p style="color:var(--petroleo);font-size:12px;margin:0 0 12px;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
-
-      <div id="novedadesLista"><div class="novedades-vacio">No hay novedades cargadas.</div></div>
-
-      <span class="field-label">Título</span>
-      <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Julio">
-      <span class="field-label">Descripción</span>
-      <textarea id="novDescripcion" placeholder="Detalle de la novedad..."></textarea>
-      <button type="button" class="btn-ia" id="btnNovIA" onclick="corregirNovedad()">Corrección con IA</button>
-      <div class="loading" id="loadingNov"></div>
-      <div class="msg-box" id="msgNov"></div>
-      <button type="button" class="btn-solid" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
-      <button type="button" class="btn-ghost hidden" id="btnNovCancelar" onclick="cancelarEdicionNovedad()" style="display:none;">Cancelar edición</button>
-
-      <hr class="divider">
-      <div class="gestionar-toggle" onclick="toggleHistorialNov()">
-        <span>Últimas 5 novedades enviadas</span>
-        <span id="historialNovFlecha">▼</span>
+      <div class="gestionar-toggle" onclick="toggleNovedades()">
+        <span>NOVEDADES DEL PRÓXIMO BOLETÍN</span>
+        <span id="novedadesFlecha">▼</span>
       </div>
-      <div class="gestionar-panel" id="historialNovPanel" style="display:none;">
-        <div id="logNovedades" style="font-size:12px;color:var(--petroleo);line-height:1.6;">Cargando...</div>
+      <div class="gestionar-panel" id="novedadesPanel">
+        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
+
+        <div id="novedadesLista"><div class="novedades-vacio">No hay novedades cargadas.</div></div>
+
+        <span class="field-label">Título</span>
+        <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Julio">
+        <span class="field-label">Descripción</span>
+        <textarea id="novDescripcion" placeholder="Detalle de la novedad..."></textarea>
+        <button type="button" class="btn-ia" id="btnNovIA" onclick="corregirNovedad()">♦ Corrección con IA</button>
+        <div class="loading" id="loadingNov"></div>
+        <div class="msg-box" id="msgNov"></div>
+        <button type="button" class="btn-solid" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
+        <button type="button" class="btn-ghost" id="btnNovCancelar" onclick="cancelarEdicionNovedad()" style="display:none;">Cancelar edición</button>
       </div>
 
       <hr class="divider">
-      <div class="section-title">Vista previa y prueba</div>
-      <button type="button" class="btn-outline" onclick="verPreviewBoletin()">Ver vista previa del boletín</button>
-      <div class="preview-html-box" id="previewHtmlBox">
-        <iframe id="previewIframe"></iframe>
+      <div class="gestionar-toggle" onclick="toggleComunicado()">
+        <span>COMUNICADO LIBRE</span>
+        <span id="comunicadoFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="comunicadoPanel">
+        <span class="field-label">Asunto</span>
+        <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
+        <span class="field-label">Mensaje</span>
+        <textarea id="commCuerpo" placeholder="Escribí el mensaje..." oninput="actualizarPreview()"></textarea>
+        <button type="button" class="btn-ia" id="btnCommIA" onclick="corregirComunicado()">♦ Corrección con IA</button>
+        <div class="loading" id="loadingCommIA"></div>
+        <div class="preview-box" id="previewBox">
+          <div class="preview-titulo">Vista previa</div>
+          <div class="preview-cuerpo" id="previewCuerpo"></div>
+        </div>
+        <div class="loading" id="loadingComm"></div>
+        <div class="msg-box" id="msgComm"></div>
+        <button type="button" class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
       </div>
 
-      <span class="field-label">Enviar boletín de prueba a</span>
-      <input type="email" id="emailPrueba" value="gacoutada@gmail.com">
-      <div class="loading" id="loadingPrueba"></div>
-      <div class="msg-box" id="msgPrueba"></div>
-      <button type="button" class="btn-outline" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
+      <hr class="divider">
+      <div class="prueba-toggle" onclick="togglePrueba()">
+        <span>VISTA PREVIA Y PRUEBA</span>
+        <span id="pruebaFlecha">▼</span>
+      </div>
+      <div class="prueba-panel" id="pruebaPanel">
+        <button type="button" class="btn-outline" onclick="verPreviewBoletin()">Ver vista previa del boletín</button>
+        <div class="preview-html-box" id="previewHtmlBox">
+          <iframe id="previewIframe"></iframe>
+        </div>
+
+        <span class="field-label">Enviar boletín de prueba a</span>
+        <input type="email" id="emailPrueba" value="gacoutada@gmail.com">
+        <div class="loading" id="loadingPrueba"></div>
+        <div class="msg-box" id="msgPrueba"></div>
+        <button type="button" class="btn-outline" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
+      </div>
 
       <hr class="divider">
       <div class="section-title">Enviar #BoletínMensual</div>
@@ -308,18 +335,13 @@
       <button type="button" class="btn-azul" onclick="enviarMensual()">Enviar manualmente #BoletínMensual</button>
 
       <hr class="divider">
-      <div class="section-title">Comunicado libre</div>
-      <span class="field-label">Asunto</span>
-      <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
-      <span class="field-label">Mensaje</span>
-      <textarea id="commCuerpo" placeholder="Escribí el mensaje..." oninput="actualizarPreview()"></textarea>
-      <div class="preview-box" id="previewBox">
-        <div class="preview-titulo">Vista previa</div>
-        <div class="preview-cuerpo" id="previewCuerpo"></div>
+      <div class="gestionar-toggle" onclick="toggleHistorialNov()">
+        <span>Últimas 5 novedades enviadas</span>
+        <span id="historialNovFlecha">▼</span>
       </div>
-      <div class="loading" id="loadingComm"></div>
-      <div class="msg-box" id="msgComm"></div>
-      <button type="button" class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
+      <div class="gestionar-panel" id="historialNovPanel" style="display:none;">
+        <div id="logNovedades" style="font-size:12px;color:var(--petroleo);line-height:1.6;">Cargando...</div>
+      </div>
 
       <hr class="divider">
       <div class="gestionar-toggle" onclick="toggleHistorial()">
