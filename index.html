@@ -93,9 +93,9 @@
     .pin-error { text-align: center; color: var(--error); font-size: 13px; font-weight: 700; min-height: 18px; margin-bottom: 8px; }
 
     .stat-row { display: flex; gap: 8px; margin-bottom: 16px; }
-    .stat-box { flex: 1; background: var(--blanco); border-radius: 14px; padding: 10px 6px; text-align: center; }
-    .stat-num { font-size: 22px; font-weight: 900; color: var(--negro); }
-    .stat-label { font-size: 9px; font-weight: 700; color: var(--petroleo); text-transform: uppercase; }
+    .stat-box { flex: 1; background: var(--petroleo); border: 2px solid var(--lima); border-radius: 14px; padding: 10px 6px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 900; color: var(--lima); }
+    .stat-label { font-size: 9px; font-weight: 700; color: var(--lima); text-transform: uppercase; opacity: 0.85; }
 
     .lista-toggle { background: var(--blanco); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--petroleo); font-size: 13px; font-weight: 700; }
     .suscriptor-list { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--blanco); border-radius: 0 0 14px 14px; margin-bottom: 14px; }
@@ -144,6 +144,10 @@
     .prueba-toggle:active { transform: scale(0.98); }
     .prueba-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
     .prueba-panel.open { display: block; }
+
+    .btn-prueba-dorado { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; transition: transform 0.08s, opacity 0.15s; }
+    .btn-prueba-dorado:hover { opacity: 0.88; }
+    .btn-prueba-dorado:active { transform: scale(0.96); }
 
     .btns-externos { display: none; width: 100%; max-width: 480px; margin-top: 36px; }
     .btns-externos.visible { display: block; }
@@ -246,6 +250,26 @@
       </div>
 
       <hr class="divider">
+      <div class="prueba-toggle" onclick="togglePrueba()">
+        <span>VISTA PREVIA Y PRUEBA</span>
+        <span id="pruebaFlecha">▼</span>
+      </div>
+      <div class="prueba-panel" id="pruebaPanel">
+        <button type="button" class="btn-outline" onclick="verPreviewBoletin()">Ver vista previa del boletín</button>
+        <div class="preview-html-box" id="previewHtmlBox">
+          <iframe id="previewIframe"></iframe>
+        </div>
+
+        <hr class="divider">
+
+        <span class="field-label">Enviar boletín de prueba a</span>
+        <input type="email" id="emailPrueba" value="gacoutada@gmail.com">
+        <div class="loading" id="loadingPrueba"></div>
+        <div class="msg-box" id="msgPrueba"></div>
+        <button type="button" class="btn-prueba-dorado" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
+      </div>
+
+      <hr class="divider">
       <div class="gestionar-toggle" onclick="toggleGestionar()">
         <span>AGREGAR O QUITAR SUSCRIPTOR MANUALMENTE</span>
         <span id="gestionarFlecha">▼</span>
@@ -294,6 +318,7 @@
         <span id="comunicadoFlecha">▼</span>
       </div>
       <div class="gestionar-panel" id="comunicadoPanel">
+        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este apartado es para enviar un email a todos los suscriptores, por fuera del #BoletínMensual.</p>
         <span class="field-label">Asunto</span>
         <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
         <span class="field-label">Mensaje</span>
@@ -310,29 +335,16 @@
       </div>
 
       <hr class="divider">
-      <div class="prueba-toggle" onclick="togglePrueba()">
-        <span>VISTA PREVIA Y PRUEBA</span>
-        <span id="pruebaFlecha">▼</span>
+      <div class="gestionar-toggle" onclick="toggleEnviarMensual()">
+        <span>ENVIAR #BOLETÍNMENSUAL</span>
+        <span id="enviarMensualFlecha">▼</span>
       </div>
-      <div class="prueba-panel" id="pruebaPanel">
-        <button type="button" class="btn-outline" onclick="verPreviewBoletin()">Ver vista previa del boletín</button>
-        <div class="preview-html-box" id="previewHtmlBox">
-          <iframe id="previewIframe"></iframe>
-        </div>
-
-        <span class="field-label">Enviar boletín de prueba a</span>
-        <input type="email" id="emailPrueba" value="gacoutada@gmail.com">
-        <div class="loading" id="loadingPrueba"></div>
-        <div class="msg-box" id="msgPrueba"></div>
-        <button type="button" class="btn-outline" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
+      <div class="gestionar-panel" id="enviarMensualPanel">
+        <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Envía a todos los suscriptores activos el #BoletínMensual del mes con la cuota vigente en el DASHBOARD y las novedades cargadas arriba.</p>
+        <div class="loading" id="loadingMensual"></div>
+        <div class="msg-box" id="msgMensual"></div>
+        <button type="button" class="btn-azul" onclick="enviarMensual()">Enviar manualmente #BoletínMensual</button>
       </div>
-
-      <hr class="divider">
-      <div class="section-title">Enviar #BoletínMensual</div>
-      <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Envía a todos los suscriptores activos el #BoletínMensual del mes con la cuota vigente en el DASHBOARD y las novedades cargadas arriba.</p>
-      <div class="loading" id="loadingMensual"></div>
-      <div class="msg-box" id="msgMensual"></div>
-      <button type="button" class="btn-azul" onclick="enviarMensual()">Enviar manualmente #BoletínMensual</button>
 
       <hr class="divider">
       <div class="gestionar-toggle" onclick="toggleHistorial()">
@@ -459,6 +471,7 @@ function toggleGestionar() { togglePanel('gestionarPanel', 'gestionarFlecha'); }
 function toggleNovedades() { togglePanel('novedadesPanel', 'novedadesFlecha'); }
 function toggleComunicado() { togglePanel('comunicadoPanel', 'comunicadoFlecha'); }
 function togglePrueba() { togglePanel('pruebaPanel', 'pruebaFlecha'); }
+function toggleEnviarMensual() { togglePanel('enviarMensualPanel', 'enviarMensualFlecha'); }
 
 function toggleHistorial() {
   const panel = document.getElementById('historialPanel');
