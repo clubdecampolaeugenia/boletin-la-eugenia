@@ -1,1054 +1,893 @@
-// ============================================================
-// BOLETÍN LA EUGENIA — Apps Script v8
-// Incluye: HTML del mail mensual + gestión de novedades
-// ============================================================
-
-const HOJA_SUSC = "SUSCRIPTORES";
-const HOJA_LOG = "LOG_ENVIOS";
-const HOJA_NOVEDADES = "NOVEDADES";
-const HOJA_NOVEDADES_HIST = "NOVEDADES_HISTORIAL";
-const EMAIL_CLUB = "clubdecampolaeugenia@gmail.com";
-const NOMBRE_CLUB = "La Eugenia Club de Campo";
-const ALIAS = "DELFIN.COCINA.MANTO";
-const CBU = "1910229855022900048696";
-const CUIT = "30-63417128-9";
-const TEL_RAUL = "+54 9 3764 60-3432";
-const WA_RAUL = "https://wa.me/5493764603432";
-const URL_CGV = "https://clubdecampolaeugenia.taplink.site/";
-const URL_TESORERIA = "https://clubdecampolaeugenia.github.io/tesoreria-la-eugenia/";
-const URL_BOLETIN = "https://clubdecampolaeugenia.github.io/boletin-la-eugenia/";
-const URL_CUOTA = "https://clubdecampolaeugenia.github.io/cuota-la-eugenia/";
-const URL_COPIAR_ALIAS = "https://clubdecampolaeugenia.github.io/copiar-alias/";
-const LOGO_URL = "https://i.imgur.com/2jCxrty.png";
-const SHEET_CUOTA_ID = "1BaK9rg7FAsnWtZ5uPmB0GV-ri9bZoUYGifbQPjqcHMA";
-const WA_NUMERO = "5493764113300";
-const WA_APIKEY = "5116671";
-
-const _p1 = 'sk-ant-api03-';
-const _p2 = '2HepC27etCoR12Jm';
-const _p3 = 'lgSsA1eiBGIhR5IR';
-const _p4 = 'VeNcPc7K8QMUX2sE';
-const _p5 = 'f2KH1ZiqZs7eB0rO';
-const _p6 = '2EUvT4Bv1Dbx7boj';
-const _p7 = 'PZdEpw-_dqcKgAA';
-const AK = _p1+_p2+_p3+_p4+_p5+_p6+_p7;
-
-// ============================================================
-// TEST — ejecutar para verificar valores
-// ============================================================
-function testObtenerCuota() {
-  const cuota = obtenerCuota();
-  Logger.log('Periodo: ' + cuota.periodo);
-  Logger.log('Lote raw: ' + cuota.lote);
-  Logger.log('Adicional raw: ' + cuota.adicional);
-  Logger.log('IPC: ' + cuota.ipc);
-  Logger.log('Mes IPC: ' + cuota.mesIpc);
-  Logger.log('Ajuste: ' + cuota.ajusteTotal);
-}
-
-// ============================================================
-// doGet — punto de entrada JSONP
-// ============================================================
-function doGet(e) {
-  const accion = e.parameter.accion || '';
-  const callback = e.parameter.callback || '';
-  let resultado;
-  try {
-    if (accion === 'suscribir') resultado = suscribir(e.parameter.email, e.parameter.nombre || '');
-    else if (accion === 'baja') resultado = baja(e.parameter.email);
-    else if (accion === 'listar') resultado = listar();
-    else if (accion === 'agregarManual') resultado = agregarManual(e.parameter.email, e.parameter.nombre || '');
-    else if (accion === 'enviarMensual') resultado = enviarMensual();
-    else if (accion === 'enviarBoletinPrueba') resultado = enviarBoletinPrueba(e.parameter.email);
-    else if (accion === 'enviarComunicado') resultado = enviarComunicado(e.parameter.asunto, e.parameter.cuerpo);
-    else if (accion === 'confirmar') resultado = confirmar(e.parameter.token);
-    else if (accion === 'logEnvios') resultado = logEnvios();
-    else if (accion === 'obtenerHTMLEnvio') resultado = obtenerHTMLEnvio(e.parameter.id);
-    else if (accion === 'listarNovedades') resultado = listarNovedades();
-    else if (accion === 'agregarNovedad') resultado = agregarNovedad(e.parameter.titulo, e.parameter.descripcion);
-    else if (accion === 'editarNovedad') resultado = editarNovedad(e.parameter.id, e.parameter.titulo, e.parameter.descripcion);
-    else if (accion === 'eliminarNovedad') resultado = eliminarNovedad(e.parameter.id);
-    else if (accion === 'corregirNovedadIA') resultado = corregirNovedadIA(e.parameter.titulo, e.parameter.descripcion);
-    else if (accion === 'corregirComunicadoIA') resultado = corregirComunicadoIA(e.parameter.asunto, e.parameter.cuerpo);
-    else if (accion === 'previewBoletin') resultado = previewBoletin();
-    else if (accion === 'historialNovedades') resultado = historialNovedades();
-    else resultado = { ok: false, mensaje: 'Acción no reconocida.' };
-  } catch(err) {
-    resultado = { ok: false, mensaje: 'Error interno: ' + err.message };
-  }
-  const json = JSON.stringify(resultado);
-  if (callback) {
-    return ContentService.createTextOutput(callback + '(' + json + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
-}
-
-// ============================================================
-// OBTENER CUOTA
-// ============================================================
-function obtenerCuota() {
-  const ss = SpreadsheetApp.openById(SHEET_CUOTA_ID);
-  const dash = ss.getSheetByName("DASHBOARD");
-  const hojaCuotas = ss.getSheetByName("CUOTAS");
-
-  const periodo = dash.getRange("A1").getDisplayValue();
-  const lote = dash.getRange("A2").getDisplayValue();
-  const adicional = dash.getRange("A3").getDisplayValue();
-
-  const datos = hojaCuotas.getDataRange().getValues();
-  let ipc = '', pctFijo = '', ajusteTotal = '', mesIpc = '';
-
-  for (let i = datos.length - 1; i >= 1; i--) {
-    const valIpc = datos[i][2];
-    const valFijo = datos[i][5];
-    const valAjuste = datos[i][6];
-    if (typeof valIpc === 'number' && !isNaN(valIpc) && valIpc > 0) {
-      ipc = (valIpc * 100).toFixed(2) + '%';
-      pctFijo = (typeof valFijo === 'number') ? (valFijo * 100).toFixed(1) + '%' : '2,0%';
-      ajusteTotal = (typeof valAjuste === 'number') ? (valAjuste * 100).toFixed(2) + '%' : '';
-      mesIpc = datos[i][1] ? datos[i][1].toString() : '';
-      break;
-    }
-  }
-
-  return { periodo, lote, adicional, ipc, pctFijo, ajusteTotal, mesIpc };
-}
-
-// ============================================================
-// WHATSAPP VÍA CALLMEBOT
-// ============================================================
-function enviarWhatsApp(mensaje) {
-  try {
-    const url = 'https://api.callmebot.com/whatsapp.php?phone=' + WA_NUMERO +
-      '&text=' + encodeURIComponent(mensaje) + '&apikey=' + WA_APIKEY;
-    const resp = UrlFetchApp.fetch(url);
-    return resp.getResponseCode() === 200;
-  } catch(e) {
-    return false;
-  }
-}
-
-// ============================================================
-// MAIL DE ALERTA SI FALLA WHATSAPP
-// ============================================================
-function mailAlertaFalloWA(mensajeWA, dia) {
-  const fecha = new Date().toLocaleDateString('es-AR');
-  const prompt = '"El sistema automático del #BoletínMensual de La Eugenia no pudo enviar el mensaje de WhatsApp del día ' + fecha + '. La causa más probable es que CallMeBot cambió su número de registro o que la API key dejó de ser válida. Necesito instrucciones para reactivar CallMeBot y el código actualizado del script."';
-  const cuerpo =
-`⚠️ FALLO EN ENVÍO DE WHATSAPP — #BoletínMensual ${fecha}
-
-El sistema intentó enviar el mensaje de WhatsApp del día ${fecha} pero no pudo completarlo.
-El boletín mensual NO fue afectado — solo falló el aviso por WhatsApp.
-
-────────────────────────────
-MENSAJE PARA COPIAR AL GRUPO MANUALMENTE:
-
-${mensajeWA}
-
-────────────────────────────
-PARA RESOLVER EL FALLO CON CLAUDE:
-
-Pegá esto en Claude:
-${prompt}
-
-────────────────────────────
-No conteste este mensaje.`;
-
-  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '⚠️ Fallo WhatsApp — #BoletínMensual ' + fecha, body: cuerpo, name: NOMBRE_CLUB });
-}
-
-// ============================================================
-// DÍA 26 — RECORDATORIO CD
-// ============================================================
-function recordatorioDia26() {
-  const cuota = obtenerCuota();
-  const mensajeWA =
-`*Para conocimiento de la Comisión Directiva:*
-
-#BoletínMensual
-Estado: 🟡 En proceso de confirmación
-
-————
-Cuota social ${cuota.periodo}
-
-🏡 ${cuota.lote.replace('$', '$ ')}
-🏘️ ${cuota.adicional.replace('$', '$ ')}
-
-————
-Base de cálculo:
-- IPC ${cuota.mesIpc}: ${cuota.ipc}
-- Porcentaje fijo CD: ${cuota.pctFijo}
-- Ajuste total aplicado: ${cuota.ajusteTotal}
-
-————
-Reaccioná a este mensaje con 👍 para ratificar o escribí si hay alguna modificación.
-
-🔔 El boletín se publicará automáticamente el día 1º.
-
-LA EUGE informa 📣`;
-
-  const waOk = enviarWhatsApp(mensajeWA);
-  if (!waOk) mailAlertaFalloWA(mensajeWA, '26');
-
-  const cuerpoMail =
-`PARA CONSIDERACIÓN DE LA COMISIÓN DIRECTIVA:
-
-Este es un mensaje del sistema destinado a reportar el cálculo automático realizado para la cuota de ${cuota.periodo}. Si necesitara modificación debe realizarse antes del 28. De no necesitar modificación, debe omitir hacer alguna intervención.
-
-La fecha de publicación en la web será el 28 y el 1º del mes entrante se divulgará por #BoletínMensual vía email y grupo oficial de WhatsApp.
-
-──────────────────────────
-Cuota social ${cuota.periodo}
-
-🏡 ${cuota.lote}
-🏘️ ${cuota.adicional}
-
-──────────────────────────
-Base de cálculo:
-- IPC ${cuota.mesIpc}: ${cuota.ipc}
-- Porcentaje fijo CD: ${cuota.pctFijo}
-- Ajuste total aplicado: ${cuota.ajusteTotal}
-
-──────────────────────────
-Este es un mensaje automático del sistema. No lo conteste.`;
-
-  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '🟡 #BoletínMensual — Cuota en proceso de confirmación', body: cuerpoMail, name: NOMBRE_CLUB });
-}
-
-// ============================================================
-// DÍA 28 — CONFIRMACIÓN
-// ============================================================
-function confirmacionDia28() {
-  const cuota = obtenerCuota();
-  const mensajeWA =
-`*Para conocimiento de la Comisión Directiva:*
-
-#BoletínMensual
-Estado: 🟢 Publicado y listo para difusión
-
-————
-Cuota social ${cuota.periodo}
-
-🏡 ${cuota.lote.replace('$', '$ ')}
-🏘️ ${cuota.adicional.replace('$', '$ ')}
-
-🔔 El boletín se enviará automáticamente por mail a todos los suscriptos y se compartirá en el grupo oficial de difusión el día 1º.
-
-Consultá la cuota publicada:
-${URL_CUOTA}
-
-LA EUGE informa 📣`;
-
-  const waOk = enviarWhatsApp(mensajeWA);
-  if (!waOk) mailAlertaFalloWA(mensajeWA, '28');
-
-  const cuerpoMail =
-`PARA INFORMACIÓN DE LA COMISIÓN DIRECTIVA Y ADMINISTRACIÓN:
-
-Este es un mensaje del sistema confirmando que la cuota social de ${cuota.periodo} ha sido publicada en la web y se encuentra lista para su difusión el 1º del mes entrante.
-
-De haberse realizado alguna modificación manual, verificar que el valor publicado en la web sea el correcto antes del día 1º.
-
-──────────────────────────
-Cuota social ${cuota.periodo}
-
-🏡 ${cuota.lote}
-🏘️ ${cuota.adicional}
-
-──────────────────────────
-Base de cálculo:
-- IPC ${cuota.mesIpc}: ${cuota.ipc}
-- Porcentaje fijo CD: ${cuota.pctFijo}
-- Ajuste total aplicado: ${cuota.ajusteTotal}
-
-──────────────────────────
-Consultá la cuota publicada:
-${URL_CUOTA}
-
-──────────────────────────
-Este es un mensaje automático del sistema. No lo conteste.`;
-
-  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '🟢 #BoletínMensual — Cuota confirmada y lista para difusión', body: cuerpoMail, name: NOMBRE_CLUB });
-}
-
-// ============================================================
-// DÍA 1 — ENVÍO AUTOMÁTICO
-// ============================================================
-function enviarMensualAutomatico() {
-  enviarMensualConOrigen('automatico');
-  const cuota = obtenerCuota();
-  const mensajeWA =
-`#BoletínMensual
-
-Estimados socios,
-
-La cuota social correspondiente a ${cuota.periodo} ya está disponible:
-
-🏡 ${cuota.lote.replace('$', '$ ')}
-🏘️ ${cuota.adicional.replace('$', '$ ')}
-
-————
-Datos para transferencia:
-Titular: ${NOMBRE_CLUB}
-Alias: ${ALIAS}
-CBU: ${CBU}
-CUIT: ${CUIT}
-
-————
-Consultas sobre pagos o estado de cuenta:
-📞 Raúl O. Toloza: ${TEL_RAUL}
-💬 ${WA_RAUL}
-
-————
-Movimiento de Tesorería — último período disponible:
-📊 ${URL_TESORERIA}
-
-————
-Centro de Gestión Vecinal:
-🌐 ${URL_CGV}
-
-————
-LA EUGE informa 📣`;
-
-  const waOk = enviarWhatsApp(mensajeWA);
-  if (!waOk) mailAlertaFalloWA(mensajeWA, '1');
-}
-
-// ============================================================
-// ENVIAR MENSUAL
-// ============================================================
-function enviarMensual() {
-  return enviarMensualConOrigen('manual');
-}
-
-// ============================================================
-// ENVÍO DE PRUEBA — manda el boletín actual (con novedades
-// pendientes) a un único email, sin afectar suscriptores,
-// sin registrar en el LOG y sin limpiar las novedades.
-// ============================================================
-function enviarBoletinPrueba(emailPrueba) {
-  if (!emailPrueba || !emailPrueba.includes('@')) {
-    return { ok: false, mensaje: 'Email de prueba inválido.' };
-  }
-  const cuota = obtenerCuota();
-  if (!cuota.periodo) return { ok: false, mensaje: 'No se pudo obtener la cuota del DASHBOARD.' };
-
-  const novedades = obtenerNovedadesPendientes();
-  const htmlBody = armarHTMLBoletin(cuota, novedades, emailPrueba);
-  const asunto = '🧪 PRUEBA — Cuota social — ' + cuota.periodo;
-
-  MailApp.sendEmail({ to: emailPrueba, subject: asunto, htmlBody: htmlBody, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
-
-  return { ok: true, mensaje: 'Boletín de prueba enviado a ' + emailPrueba + '.' };
-}
-
-function enviarMensualConOrigen(origen) {
-  origen = origen || 'manual';
-  const cuota = obtenerCuota();
-  if (!cuota.periodo) return { ok: false, mensaje: 'No se pudo obtener la cuota del DASHBOARD.' };
-  const destinatarios = obtenerActivos();
-  if (destinatarios.length === 0) return { ok: false, mensaje: 'No hay suscriptores activos.' };
-
-  const novedades = obtenerNovedadesPendientes();
-  const asunto = 'Cuota social — ' + cuota.periodo;
-
-  for (let i = 0; i < destinatarios.length; i++) {
-    const emailDest = destinatarios[i];
-    const htmlBody = armarHTMLBoletin(cuota, novedades, emailDest);
-    MailApp.sendEmail({ to: emailDest, subject: asunto, htmlBody: htmlBody, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
-    if (i < destinatarios.length - 1) Utilities.sleep(1000);
-  }
-
-  const htmlEnviado = armarHTMLBoletin(cuota, novedades, '[email del suscriptor]');
-  registrarEnvio('mensual', asunto, destinatarios.length, origen, htmlEnviado);
-
-  // Archivar novedades en historial y limpiar pendientes
-  if (novedades.length > 0) {
-    archivarNovedades(novedades, cuota.periodo);
-    limpiarNovedadesPendientes();
-  }
-
-  MailApp.sendEmail({
-    to: EMAIL_CLUB,
-    subject: '✅ #BoletínMensual enviado — ' + cuota.periodo,
-    htmlBody: '<p>El #BoletínMensual fue enviado.</p><p>Destinatarios: ' + destinatarios.length + '<br>Fecha y hora: ' + new Date().toLocaleString('es-AR') + '</p><hr>' + htmlEnviado,
-    name: NOMBRE_CLUB
-  });
-
-  return { ok: true, mensaje: 'Boletín enviado a ' + destinatarios.length + ' suscriptores.' };
-}
-
-// ============================================================
-// ARMAR HTML DEL BOLETÍN MENSUAL
-// ============================================================
-function armarHTMLBoletin(cuota, novedades, emailDestino) {
-  const mesCapitalizado = cuota.periodo
-    ? cuota.periodo.split(' ')[0].charAt(0).toUpperCase() + cuota.periodo.split(' ')[0].slice(1).toLowerCase()
-    : '';
-  const periodoMayus = cuota.periodo ? cuota.periodo.toUpperCase() : '';
-  const urlBaja = URL_BOLETIN + '?baja=1&email=' + encodeURIComponent(emailDestino);
-
-  let bloqueNovedades = '';
-  if (novedades && novedades.length > 0) {
-    const items = novedades.map(n => `
-      <tr><td style="padding-bottom:10px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-left:3px solid #135457; background:#f5f3ec; border-radius:0 8px 8px 0;">
-          <tr><td style="padding:12px 14px;">
-            <div style="color:#135457; font-size:13px; font-weight:bold; margin-bottom:3px;">${escaparHTML(n.titulo)}</div>
-            <div style="color:#135457; font-size:13px; line-height:1.5;">${escaparHTML(n.descripcion)}</div>
-          </td></tr>
-        </table>
-      </td></tr>`).join('');
-
-    bloqueNovedades = `
-    <tr><td style="padding:22px 24px 0;">
-      <div style="color:#135457; font-size:11px; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid #c4df57; padding-bottom:6px; margin-bottom:10px;">Novedades del mes</div>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${items}</table>
-    </td></tr>`;
-  }
-
-  return `<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta name="color-scheme" content="light">
-<meta name="supported-color-schemes" content="light">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#135457">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/2jCxrty.png">
+  <link rel="icon" type="image/png" href="https://i.imgur.com/2jCxrty.png">
+  <title>Boletín La Eugenia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --petroleo: #135457;
+      --lima:     #c4df57;
+      --naranja:  #deaf4d;
+      --verdecl:  #b7d6b5;
+      --blanco:   #ffffff;
+      --hueso:    #f5f3ec;
+      --negro:    #000000;
+      --error:    #c0392b;
+    }
+    body { margin: 0; min-height: 100vh; background: var(--petroleo); font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 28px 16px; }
+
+    @keyframes fadeInScreen {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .logo-wrap img { width: 158px; height: auto; display: block; margin: 0 auto 8px; filter: drop-shadow(0 4px 7px rgba(0,0,0,0.35)); }
+    h1 { margin: 0 0 0px; color: var(--lima); font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+    h2 { margin: 0 0 4px; color: var(--lima); font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; text-align: center; font-weight: 900; }
+    .club-nombre { color: #fff; font-size: 14px; font-weight: 400; text-align: center; margin-bottom: 20px; }
+    .card { background: var(--verdecl); border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeInScreen 0.3s ease-out; }
+    .intro { color: var(--petroleo); font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 6px; }
+    .intro-baja { color: var(--petroleo); font-size: 13px; text-align: center; margin-bottom: 20px; }
+    .field-label { color: var(--petroleo); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; display: block; }
+    input[type=text], input[type=email], textarea { width: 100%; border: 2px solid var(--petroleo); border-radius: 14px; padding: 12px; background: var(--blanco); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; outline: none; }
+    input:focus, textarea:focus { border-color: var(--naranja); }
+    input.error { border-color: var(--error); animation: shakeError 0.35s ease-in-out; }
+    textarea { min-height: 100px; resize: vertical; }
+
+    .btn-solid, .btn-susc, .btn-azul, .btn-rojo, .btn-outline, .btn-cgv, .btn-admin {
+      transition: transform 0.08s, box-shadow 0.08s, opacity 0.15s;
+    }
+    .btn-solid:active, .btn-susc:active, .btn-azul:active, .btn-rojo:active, .btn-outline:active, .btn-cgv:active, .btn-admin:active {
+      transform: scale(0.96);
+    }
+
+    .btn-solid { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; text-decoration: none; }
+    .btn-solid:hover { opacity: 0.88; }
+
+    .btn-susc { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; }
+    .btn-susc:hover { opacity: 0.88; }
+
+    .btn-azul { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-azul:hover { opacity: 0.88; }
+
+    .btn-rojo { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--error); background: var(--error); color: var(--blanco); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-rojo:hover { opacity: 0.88; }
+
+    .btn-outline { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-outline:hover { background: var(--petroleo); color: var(--naranja); }
+
+    .btn-ghost { display: block; width: 100%; padding: 10px; border-radius: 24px; border: none; background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 4px; text-align: center; }
+
+    .btn-cgv { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid var(--petroleo); background: var(--lima); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 14px; text-align: center; text-decoration: none; }
+    .btn-cgv:hover { opacity: 0.88; }
+
+    .btn-admin { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid var(--lima); background: transparent; color: var(--lima); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-admin:hover { opacity: 0.75; }
+
+    .msg-pendiente { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 24px; padding: 12px 14px; color: var(--petroleo); font-size: 14px; text-align: center; display: none; margin-top: 10px; animation: destelloAzul 2s ease-in-out infinite; }
+    @keyframes destelloAzul { 0%,100%{box-shadow:0 0 0 rgba(19,84,87,0)} 50%{box-shadow:0 0 14px rgba(19,84,87,0.4)} }
+
+    .pin-label { text-align: center; color: var(--petroleo); font-size: 13px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+    .pin-input { display: block; width: 100%; text-align: center; font-size: 28px; font-weight: 900; letter-spacing: 12px; border: 2px solid var(--petroleo); border-radius: 16px; padding: 12px; background: var(--blanco); color: var(--petroleo); outline: none; margin-bottom: 12px; }
+    .pin-input.error { animation: shakeError 0.35s ease-in-out; border-color: var(--error); }
+    .pin-error { text-align: center; color: var(--error); font-size: 13px; font-weight: 700; min-height: 18px; margin-bottom: 8px; }
+
+    .stat-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .stat-box { flex: 1; background: var(--petroleo); border: 2px solid var(--lima); border-radius: 14px; padding: 10px 6px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 900; color: var(--lima); }
+    .stat-label { font-size: 9px; font-weight: 700; color: var(--lima); text-transform: uppercase; opacity: 0.85; }
+
+    .lista-toggle { background: var(--blanco); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--petroleo); font-size: 13px; font-weight: 700; }
+    .suscriptor-list { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--blanco); border-radius: 0 0 14px 14px; margin-bottom: 14px; }
+    .suscriptor-list.open { max-height: 300px; overflow-y: auto; padding: 8px 10px; }
+    .suscriptor-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--lima); font-size: 12px; color: var(--petroleo); }
+    .suscriptor-item:last-child { border-bottom: none; }
+    .badge-activo { background: #d5f5e3; color: #1e8449; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
+    .badge-baja { background: #fdebd0; color: #a04000; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
+    .badge-pendiente { background: #eaf4ff; color: #2471a3; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
+
+    .divider { border: none; border-top: 1.5px solid #9bb583; margin: 18px 0; }
+    .section-title { color: var(--negro); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+
+    .msg-box { background: var(--blanco); border-radius: 14px; padding: 12px 14px; color: var(--petroleo); font-size: 14px; text-align: center; display: none; margin-top: 10px; }
+    .msg-box.ok { border: 2px solid #1e8449; color: #1e8449; }
+    .msg-box.err { border: 2px solid var(--error); color: var(--error); }
+    .loading { text-align: center; color: var(--petroleo); font-size: 13px; font-weight: 700; min-height: 18px; margin: 8px 0; }
+
+    .preview-box { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; padding: 16px; margin-top: 12px; display: none; }
+    .preview-titulo { color: var(--petroleo); font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
+    .preview-cuerpo { color: var(--petroleo); font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
+
+    .confirm-icon { font-size: 60px; text-align: center; margin-bottom: 16px; animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .confirm-titulo { color: var(--negro); font-family: Impact, sans-serif; font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
+    .confirm-texto { color: var(--petroleo); font-size: 14px; text-align: center; line-height: 1.6; }
+
+    .lista-wrap { margin-bottom: 14px; }
+    .lista-seccion { margin-bottom: 10px; }
+    .lista-seccion-titulo { background: var(--blanco); border-radius: 10px 10px 0 0; padding: 8px 12px; font-size: 11px; font-weight: 900; color: var(--petroleo); text-transform: uppercase; }
+    .lista-seccion-items { background: var(--blanco); border-radius: 0 0 10px 10px; max-height: 180px; overflow-y: auto; }
+    .lista-seccion-vacia { padding: 8px 12px; font-size: 12px; color: var(--petroleo); opacity: 0.6; }
+
+    .mini-toggle { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; background: var(--blanco); border-radius: 10px; margin-bottom: 2px; cursor: pointer; font-size: 11px; font-weight: 900; color: var(--negro); text-transform: uppercase; transition: transform 0.08s; }
+    .mini-toggle:active { transform: scale(0.97); }
+    .mini-flecha { font-size: 10px; opacity: 0.6; }
+    .mini-panel { display: none; background: var(--blanco); border-radius: 0 0 10px 10px; max-height: 160px; overflow-y: auto; margin-bottom: 6px; }
+    .mini-panel.open { display: block; }
+
+    .gestionar-toggle { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--negro); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
+    .gestionar-toggle:active { transform: scale(0.98); }
+    .gestionar-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
+    .gestionar-panel.open { display: block; }
+    .gestionar-panel .field-label { color: var(--petroleo); }
+
+    .prueba-toggle { background: var(--petroleo); border: 2px solid var(--lima); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--lima); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
+    .prueba-toggle:active { transform: scale(0.98); }
+    .prueba-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
+    .prueba-panel.open { display: block; }
+
+    .btn-prueba-dorado { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; transition: transform 0.08s, opacity 0.15s; }
+    .btn-prueba-dorado:hover { opacity: 0.88; }
+    .btn-prueba-dorado:active { transform: scale(0.96); }
+
+    .btns-externos { display: none; width: 100%; max-width: 480px; margin-top: 36px; }
+    .btns-externos.visible { display: block; }
+    .btns-externos .btn-cgv { margin-top: 0; }
+
+    /* NOVEDADES */
+    .novedad-item {
+      background: var(--blanco);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .novedad-titulo { color: var(--negro); font-size: 13px; font-weight: 900; margin-bottom: 4px; }
+    .novedad-desc { color: var(--petroleo); font-size: 12px; line-height: 1.5; margin-bottom: 8px; }
+    .novedad-acciones { display: flex; gap: 8px; }
+    .btn-mini { flex: 1; padding: 7px; border-radius: 14px; border: 1.5px solid var(--petroleo); background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; }
+    .btn-mini:hover { opacity: 0.7; }
+    .btn-mini.rojo { border-color: var(--error); color: var(--error); }
+    .novedades-vacio { color: var(--petroleo); font-size: 12px; opacity: 0.7; text-align: center; padding: 10px; }
+    .btn-ia { display: block; width: 100%; padding: 11px; border-radius: 20px; border: 2px solid var(--petroleo); background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; transition: opacity 0.2s, background 0.15s, color 0.15s; }
+    .btn-ia:hover { background: var(--petroleo); color: var(--naranja); }
+    .btn-ia.on { background: var(--petroleo); color: var(--naranja); }
+    .preview-html-box { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; margin-top: 12px; display: none; overflow: hidden; }
+    .preview-html-box iframe { width: 100%; height: 480px; border: none; display: block; }
+  </style>
 </head>
-<body style="margin:0; padding:0; background:#f1efe8; font-family:Arial, Helvetica, sans-serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1efe8; padding:24px 0;">
-<tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px; background:#ffffff; border-radius:12px; overflow:hidden;">
+<body>
+  <div class="logo-wrap"><img src="https://i.imgur.com/2jCxrty.png" alt="Boletín La Eugenia"></div>
+  <h1>#Boletín</h1>
+  <h2>Mensual</h2>
+  <div class="club-nombre">Club de Campo La Eugenia</div>
 
-<tr><td style="background:#135457; padding:28px 24px; text-align:center;">
-<div style="color:#c4df57; font-size:26px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; font-family:Impact, Arial, sans-serif;">#Boletín Mensual</div>
-<div style="color:#ffffff; font-size:18px; font-weight:bold; text-transform:uppercase; margin-top:6px; font-family:Impact, Arial, sans-serif;">${periodoMayus}</div>
-</td></tr>
+  <div class="card">
 
-<tr><td style="padding:28px 24px 12px;">
-<p style="color:#135457; font-size:14px; line-height:1.6; margin:0;">Estimados socios,</p>
-<p style="color:#135457; font-size:14px; line-height:1.6; margin:8px 0 0;">Nos comunicamos para informarles que la cuota social correspondiente al mes de <b>${mesCapitalizado}</b> ya está disponible:</p>
-</td></tr>
+    <!-- CONFIRMACIÓN -->
+    <div class="screen" id="screenConfirmado">
+      <div class="confirm-icon">✅</div>
+      <div class="confirm-titulo">¡Suscripción confirmada!</div>
+      <div class="confirm-texto">A partir de ahora recibirás la cuota social mensual y otras novedades del club directamente en tu correo.</div>
+      <div class="confirm-texto" style="margin-top:10px;">Podés darte de baja cuando quieras desde el mismo mail.</div>
+      <a class="btn-solid" style="margin-top:24px;" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
+    </div>
 
-<tr><td style="padding:12px 24px 0;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #135457; border-radius:10px; overflow:hidden;">
-<tr style="background:#b7d6b5;">
-<td style="padding:12px 16px; color:#135457; font-size:13px; font-weight:bold; text-transform:uppercase; border-bottom:1px solid #135457;">Cuota lote</td>
-<td style="padding:12px 16px; color:#135457; font-size:16px; font-weight:bold; text-align:right; border-bottom:1px solid #135457;">${limpiarMontoCuota(cuota.lote)}</td>
-</tr>
-<tr style="background:#b7d6b5;">
-<td style="padding:12px 16px; color:#135457; font-size:13px; font-weight:bold; text-transform:uppercase;">Cuota lote adicional</td>
-<td style="padding:12px 16px; color:#135457; font-size:16px; font-weight:bold; text-align:right;">${limpiarMontoCuota(cuota.adicional)}</td>
-</tr>
-</table>
-</td></tr>
+    <!-- BAJA -->
+    <div class="screen" id="screenBaja">
+      <div class="confirm-icon">👋</div>
+      <div class="confirm-titulo">Darse de baja</div>
+      <div class="confirm-texto" style="margin-bottom:20px;">Estás por dejar de recibir el Boletín de La Eugenia Club de Campo. Podés volver a suscribirte cuando quieras.</div>
+      <div class="msg-box" id="msgBaja"></div>
+      <div class="loading" id="loadingBaja"></div>
+      <button type="button" class="btn-rojo" onclick="confirmarBaja()">Sí, darme de baja</button>
+      <button type="button" class="btn-outline" style="margin-top:10px;" onclick="volverPublico()">Cancelar</button>
+    </div>
 
-<tr><td style="padding:18px 24px 0;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f3ec; border-radius:10px;">
-<tr><td style="padding:14px 16px;">
-<div style="color:#135457; font-size:11px; font-weight:bold; text-transform:uppercase; margin-bottom:6px;">Datos para transferencia</div>
-<div style="color:#135457; font-size:13px; line-height:1.8;">
-Titular: ${NOMBRE_CLUB}<br>
-CBU: ${CBU}<br>
-Alias: <span style="font-weight:bold;">${ALIAS}</span><br>
-CUIT: ${CUIT}
-</div>
-<div style="border-top:1px solid #d8d4c5; margin:14px 0 0; padding-top:12px;">
-<div style="color:#135457; font-size:11px; font-weight:bold; text-transform:uppercase; margin-bottom:6px;">Administración</div>
-<div style="color:#135457; font-size:11px; text-transform:uppercase; margin-bottom:4px;">Consulta sobre pagos y estados de cuenta</div>
-<div style="color:#135457; font-size:13px;">Raúl O. Toloza — <a href="${WA_RAUL}" style="color:#135457; font-weight:bold; text-decoration:underline;">${TEL_RAUL} (WhatsApp)</a></div>
-</div>
-</td></tr>
-</table>
-</td></tr>
+    <!-- SUSCRIPCIÓN -->
+    <div class="screen active" id="screenPublico">
+      <div class="intro">Recibí todos los meses el valor de la cuota social junto a otras novedades del club directamente en tu correo.</div>
+      <span class="field-label">Nombre y apellido / Razón social *</span>
+      <input type="text" id="suscNombre" placeholder="Ej: María González" onblur="capitalizarNombre(this)" oninput="filtrarNombre(this)">
+      <span class="field-label">Email *</span>
+      <input type="email" id="suscEmail" placeholder="tu@email.com" oninput="validarEmail(this)">
+      <div class="loading" id="loadingSusc"></div>
+      <div class="msg-pendiente" id="msgPendiente">Te enviamos un mail de confirmación. Revisá tu casilla.</div>
+      <div class="msg-box" id="msgSusc"></div>
+      <button type="button" class="btn-susc" onclick="suscribir()">Suscribirme</button>
+      <p style="color:var(--petroleo);font-size:12px;text-align:center;margin-top:10px;font-style:italic;opacity:0.8;">Podés darte de baja cuando quieras desde el mismo mail.</p>
+    </div>
 
-<tr><td style="padding:18px 24px 0;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-<tr><td style="background:#deaf4d; border-radius:10px; padding:14px 16px; text-align:center;">
-<div style="color:#135457; font-size:12px; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">Movimiento de tesorería</div>
-<div style="color:#135457; font-size:12px;">Consultá el último período disponible</div>
-<a href="${URL_TESORERIA}" style="display:inline-block; margin-top:10px; background:#135457; color:#c4df57; font-size:12px; font-weight:bold; text-transform:uppercase; padding:9px 18px; border-radius:20px; text-decoration:none;">Ver informe</a>
-</td></tr>
-</table>
-</td></tr>
+    <!-- PIN -->
+    <div class="screen" id="screenPin">
+      <div class="pin-label">PIN de administración</div>
+      <input class="pin-input" type="password" inputmode="numeric" maxlength="4" id="pinInput" placeholder="····">
+      <div class="pin-error" id="pinError"></div>
+      <button type="button" class="btn-solid" onclick="verificarPin()">Ingresar</button>
+      <button type="button" class="btn-ghost" onclick="volverPublico()">Cancelar</button>
+    </div>
 
-${bloqueNovedades}
+    <!-- ADMIN -->
+    <div class="screen" id="screenAdmin">
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="statActivos">—</div><div class="stat-label">Activos</div></div>
+        <div class="stat-box"><div class="stat-num" id="statPendientes">—</div><div class="stat-label">Pendientes</div></div>
+        <div class="stat-box"><div class="stat-num" id="statBajas">—</div><div class="stat-label">Bajas</div></div>
+      </div>
+      <div id="statOrigen" style="text-align:center; color:var(--petroleo); font-size:11px; font-weight:700; margin:-10px 0 16px; opacity:0.8;"></div>
 
-<tr><td style="padding:22px 24px 0; text-align:center;">
-<div style="color:#135457; font-size:12px; margin-bottom:10px;">Para más información sobre trámites y servicios</div>
-<a href="${URL_CGV}" style="display:inline-block; background:#c4df57; color:#135457; font-size:13px; font-weight:bold; text-transform:uppercase; padding:12px 28px; border-radius:8px; text-decoration:none; border:2px solid #135457;">Ir al Centro de Gestión Vecinal</a>
-</td></tr>
+      <div class="lista-wrap" id="listaWrap">
+        <div class="mini-toggle" onclick="toggleMini('secActivos','flechaActivos')">
+          <span id="labelActivos">Activos</span><span id="flechaActivos" class="mini-flecha">▼</span>
+        </div>
+        <div class="mini-panel" id="secActivos"></div>
+        <div class="mini-toggle" onclick="toggleMini('secPendientes','flechaPendientes')">
+          <span id="labelPendientes">Pendientes</span><span id="flechaPendientes" class="mini-flecha">▼</span>
+        </div>
+        <div class="mini-panel" id="secPendientes"></div>
+        <div class="mini-toggle" onclick="toggleMini('secBajas','flechaBajas')">
+          <span id="labelBajas">Bajas</span><span id="flechaBajas" class="mini-flecha">▼</span>
+        </div>
+        <div class="mini-panel" id="secBajas"></div>
+      </div>
 
-<tr><td style="padding:24px 24px 20px;">
-<div style="border-top:1px solid #d8d4c5; padding-top:16px;">
-<div style="color:#888780; font-size:11px; line-height:1.6; margin-bottom:16px; text-align:left;">Para dejar de recibir este boletín, hacé clic <a href="${urlBaja}" style="color:#135457;">aquí</a>.</div>
-<div style="text-align:center;">
-<img src="https://i.imgur.com/gBsJz9d.png" alt="La Eugenia Club de Campo" style="width:140px; height:auto; display:inline-block;">
-<div style="color:#888780; font-size:11px; margin-top:10px;">WhatsApp: <a href="https://wa.me/${WA_NUMERO}" style="color:#888780; font-size:11px;">+54 9 3764 11-3300</a></div>
-<div style="color:#888780; font-size:11px;">(solo mensajes)</div>
-</div>
-</div>
-</td></tr>
+      <hr class="divider">
+      <div class="prueba-toggle" onclick="togglePrueba()">
+        <span>VISTA PREVIA Y PRUEBA</span>
+        <span id="pruebaFlecha">▼</span>
+      </div>
+      <div class="prueba-panel" id="pruebaPanel">
+        <button type="button" class="btn-outline" onclick="verPreviewBoletin()">Ver vista previa del boletín</button>
+        <div class="preview-html-box" id="previewHtmlBox">
+          <iframe id="previewIframe"></iframe>
+        </div>
 
-</table>
-</td></tr>
-</table>
+        <hr class="divider">
+
+        <span class="field-label">Enviar boletín de prueba a</span>
+        <input type="email" id="emailPrueba" value="gacoutada@gmail.com">
+        <div class="loading" id="loadingPrueba"></div>
+        <div class="msg-box" id="msgPrueba"></div>
+        <button type="button" class="btn-prueba-dorado" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
+      </div>
+
+      <hr class="divider">
+      <div class="gestionar-toggle" onclick="toggleGestionar()">
+        <span>AGREGAR O QUITAR SUSCRIPTOR MANUALMENTE</span>
+        <span id="gestionarFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="gestionarPanel">
+        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este método no requiere confirmación del email — el suscriptor queda activo de inmediato.</p>
+        <span class="field-label">Nombre y apellido / Razón social</span>
+        <input type="text" id="adminNombre" placeholder="Ej: María González">
+        <span class="field-label">Email *</span>
+        <input type="email" id="adminEmail" placeholder="email@ejemplo.com">
+        <div class="loading" id="loadingAdmin"></div>
+        <div class="msg-box" id="msgAdmin"></div>
+        <button type="button" class="btn-solid" onclick="agregarManual()">Agregar suscriptor</button>
+        <div style="border-top:1px solid #9bb583;margin:16px 0;"></div>
+        <span class="field-label">Email a desuscribir</span>
+        <input type="email" id="bajaManualEmail" placeholder="email@ejemplo.com">
+        <div class="loading" id="loadingBajaManual"></div>
+        <div class="msg-box" id="msgBajaManual"></div>
+        <button type="button" class="btn-solid" onclick="desuscribirManual()">Quitar suscriptor</button>
+      </div>
+
+      <hr class="divider">
+      <div class="gestionar-toggle" onclick="toggleNovedades()">
+        <span>INCLUIR NOVEDADES EN EL PRÓXIMO BOLETÍN</span>
+        <span id="novedadesFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="novedadesPanel">
+        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
+
+        <div id="novedadesLista"><div class="novedades-vacio">No hay novedades cargadas.</div></div>
+
+        <span class="field-label">Título</span>
+        <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Julio">
+        <span class="field-label">Descripción</span>
+        <textarea id="novDescripcion" placeholder="Detalle de la novedad..."></textarea>
+        <button type="button" class="btn-ia" id="btnNovIA" onclick="corregirNovedad()">♦ Corrección con IA</button>
+        <div class="loading" id="loadingNov"></div>
+        <div class="msg-box" id="msgNov"></div>
+        <button type="button" class="btn-solid" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
+        <button type="button" class="btn-ghost" id="btnNovCancelar" onclick="cancelarEdicionNovedad()" style="display:none;">Cancelar edición</button>
+      </div>
+
+      <hr class="divider">
+      <div class="gestionar-toggle" onclick="toggleComunicado()">
+        <span>COMUNICADO LIBRE</span>
+        <span id="comunicadoFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="comunicadoPanel">
+        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este apartado es para enviar un email a todos los suscriptores, por fuera del #BoletínMensual.</p>
+        <span class="field-label">Asunto</span>
+        <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
+        <span class="field-label">Mensaje</span>
+        <textarea id="commCuerpo" placeholder="Escribí el mensaje..." oninput="actualizarPreview()"></textarea>
+        <button type="button" class="btn-ia" id="btnCommIA" onclick="corregirComunicado()">♦ Corrección con IA</button>
+        <div class="loading" id="loadingCommIA"></div>
+        <div class="preview-box" id="previewBox">
+          <div class="preview-titulo">Vista previa</div>
+          <div class="preview-cuerpo" id="previewCuerpo"></div>
+        </div>
+        <div class="loading" id="loadingComm"></div>
+        <div class="msg-box" id="msgComm"></div>
+        <button type="button" class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
+      </div>
+
+      <hr class="divider">
+      <div class="gestionar-toggle" onclick="toggleEnviarMensual()">
+        <span>ENVIAR MANUALMENTE #BOLETÍNMENSUAL</span>
+        <span id="enviarMensualFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="enviarMensualPanel">
+        <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Este botón está pensado para cuando el envío automático del día 1 falla. Envía a todos los suscriptores activos el #BoletínMensual del mes con la cuota vigente en el DASHBOARD y las novedades cargadas arriba.</p>
+        <div class="loading" id="loadingMensual"></div>
+        <div class="msg-box" id="msgMensual"></div>
+        <button type="button" class="btn-azul" onclick="enviarMensual()">Enviar manualmente #BoletínMensual</button>
+      </div>
+
+      <hr class="divider">
+      <div class="gestionar-toggle" onclick="toggleHistorial()">
+        <span>Últimos 5 #BoletinesMensuales enviados</span>
+        <span id="historialFlecha">▼</span>
+      </div>
+      <div class="gestionar-panel" id="historialPanel" style="display:none;">
+        <div id="logEnvios" style="font-size:12px;color:var(--petroleo);line-height:1.6;">Cargando...</div>
+      </div>
+
+      <hr class="divider">
+      <button type="button" class="btn-outline" onclick="cerrarAdmin()">Volver al inicio</button>
+    </div>
+
+  </div>
+
+  <div class="btns-externos" id="btnsExternos">
+    <a class="btn-cgv" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
+    <button type="button" class="btn-admin" onclick="mostrarPin()">Acceso reservado a personal autorizado</button>
+  </div>
+
+<script>
+const PIN = '1112';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-m5ffo9Ul05FO88O-7I09_BPZrYYm4awYcQcC47pPjMQ5fV9xI-8kzkH6IKgnSJvW/exec';
+const NOMBRE_CLUB = 'La Eugenia Club de Campo';
+const URL_BOLETIN = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/';
+
+let emailParaBaja = '';
+let novedadEditandoId = null;
+let novedadCorregidaIA = false;
+
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const esBaja = params.get('baja');
+  const emailParam = params.get('email');
+  if (token) {
+    confirmarToken(token);
+    ocultarBtnsExternos();
+  } else if (esBaja && emailParam) {
+    emailParaBaja = decodeURIComponent(emailParam);
+    mostrarScreen('screenBaja');
+    ocultarBtnsExternos();
+  } else {
+    mostrarBtnsExternos();
+  }
+});
+
+function mostrarBtnsExternos() { document.getElementById('btnsExternos').classList.add('visible'); }
+function ocultarBtnsExternos() { document.getElementById('btnsExternos').classList.remove('visible'); }
+
+async function confirmarToken(token) {
+  try {
+    const r = await llamarScript({ accion: 'confirmar', token });
+    mostrarScreen(r.ok ? 'screenConfirmado' : 'screenPublico');
+  } catch(e) { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+}
+
+async function confirmarBaja() {
+  if (!emailParaBaja) { mostrarMsg('msgBaja', 'No se encontró el email.', 'err'); return; }
+  document.getElementById('loadingBaja').innerText = 'Procesando...';
+  try {
+    const r = await llamarScript({ accion: 'baja', email: emailParaBaja });
+    document.getElementById('loadingBaja').innerText = '';
+    mostrarMsg('msgBaja', r.mensaje, r.ok ? 'ok' : 'err');
+  } catch(e) {
+    document.getElementById('loadingBaja').innerText = '';
+    mostrarMsg('msgBaja', 'Error. Intentá de nuevo.', 'err');
+  }
+}
+
+function capitalizarNombre(input) {
+  input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
+}
+function filtrarNombre(input) {
+  input.value = input.value.replace(/[0-9]/g, '');
+}
+function validarEmail(input) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  input.classList.toggle('error', input.value.length > 0 && !ok);
+}
+
+function mostrarScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function mostrarPin() { mostrarScreen('screenPin'); ocultarBtnsExternos(); document.getElementById('pinInput').value = ''; document.getElementById('pinError').innerText = ''; }
+function volverPublico() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+function cerrarAdmin() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+
+function verificarPin() {
+  if (document.getElementById('pinInput').value === PIN) {
+    mostrarScreen('screenAdmin');
+    ocultarBtnsExternos();
+    cargarSuscriptores();
+    cargarLog();
+    cargarNovedades();
+  } else {
+    document.getElementById('pinError').innerText = 'PIN incorrecto.';
+    document.getElementById('pinInput').value = '';
+    const pinEl = document.getElementById('pinInput');
+    pinEl.classList.add('error');
+    setTimeout(() => pinEl.classList.remove('error'), 400);
+  }
+}
+document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verificarPin(); });
+
+function toggleMini(panelId, flechaId) {
+  const panel = document.getElementById(panelId);
+  const flecha = document.getElementById(flechaId);
+  panel.classList.toggle('open');
+  flecha.innerText = panel.classList.contains('open') ? '▲' : '▼';
+}
+
+function togglePanel(panelId, flechaId) {
+  const panel = document.getElementById(panelId);
+  const flecha = document.getElementById(flechaId);
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open');
+  flecha.innerText = isOpen ? '▼' : '▲';
+}
+
+function toggleGestionar() { togglePanel('gestionarPanel', 'gestionarFlecha'); }
+function toggleNovedades() { togglePanel('novedadesPanel', 'novedadesFlecha'); }
+function toggleComunicado() { togglePanel('comunicadoPanel', 'comunicadoFlecha'); }
+function togglePrueba() { togglePanel('pruebaPanel', 'pruebaFlecha'); }
+function toggleEnviarMensual() { togglePanel('enviarMensualPanel', 'enviarMensualFlecha'); }
+
+function toggleHistorial() {
+  const panel = document.getElementById('historialPanel');
+  const flecha = document.getElementById('historialFlecha');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  flecha.innerText = isOpen ? '▼' : '▲';
+}
+
+async function llamarScript(params) {
+  return new Promise((resolve) => {
+    const callbackName = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+    const url = new URL(SCRIPT_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
+    url.searchParams.append('callback', callbackName);
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    const script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = () => resolve({ ok: false, mensaje: 'Error de conexión.' });
+    document.body.appendChild(script);
+  });
+}
+
+function mostrarMsg(id, texto, tipo) {
+  const el = document.getElementById(id);
+  el.innerText = texto;
+  el.className = 'msg-box ' + tipo;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
+
+async function suscribir() {
+  const email = document.getElementById('suscEmail').value.trim();
+  const nombre = document.getElementById('suscNombre').value.trim();
+  if (!nombre) { mostrarMsg('msgSusc', 'Ingresá tu nombre, apellido o razón social.', 'err'); marcarError('suscNombre'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc', 'Ingresá un email válido.', 'err'); marcarError('suscEmail'); return; }
+  document.getElementById('loadingSusc').innerText = 'Procesando...';
+  try {
+    const r = await llamarScript({ accion: 'suscribir', email, nombre });
+    document.getElementById('loadingSusc').innerText = '';
+    if (r.ok) {
+      document.getElementById('msgPendiente').style.display = 'block';
+      document.getElementById('suscEmail').value = '';
+      document.getElementById('suscNombre').value = '';
+    } else {
+      mostrarMsg('msgSusc', r.mensaje, 'err');
+    }
+  } catch(e) {
+    document.getElementById('loadingSusc').innerText = '';
+    mostrarMsg('msgSusc', 'Error. Intentá de nuevo.', 'err');
+  }
+}
+
+function marcarError(id) {
+  const el = document.getElementById(id);
+  el.classList.add('error');
+  setTimeout(() => el.classList.remove('error'), 400);
+}
+
+async function cargarSuscriptores() {
+  try {
+    const r = await llamarScript({ accion: 'listar' });
+    document.getElementById('statActivos').innerText = r.activos;
+    document.getElementById('statPendientes').innerText = r.pendientes || 0;
+    document.getElementById('statBajas').innerText = r.bajas;
+
+    const web = r.activosWeb || 0;
+    const manual = r.activosManual || 0;
+    document.getElementById('statOrigen').innerText = `${web} vía web · ${manual} manual/importación`;
+
+    const activos = r.suscriptores.filter(s => s.estado === 'activo');
+    const pendientes = r.suscriptores.filter(s => s.estado === 'pendiente');
+    const bajas = r.suscriptores.filter(s => s.estado === 'baja');
+
+    document.getElementById('labelActivos').innerText = `Activos (${activos.length})`;
+    document.getElementById('labelPendientes').innerText = `Pendientes (${pendientes.length})`;
+    document.getElementById('labelBajas').innerText = `Bajas (${bajas.length})`;
+
+    function origenAbrev(origen) {
+      if (origen === 'web') return 'W';
+      if (origen === 'importacion') return 'I';
+      return 'M';
+    }
+
+    function renderMini(id, items, badgeClass, badgeLabel) {
+      const el = document.getElementById(id);
+      if (items.length === 0) { el.innerHTML = '<div style="padding:6px 12px;font-size:11px;opacity:0.6;">Sin registros.</div>'; return; }
+      el.innerHTML = items.map(s => `
+        <div class="suscriptor-item" style="padding:5px 12px;">
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-size:11px;">${s.nombre ? s.nombre + ' — ' : ''}${s.email}</span>
+          <span style="flex-shrink:0;margin-left:6px;font-size:9px;opacity:0.55;font-weight:900;" title="${s.origen}">${origenAbrev(s.origen)}</span>
+          <span class="badge-${badgeClass}" style="flex-shrink:0;margin-left:4px;font-size:9px;">${badgeLabel}</span>
+        </div>`).join('');
+    }
+
+    renderMini('secActivos', activos, 'activo', 'Activo');
+    renderMini('secPendientes', pendientes, 'pendiente', 'Pendiente');
+    renderMini('secBajas', bajas, 'baja', 'Baja');
+
+  } catch(e) {
+    document.getElementById('secActivos').innerHTML = '<div style="color:#c0392b;font-size:13px;padding:10px;">Error cargando lista.</div>';
+  }
+}
+
+async function agregarManual() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const nombre = document.getElementById('adminNombre').value.trim();
+  if (!email) { mostrarMsg('msgAdmin', 'Ingresá el email.', 'err'); marcarError('adminEmail'); return; }
+  document.getElementById('loadingAdmin').innerText = 'Agregando...';
+  try {
+    const r = await llamarScript({ accion: 'agregarManual', email, nombre });
+    document.getElementById('loadingAdmin').innerText = '';
+    mostrarMsg('msgAdmin', r.mensaje, r.ok ? 'ok' : 'err');
+    if (r.ok) { document.getElementById('adminEmail').value = ''; document.getElementById('adminNombre').value = ''; cargarSuscriptores(); }
+  } catch(e) {
+    document.getElementById('loadingAdmin').innerText = '';
+    mostrarMsg('msgAdmin', 'Error. Intentá de nuevo.', 'err');
+  }
+}
+
+async function desuscribirManual() {
+  const email = document.getElementById('bajaManualEmail').value.trim();
+  if (!email) { mostrarMsg('msgBajaManual', 'Ingresá el email.', 'err'); marcarError('bajaManualEmail'); return; }
+  if (!confirm(`¿Dar de baja a ${email}?`)) return;
+  document.getElementById('loadingBajaManual').innerText = 'Procesando...';
+  try {
+    const r = await llamarScript({ accion: 'baja', email });
+    document.getElementById('loadingBajaManual').innerText = '';
+    mostrarMsg('msgBajaManual', r.mensaje, r.ok ? 'ok' : 'err');
+    if (r.ok) { document.getElementById('bajaManualEmail').value = ''; cargarSuscriptores(); }
+  } catch(e) {
+    document.getElementById('loadingBajaManual').innerText = '';
+    mostrarMsg('msgBajaManual', 'Error. Intentá de nuevo.', 'err');
+  }
+}
+
+// ============================================================
+// NOVEDADES
+// ============================================================
+async function cargarNovedades() {
+  try {
+    const r = await llamarScript({ accion: 'listarNovedades' });
+    const el = document.getElementById('novedadesLista');
+    if (!r.novedades || r.novedades.length === 0) {
+      el.innerHTML = '<div class="novedades-vacio">No hay novedades cargadas.</div>';
+      return;
+    }
+    el.innerHTML = r.novedades.map(n => `
+      <div class="novedad-item">
+        <div class="novedad-titulo">${escaparTexto(n.titulo)}</div>
+        <div class="novedad-desc">${escaparTexto(n.descripcion)}</div>
+        <div class="novedad-acciones">
+          <button type="button" class="btn-mini" onclick="editarNovedadUI('${n.id}', '${escaparAtributo(n.titulo)}', '${escaparAtributo(n.descripcion)}')">Editar</button>
+          <button type="button" class="btn-mini rojo" onclick="eliminarNovedadUI('${n.id}')">Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    document.getElementById('novedadesLista').innerHTML = '<div class="novedades-vacio">Error cargando novedades.</div>';
+  }
+}
+
+function escaparTexto(t) {
+  const div = document.createElement('div');
+  div.innerText = t || '';
+  return div.innerHTML;
+}
+function escaparAtributo(t) {
+  return (t || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function editarNovedadUI(id, titulo, descripcion) {
+  novedadEditandoId = id;
+  document.getElementById('novTitulo').value = titulo;
+  document.getElementById('novDescripcion').value = descripcion;
+  document.getElementById('btnNovAccion').innerText = 'Guardar cambios';
+  document.getElementById('btnNovCancelar').style.display = 'block';
+  document.getElementById('novTitulo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelarEdicionNovedad() {
+  novedadEditandoId = null;
+  document.getElementById('novTitulo').value = '';
+  document.getElementById('novDescripcion').value = '';
+  document.getElementById('btnNovAccion').innerText = 'Agregar novedad';
+  document.getElementById('btnNovCancelar').style.display = 'none';
+  document.getElementById('btnNovIA').classList.remove('on');
+  novedadCorregidaIA = false;
+}
+
+async function eliminarNovedadUI(id) {
+  if (!confirm('¿Eliminar esta novedad?')) return;
+  try {
+    const r = await llamarScript({ accion: 'eliminarNovedad', id });
+    if (r.ok) cargarNovedades();
+    else mostrarMsg('msgNov', r.mensaje, 'err');
+  } catch(e) {
+    mostrarMsg('msgNov', 'Error al eliminar.', 'err');
+  }
+}
+
+async function guardarNovedad() {
+  const titulo = document.getElementById('novTitulo').value.trim();
+  const descripcion = document.getElementById('novDescripcion').value.trim();
+  if (!titulo) { mostrarMsg('msgNov', 'Ingresá un título.', 'err'); marcarError('novTitulo'); return; }
+  if (!descripcion) { mostrarMsg('msgNov', 'Ingresá una descripción.', 'err'); marcarError('novDescripcion'); return; }
+
+  document.getElementById('loadingNov').innerText = 'Guardando...';
+  try {
+    let r;
+    if (novedadEditandoId) {
+      r = await llamarScript({ accion: 'editarNovedad', id: novedadEditandoId, titulo, descripcion });
+    } else {
+      r = await llamarScript({ accion: 'agregarNovedad', titulo, descripcion });
+    }
+    document.getElementById('loadingNov').innerText = '';
+    mostrarMsg('msgNov', r.mensaje, r.ok ? 'ok' : 'err');
+    if (r.ok) {
+      cancelarEdicionNovedad();
+      cargarNovedades();
+    }
+  } catch(e) {
+    document.getElementById('loadingNov').innerText = '';
+    mostrarMsg('msgNov', 'Error al guardar.', 'err');
+  }
+}
+
+async function corregirNovedad() {
+  const titulo = document.getElementById('novTitulo').value.trim();
+  const descripcion = document.getElementById('novDescripcion').value.trim();
+  if (!titulo || !descripcion) { mostrarMsg('msgNov', 'Completá título y descripción antes de corregir.', 'err'); return; }
+
+  document.getElementById('btnNovIA').classList.add('on');
+  document.getElementById('loadingNov').innerText = 'Corrigiendo con IA...';
+  try {
+    const r = await llamarScript({ accion: 'corregirNovedadIA', titulo, descripcion });
+    document.getElementById('loadingNov').innerText = '';
+    if (r.ok) {
+      document.getElementById('novTitulo').value = r.titulo;
+      document.getElementById('novDescripcion').value = r.descripcion;
+      novedadCorregidaIA = true;
+    } else {
+      mostrarMsg('msgNov', r.mensaje, 'err');
+      document.getElementById('btnNovIA').classList.remove('on');
+    }
+  } catch(e) {
+    document.getElementById('loadingNov').innerText = '';
+    mostrarMsg('msgNov', 'Error al corregir.', 'err');
+    document.getElementById('btnNovIA').classList.remove('on');
+  }
+}
+
+async function corregirComunicado() {
+  const asunto = document.getElementById('commAsunto').value.trim();
+  const cuerpo = document.getElementById('commCuerpo').value.trim();
+  if (!asunto || !cuerpo) { mostrarMsg('msgComm', 'Completá el asunto y el mensaje antes de corregir.', 'err'); return; }
+
+  document.getElementById('btnCommIA').classList.add('on');
+  document.getElementById('loadingCommIA').innerText = 'Corrigiendo con IA...';
+  try {
+    const r = await llamarScript({ accion: 'corregirComunicadoIA', asunto, cuerpo });
+    document.getElementById('loadingCommIA').innerText = '';
+    if (r.ok) {
+      document.getElementById('commAsunto').value = r.asunto;
+      document.getElementById('commCuerpo').value = r.cuerpo;
+      actualizarPreview();
+    } else {
+      mostrarMsg('msgComm', r.mensaje, 'err');
+      document.getElementById('btnCommIA').classList.remove('on');
+    }
+  } catch(e) {
+    document.getElementById('loadingCommIA').innerText = '';
+    mostrarMsg('msgComm', 'Error al corregir.', 'err');
+    document.getElementById('btnCommIA').classList.remove('on');
+  }
+}
+
+// ============================================================
+// PREVIEW Y PRUEBA
+// ============================================================
+async function verPreviewBoletin() {
+  try {
+    const r = await llamarScript({ accion: 'previewBoletin' });
+    if (!r.ok) { alert(r.mensaje); return; }
+    const box = document.getElementById('previewHtmlBox');
+    const iframe = document.getElementById('previewIframe');
+    iframe.srcdoc = r.html;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {
+    alert('Error al generar la vista previa.');
+  }
+}
+
+async function enviarPrueba() {
+  const email = document.getElementById('emailPrueba').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgPrueba', 'Ingresá un email válido.', 'err'); marcarError('emailPrueba'); return; }
+  document.getElementById('loadingPrueba').innerText = 'Enviando prueba...';
+  try {
+    const r = await llamarScript({ accion: 'enviarBoletinPrueba', email });
+    document.getElementById('loadingPrueba').innerText = '';
+    mostrarMsg('msgPrueba', r.mensaje, r.ok ? 'ok' : 'err');
+  } catch(e) {
+    document.getElementById('loadingPrueba').innerText = '';
+    mostrarMsg('msgPrueba', 'Error al enviar la prueba.', 'err');
+  }
+}
+
+async function enviarMensual() {
+  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente y las novedades cargadas.\n\n¿Confirmás el envío?')) return;
+  document.getElementById('loadingMensual').innerText = 'Enviando...';
+  try {
+    const r = await llamarScript({ accion: 'enviarMensual' });
+    document.getElementById('loadingMensual').innerText = '';
+    mostrarMsg('msgMensual', r.mensaje, r.ok ? 'ok' : 'err');
+    if (r.ok) {
+      cargarLog();
+      cargarNovedades();
+    }
+  } catch(e) {
+    document.getElementById('loadingMensual').innerText = '';
+    mostrarMsg('msgMensual', 'Error al enviar.', 'err');
+  }
+}
+
+function actualizarPreview() {
+  const asunto = document.getElementById('commAsunto').value.trim();
+  const cuerpo = document.getElementById('commCuerpo').value.trim();
+  const preview = document.getElementById('previewBox');
+  if (!asunto && !cuerpo) { preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  const firma = `\n\n──────────────────────────\nAtentos saludos,\n${NOMBRE_CLUB}`;
+  document.getElementById('previewCuerpo').innerText =
+    (asunto ? `Asunto: ${asunto}\n${'─'.repeat(30)}\n\n` : '') + cuerpo + firma;
+}
+
+async function enviarComunicado() {
+  const asunto = document.getElementById('commAsunto').value.trim();
+  const cuerpo = document.getElementById('commCuerpo').value.trim();
+  if (!asunto || !cuerpo) { mostrarMsg('msgComm', 'Completá el asunto y el mensaje.', 'err'); return; }
+  if (!confirm(`¿Enviar este comunicado a todos los suscriptores activos?\n\nAsunto: ${asunto}`)) return;
+  document.getElementById('loadingComm').innerText = 'Enviando...';
+  try {
+    const r = await llamarScript({ accion: 'enviarComunicado', asunto, cuerpo });
+    document.getElementById('loadingComm').innerText = '';
+    mostrarMsg('msgComm', r.mensaje, r.ok ? 'ok' : 'err');
+    if (r.ok) {
+      document.getElementById('commAsunto').value = '';
+      document.getElementById('commCuerpo').value = '';
+      document.getElementById('previewBox').style.display = 'none';
+      cargarLog();
+    }
+  } catch(e) {
+    document.getElementById('loadingComm').innerText = '';
+    mostrarMsg('msgComm', 'Error al enviar.', 'err');
+  }
+}
+
+async function cargarLog() {
+  try {
+    const r = await llamarScript({ accion: 'logEnvios' });
+    const el = document.getElementById('logEnvios');
+    if (!r.envios || r.envios.length === 0) { el.innerText = 'Sin envíos registrados aún.'; return; }
+
+    const porAnio = {};
+    r.envios.forEach(e => {
+      const fecha = new Date(e.fecha);
+      const anio = fecha.getFullYear();
+      if (!porAnio[anio]) porAnio[anio] = [];
+      porAnio[anio].push(e);
+    });
+
+    el.innerHTML = Object.keys(porAnio).sort((a,b) => b-a).map(anio => `
+      <div style="font-weight:900;color:#135457;margin:8px 0 4px;font-size:13px;">${anio}</div>
+      ${porAnio[anio].map(e => {
+        const fecha = new Date(e.fecha);
+        const fechaStr = fecha.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'}) + ', ' + fecha.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+        const esAuto = e.origen === 'automatico';
+        const esMensual = e.tipo === 'mensual';
+        const tag = esAuto ? '<span style="color:#1e8449;font-size:10px;">(Automático)</span>' : '<span style="color:#2471a3;font-size:10px;">(Manual)</span>';
+        const asuntoMostrar = esMensual 
+          ? `#BoletínMensual — Cuota Social — ${e.asunto.replace('Cuota social — ','')}`
+          : `Comunicado — ${e.asunto}`;
+        const btnVer = (esMensual && e.htmlId)
+          ? `<button type="button" onclick="verBoletinEnviado('${e.htmlId}')" style="background:transparent;border:1.5px solid #135457;color:#135457;font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 10px;border-radius:10px;cursor:pointer;margin-left:6px;">Ver</button>`
+          : '';
+        return `<div style="padding:5px 0;border-bottom:1px solid #c4df57;font-size:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+            <span>${asuntoMostrar} ${tag}</span>${btnVer}
+          </div>
+          <span style="opacity:0.6;font-size:11px;">${fechaStr}</span>
+        </div>`;
+      }).join('')}
+    `).join('');
+  } catch(e) {
+    document.getElementById('logEnvios').innerText = 'Error cargando historial.';
+  }
+}
+
+async function verBoletinEnviado(htmlId) {
+  try {
+    const r = await llamarScript({ accion: 'obtenerHTMLEnvio', id: htmlId });
+    if (!r.ok) { alert(r.mensaje); return; }
+    const box = document.getElementById('previewHtmlBox');
+    const iframe = document.getElementById('previewIframe');
+    iframe.srcdoc = r.html;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {
+    alert('Error al cargar el boletín enviado.');
+  }
+}
+</script>
 </body>
-</html>`;
-}
-
-function escaparHTML(texto) {
-  if (!texto) return '';
-  return texto.toString()
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-// Recorta prefijos de texto tipo "LOTE: $..." o "LOTE ADICIONAL: $..."
-// que vienen del DASHBOARD, dejando solo el monto.
-function limpiarMontoCuota(valor) {
-  if (!valor) return '';
-  return valor.toString().replace(/^.*?:\s*/, '').trim();
-}
-
-// ============================================================
-// COMUNICADO LIBRE
-// ============================================================
-function enviarComunicado(asunto, cuerpo) {
-  if (!asunto || !cuerpo) return { ok: false, mensaje: 'Asunto y mensaje son requeridos.' };
-  const destinatarios = obtenerActivos();
-  if (destinatarios.length === 0) return { ok: false, mensaje: 'No hay suscriptores activos.' };
-  const cuerpoCompleto = cuerpo + '\n\n──────────────────────────\nPara dejar de recibir el boletín: ' + URL_BOLETIN + '\n\nAtentos saludos,\n' + NOMBRE_CLUB;
-  enviarEnTandas(destinatarios, asunto, cuerpoCompleto);
-  registrarEnvio('comunicado', asunto, destinatarios.length, 'manual');
-  MailApp.sendEmail({ to: EMAIL_CLUB, subject: '✅ Comunicado enviado — ' + asunto, body: 'Comunicado enviado.\n\nAsunto: ' + asunto + '\nDestinatarios: ' + destinatarios.length + '\nFecha: ' + new Date().toLocaleString('es-AR') + '\n\n' + NOMBRE_CLUB, name: NOMBRE_CLUB });
-  return { ok: true, mensaje: 'Comunicado enviado a ' + destinatarios.length + ' suscriptores.' };
-}
-
-// ============================================================
-// SUSCRIBIR
-// ============================================================
-function suscribir(email, nombre) {
-  if (!email || !email.includes('@')) return { ok: false, mensaje: 'Email inválido.' };
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_SUSC);
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0].toString().toLowerCase() === email.toLowerCase()) {
-      if (datos[i][3] === true) return { ok: false, mensaje: 'Este email ya está suscripto.' };
-      if (datos[i][3] === 'pendiente') {
-        enviarConfirmacion(email, nombre || datos[i][1], datos[i][5]);
-        return { ok: true, mensaje: 'Tenemos registro de un pedido de suscripción pendiente de confirmación. Te lo reenviamos por si hubo algún error.' };
-      }
-      if (datos[i][3] === false || datos[i][3] === 'FALSE' || datos[i][3] === '') {
-        const token = Utilities.getUuid();
-        hoja.getRange(i + 1, 4).setValue('pendiente');
-        hoja.getRange(i + 1, 6).setValue(token);
-        enviarConfirmacion(email, nombre || datos[i][1], token);
-        return { ok: true, mensaje: 'Te enviamos un mail de confirmación. Revisá tu casilla.' };
-      }
-    }
-  }
-  const token = Utilities.getUuid();
-  hoja.appendRow([email, nombre, new Date(), 'pendiente', 'web', token]);
-  enviarConfirmacion(email, nombre, token);
-  return { ok: true, mensaje: 'Te enviamos un mail de confirmación. Revisá tu casilla.' };
-}
-
-function enviarConfirmacion(email, nombre, token) {
-  const urlConfirm = URL_BOLETIN + '?token=' + token;
-  const cuerpo = 'Hola' + (nombre ? ' ' + nombre : '') + ',\n\nRecibimos tu solicitud para suscribirte al #BoletínMensual de La Eugenia Club de Campo.\n\nHacé clic en el siguiente enlace para confirmar tu suscripción:\n' + urlConfirm + '\n\nSi no solicitaste esta suscripción, ignorá este mensaje.\n\nAtentos saludos,\nLa Eugenia Club de Campo\nWhatsApp institucional (solo mensajes): +54 9 3764 11-3300';
-  MailApp.sendEmail({ to: email, subject: 'Confirmá tu suscripción — #BoletínMensual de La Eugenia', body: cuerpo, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
-}
-
-// ============================================================
-// CONFIRMAR
-// ============================================================
-function confirmar(token) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_SUSC);
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][5] === token) {
-      hoja.getRange(i + 1, 4).setValue(true);
-      return { ok: true, mensaje: '¡Suscripción confirmada! A partir de ahora recibirás el boletín mensual.' };
-    }
-  }
-  return { ok: false, mensaje: 'Token inválido o ya confirmado.' };
-}
-
-// ============================================================
-// BAJA
-// ============================================================
-function baja(email) {
-  if (!email) return { ok: false, mensaje: 'Email requerido.' };
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_SUSC);
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0].toString().toLowerCase() === email.toLowerCase()) {
-      if (datos[i][3] === false) return { ok: false, mensaje: 'Este email ya estaba dado de baja.' };
-      hoja.getRange(i + 1, 4).setValue(false);
-      return { ok: true, mensaje: 'Te diste de baja correctamente. Lamentamos verte partir.' };
-    }
-  }
-  return { ok: false, mensaje: 'No encontramos ese email en la lista.' };
-}
-
-// ============================================================
-// LISTAR (con desglose por ORIGEN)
-// ============================================================
-function listar() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_SUSC);
-  const datos = hoja.getDataRange().getValues();
-  let activos = 0, bajas = 0, pendientes = 0;
-  let activosWeb = 0, activosManual = 0;
-  const suscriptores = [];
-  for (let i = 1; i < datos.length; i++) {
-    const email = datos[i][0];
-    const nombre = datos[i][1];
-    const estado = datos[i][3];
-    const origen = datos[i][4] || 'manual';
-    if (!email) continue;
-    let estadoTexto;
-    if (estado === true) {
-      activos++;
-      estadoTexto = 'activo';
-      if (origen === 'web') activosWeb++; else activosManual++;
-    }
-    else if (estado === 'pendiente') { pendientes++; estadoTexto = 'pendiente'; }
-    else { bajas++; estadoTexto = 'baja'; }
-    suscriptores.push({ email, nombre, estado: estadoTexto, origen });
-  }
-  suscriptores.sort((a, b) => (a.nombre || a.email).localeCompare(b.nombre || b.email));
-  return {
-    ok: true,
-    activos, bajas, pendientes,
-    activosWeb, activosManual,
-    total: activos + bajas + pendientes,
-    suscriptores
-  };
-}
-
-// ============================================================
-// AGREGAR MANUAL
-// ============================================================
-function agregarManual(email, nombre) {
-  if (!email || !email.includes('@')) return { ok: false, mensaje: 'Email inválido.' };
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_SUSC);
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0].toString().toLowerCase() === email.toLowerCase()) {
-      if (datos[i][3] === true) return { ok: false, mensaje: 'Este email ya está activo.' };
-      hoja.getRange(i + 1, 4).setValue(true);
-      return { ok: true, mensaje: 'Suscriptor reactivado.' };
-    }
-  }
-  hoja.appendRow([email, nombre, new Date(), true, 'manual', '']);
-  return { ok: true, mensaje: 'Suscriptor agregado correctamente.' };
-}
-
-// ============================================================
-// LOG
-// ============================================================
-function logEnvios() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_LOG);
-  if (!hoja) return { ok: true, envios: [] };
-  const datos = hoja.getDataRange().getValues();
-  const envios = [];
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0]) envios.push({ fecha: datos[i][0], tipo: datos[i][1], asunto: datos[i][2], cantidad: datos[i][3], origen: datos[i][4] || 'manual', htmlId: datos[i][5] || '' });
-  }
-  return { ok: true, envios: envios.reverse() };
-}
-
-function registrarEnvio(tipo, asunto, cantidad, origen, htmlBody) {
-  origen = origen || 'manual';
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let hoja = ss.getSheetByName(HOJA_LOG);
-  if (!hoja) {
-    hoja = ss.insertSheet(HOJA_LOG);
-    hoja.getRange("A1:F1").setValues([["FECHA","TIPO","ASUNTO","DESTINATARIOS","ORIGEN","HTML_ID"]]);
-    hoja.getRange("A1:F1").setFontWeight("bold");
-  }
-  let htmlId = '';
-  if (htmlBody) {
-    htmlId = guardarHTMLEnvio(htmlBody);
-  }
-  hoja.appendRow([new Date(), tipo, asunto, cantidad, origen, htmlId]);
-  return htmlId;
-}
-
-// ============================================================
-// ARCHIVO DE HTML DE ENVÍOS (para preview de boletines pasados)
-// ============================================================
-function asegurarHojaLogHTML() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let hoja = ss.getSheetByName('LOG_HTML');
-  if (!hoja) {
-    hoja = ss.insertSheet('LOG_HTML');
-    hoja.getRange("A1:B1").setValues([["ID","HTML"]]);
-    hoja.getRange("A1:B1").setFontWeight("bold");
-    hoja.hideSheet();
-  }
-  return hoja;
-}
-
-function guardarHTMLEnvio(htmlBody) {
-  const hoja = asegurarHojaLogHTML();
-  const id = Utilities.getUuid();
-  hoja.appendRow([id, htmlBody]);
-  return id;
-}
-
-function obtenerHTMLEnvio(id) {
-  if (!id) return { ok: false, mensaje: 'ID requerido.' };
-  const hoja = asegurarHojaLogHTML();
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] === id) {
-      return { ok: true, html: datos[i][1] };
-    }
-  }
-  return { ok: false, mensaje: 'No se encontró el boletín guardado.' };
-}
-
-// ============================================================
-// NOVEDADES — pendientes (se insertan en el próximo boletín)
-// ============================================================
-function asegurarHojaNovedades() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let hoja = ss.getSheetByName(HOJA_NOVEDADES);
-  if (!hoja) {
-    hoja = ss.insertSheet(HOJA_NOVEDADES);
-    hoja.getRange("A1:D1").setValues([["ID","TITULO","DESCRIPCION","FECHA_CARGA"]]);
-    hoja.getRange("A1:D1").setFontWeight("bold").setBackground("#135457").setFontColor("#c4df57");
-  }
-  return hoja;
-}
-
-function asegurarHojaNovedadesHistorial() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let hoja = ss.getSheetByName(HOJA_NOVEDADES_HIST);
-  if (!hoja) {
-    hoja = ss.insertSheet(HOJA_NOVEDADES_HIST);
-    hoja.getRange("A1:D1").setValues([["FECHA_ENVIO","TITULO","DESCRIPCION","PERIODO_BOLETIN"]]);
-    hoja.getRange("A1:D1").setFontWeight("bold").setBackground("#135457").setFontColor("#c4df57");
-  }
-  return hoja;
-}
-
-function listarNovedades() {
-  const hoja = asegurarHojaNovedades();
-  const datos = hoja.getDataRange().getValues();
-  const novedades = [];
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0]) {
-      novedades.push({
-        id: datos[i][0],
-        titulo: datos[i][1],
-        descripcion: datos[i][2],
-        fechaCarga: datos[i][3]
-      });
-    }
-  }
-  return { ok: true, novedades };
-}
-
-function obtenerNovedadesPendientes() {
-  const r = listarNovedades();
-  return r.novedades || [];
-}
-
-function agregarNovedad(titulo, descripcion) {
-  if (!titulo || !titulo.trim()) return { ok: false, mensaje: 'El título es obligatorio.' };
-  if (!descripcion || !descripcion.trim()) return { ok: false, mensaje: 'La descripción es obligatoria.' };
-  const hoja = asegurarHojaNovedades();
-  const id = Utilities.getUuid();
-  hoja.appendRow([id, titulo.trim(), descripcion.trim(), new Date()]);
-  return { ok: true, mensaje: 'Novedad agregada.', id };
-}
-
-function editarNovedad(id, titulo, descripcion) {
-  if (!id) return { ok: false, mensaje: 'ID requerido.' };
-  if (!titulo || !titulo.trim()) return { ok: false, mensaje: 'El título es obligatorio.' };
-  if (!descripcion || !descripcion.trim()) return { ok: false, mensaje: 'La descripción es obligatoria.' };
-  const hoja = asegurarHojaNovedades();
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] === id) {
-      hoja.getRange(i + 1, 2).setValue(titulo.trim());
-      hoja.getRange(i + 1, 3).setValue(descripcion.trim());
-      return { ok: true, mensaje: 'Novedad actualizada.' };
-    }
-  }
-  return { ok: false, mensaje: 'No se encontró la novedad.' };
-}
-
-function eliminarNovedad(id) {
-  if (!id) return { ok: false, mensaje: 'ID requerido.' };
-  const hoja = asegurarHojaNovedades();
-  const datos = hoja.getDataRange().getValues();
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] === id) {
-      hoja.deleteRow(i + 1);
-      return { ok: true, mensaje: 'Novedad eliminada.' };
-    }
-  }
-  return { ok: false, mensaje: 'No se encontró la novedad.' };
-}
-
-function limpiarNovedadesPendientes() {
-  const hoja = asegurarHojaNovedades();
-  const ultimaFila = hoja.getLastRow();
-  if (ultimaFila > 1) {
-    hoja.getRange(2, 1, ultimaFila - 1, hoja.getLastColumn()).clearContent();
-  }
-}
-
-function archivarNovedades(novedades, periodoBoletin) {
-  const hoja = asegurarHojaNovedadesHistorial();
-  novedades.forEach(n => {
-    hoja.appendRow([new Date(), n.titulo, n.descripcion, periodoBoletin]);
-  });
-}
-
-function historialNovedades() {
-  const hoja = asegurarHojaNovedadesHistorial();
-  const datos = hoja.getDataRange().getValues();
-  const historial = [];
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][1]) {
-      historial.push({
-        fechaEnvio: datos[i][0],
-        titulo: datos[i][1],
-        descripcion: datos[i][2],
-        periodoBoletin: datos[i][3]
-      });
-    }
-  }
-  // Últimas 5, más recientes primero
-  return { ok: true, historial: historial.reverse().slice(0, 5) };
-}
-
-// ============================================================
-// CORRECCIÓN DE NOVEDAD CON IA (Claude Haiku)
-// ============================================================
-function corregirNovedadIA(titulo, descripcion) {
-  if (!titulo || !descripcion) return { ok: false, mensaje: 'Título y descripción requeridos.' };
-
-  const systemPrompt = `Sos un corrector de texto institucional para el Club de Campo La Eugenia (Garupá, Misiones, Argentina).
-Recibís un título y una descripción de una novedad que se va a publicar en el #BoletínMensual del club, enviado por mail a los socios.
-
-Tu única función es corregir ortografía, tildes y redacción — NUNCA cambiar el contenido, el sentido, ni agregar información que no esté.
-Mantené el tono institucional, claro y directo, en tercera persona del plural ("se realizará", "informamos").
-El título debe ser corto (máximo 6-8 palabras). La descripción debe ser clara y concisa.
-
-Respondé SOLO con JSON válido sin backticks ni texto adicional:
-{"titulo":"...","descripcion":"..."}`;
-
-  try {
-    const response = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
-      method: 'post',
-      contentType: 'application/json',
-      headers: {
-        'x-api-key': AK,
-        'anthropic-version': '2023-06-01'
-      },
-      payload: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 500,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: 'Título: ' + titulo + '\nDescripción: ' + descripcion }]
-      }),
-      muteHttpExceptions: true
-    });
-
-    const data = JSON.parse(response.getContentText());
-    if (!data.content || !data.content[0]) return { ok: false, mensaje: 'Sin respuesta de la IA.' };
-
-    let raw = data.content[0].text.replace(/```json|```/g, '').trim();
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (match) raw = match[0];
-    const parsed = JSON.parse(raw);
-
-    return { ok: true, titulo: parsed.titulo, descripcion: parsed.descripcion };
-  } catch (e) {
-    return { ok: false, mensaje: 'Error al corregir con IA: ' + e.message };
-  }
-}
-
-// ============================================================
-// CORRECCIÓN DE COMUNICADO LIBRE CON IA (Claude Haiku)
-// ============================================================
-function corregirComunicadoIA(asunto, cuerpo) {
-  if (!asunto || !cuerpo) return { ok: false, mensaje: 'Asunto y mensaje requeridos.' };
-
-  const systemPrompt = `Sos un corrector de texto institucional para el Club de Campo La Eugenia (Garupá, Misiones, Argentina).
-Recibís el asunto y el cuerpo de un comunicado libre que se va a enviar por mail a todos los suscriptores del boletín.
-
-Tu única función es corregir ortografía, tildes y redacción — NUNCA cambiar el contenido, el sentido, ni agregar información que no esté.
-Mantené el tono institucional, claro y directo, en tercera persona del plural ("informamos", "recordamos", "solicitamos").
-No agregues saludos ni firma — eso ya lo agrega el sistema automáticamente.
-
-Respondé SOLO con JSON válido sin backticks ni texto adicional:
-{"asunto":"...","cuerpo":"..."}`;
-
-  try {
-    const response = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
-      method: 'post',
-      contentType: 'application/json',
-      headers: {
-        'x-api-key': AK,
-        'anthropic-version': '2023-06-01'
-      },
-      payload: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: 'Asunto: ' + asunto + '\nCuerpo: ' + cuerpo }]
-      }),
-      muteHttpExceptions: true
-    });
-
-    const data = JSON.parse(response.getContentText());
-    if (!data.content || !data.content[0]) return { ok: false, mensaje: 'Sin respuesta de la IA.' };
-
-    let raw = data.content[0].text.replace(/```json|```/g, '').trim();
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (match) raw = match[0];
-    const parsed = JSON.parse(raw);
-
-    return { ok: true, asunto: parsed.asunto, cuerpo: parsed.cuerpo };
-  } catch (e) {
-    return { ok: false, mensaje: 'Error al corregir con IA: ' + e.message };
-  }
-}
-
-// ============================================================
-// VISTA PREVIA DEL BOLETÍN (con novedades pendientes incluidas)
-// ============================================================
-function previewBoletin() {
-  const cuota = obtenerCuota();
-  if (!cuota.periodo) return { ok: false, mensaje: 'No se pudo obtener la cuota del DASHBOARD.' };
-  const novedades = obtenerNovedadesPendientes();
-  const html = armarHTMLBoletin(cuota, novedades, '[email del suscriptor]');
-  return { ok: true, html };
-}
-
-// ============================================================
-// HELPERS
-// ============================================================
-function obtenerActivos() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hoja = ss.getSheetByName(HOJA_SUSC);
-  const datos = hoja.getDataRange().getValues();
-  const activos = [];
-  for (let i = 1; i < datos.length; i++) {
-    if (datos[i][0] && datos[i][3] === true) activos.push(datos[i][0]);
-  }
-  return activos;
-}
-
-function enviarEnTandas(destinatarios, asunto, cuerpo) {
-  for (let i = 0; i < destinatarios.length; i++) {
-    MailApp.sendEmail({ to: destinatarios[i], subject: asunto, body: cuerpo, name: NOMBRE_CLUB, replyTo: EMAIL_CLUB });
-    if (i < destinatarios.length - 1) Utilities.sleep(1000);
-  }
-}
-
-// ============================================================
-// CREAR TRIGGERS
-// ============================================================
-function crearTriggersBoletin() {
-  ScriptApp.getProjectTriggers().forEach(t => {
-    if (['recordatorioDia26','confirmacionDia28','enviarMensualAutomatico'].includes(t.getHandlerFunction())) {
-      ScriptApp.deleteTrigger(t);
-    }
-  });
-  ScriptApp.newTrigger('recordatorioDia26').timeBased().onMonthDay(26).atHour(8).create();
-  ScriptApp.newTrigger('confirmacionDia28').timeBased().onMonthDay(28).atHour(8).create();
-  ScriptApp.newTrigger('enviarMensualAutomatico').timeBased().onMonthDay(1).atHour(10).create();
-  Logger.log('Triggers creados: día 26, 28 y 1.');
-}
-
-// ============================================================
-// IMPORTAR SUSCRIPTORES
-// ============================================================
-function importarSuscriptores() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hojaImportar = ss.getSheetByName("IMPORTAR");
-  if (!hojaImportar) { Logger.log('No se encontró la hoja IMPORTAR.'); return; }
-  const hojaSusc = ss.getSheetByName(HOJA_SUSC);
-  const datosImportar = hojaImportar.getDataRange().getValues();
-  const datosSusc = hojaSusc.getDataRange().getValues();
-  const emailsExistentes = new Set();
-  for (let i = 1; i < datosSusc.length; i++) {
-    if (datosSusc[i][0]) emailsExistentes.add(datosSusc[i][0].toString().toLowerCase());
-  }
-  let agregados = 0, omitidos = 0;
-  for (let i = 1; i < datosImportar.length; i++) {
-    const email = datosImportar[i][0] ? datosImportar[i][0].toString().trim() : '';
-    const nombre = datosImportar[i][1] ? datosImportar[i][1].toString().trim() : '';
-    if (!email || !email.includes('@')) { omitidos++; continue; }
-    if (emailsExistentes.has(email.toLowerCase())) { omitidos++; continue; }
-    hojaSusc.appendRow([email, nombre, new Date(), true, 'importacion', '']);
-    emailsExistentes.add(email.toLowerCase());
-    agregados++;
-  }
-  Logger.log('Importación completada. Agregados: ' + agregados + ' | Omitidos: ' + omitidos);
-}
-
-// ============================================================
-// LIMPIAR DATOS DE PRUEBA
-// ============================================================
-function limpiarDatosDePrueba() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const hojaSupc = ss.getSheetByName(HOJA_SUSC);
-  if (hojaSupc && hojaSupc.getLastRow() > 1) hojaSupc.getRange(2, 1, hojaSupc.getLastRow() - 1, hojaSupc.getLastColumn()).clearContent();
-  const hojaLog = ss.getSheetByName(HOJA_LOG);
-  if (hojaLog && hojaLog.getLastRow() > 1) hojaLog.getRange(2, 1, hojaLog.getLastRow() - 1, hojaLog.getLastColumn()).clearContent();
-  const hojaImportar = ss.getSheetByName("IMPORTAR");
-  if (hojaImportar && hojaImportar.getLastRow() > 1) hojaImportar.getRange(2, 1, hojaImportar.getLastRow() - 1, hojaImportar.getLastColumn()).clearContent();
-  Logger.log('✅ Datos de prueba eliminados.');
-}
-
-// ============================================================
-// CREAR HOJA SUSCRIPTORES
-// ============================================================
-function crearHojaSuscriptores() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let hoja = ss.getSheetByName(HOJA_SUSC);
-  if (!hoja) hoja = ss.insertSheet(HOJA_SUSC);
-  hoja.getRange("A1:F1").setValues([["EMAIL","NOMBRE","FECHA","ACTIVO","ORIGEN","TOKEN"]]);
-  hoja.getRange("A1:F1").setFontWeight("bold").setBackground("#003a6b").setFontColor("#c4df57");
-  hoja.setColumnWidth(1, 220); hoja.setColumnWidth(2, 150); hoja.setColumnWidth(3, 140);
-  hoja.setColumnWidth(4, 80); hoja.setColumnWidth(5, 80); hoja.setColumnWidth(6, 200);
-  Logger.log('✅ Hoja SUSCRIPTORES lista.');
-}
-
-// ============================================================
-// CREAR HOJA IMPORTAR
-// ============================================================
-function crearHojaImportar() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let hoja = ss.getSheetByName("IMPORTAR");
-  if (!hoja) hoja = ss.insertSheet("IMPORTAR");
-  hoja.getRange("A1:B1").setValues([["EMAIL *", "NOMBRE (opcional)"]]);
-  hoja.getRange("A1:B1").setFontWeight("bold").setBackground("#003a6b").setFontColor("#c4df57");
-  hoja.getRange("C1").setValue("← Pegá los datos desde la fila 2. Solo emails válidos. Los duplicados se ignoran.");
-  hoja.getRange("C1").setFontColor("#c0392b").setFontSize(10).setFontStyle("italic");
-  hoja.setColumnWidth(1, 250); hoja.setColumnWidth(2, 200); hoja.setColumnWidth(3, 380);
-  Logger.log('✅ Hoja IMPORTAR configurada.');
-}
-
-// ============================================================
-// CREAR HOJA NOVEDADES (manual, si hace falta inicializar)
-// ============================================================
-function crearHojaNovedades() {
-  asegurarHojaNovedades();
-  asegurarHojaNovedadesHistorial();
-  Logger.log('✅ Hojas NOVEDADES y NOVEDADES_HISTORIAL listas.');
-}
+</html>
