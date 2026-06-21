@@ -841,17 +841,19 @@ async function enviarPrueba() {
 }
 
 async function enviarMensual() {
-  let avisoExtra = '';
+  let lineaPdf = '⚠️ No se pudo verificar el estado del PDF de Tesorería.';
   try {
     const check = await llamarScript({ accion: 'chequearEstadoPdfTesoreria' });
     if (check.estado === 'faltante') {
-      avisoExtra = '\n\n⚠️ ATENCIÓN: no se encontró un PDF de Tesorería publicado. El boletín se enviará SIN adjunto.';
+      lineaPdf = '⚠️ No se encontró un PDF de Tesorería publicado. Se enviará SIN adjunto.';
     } else if (check.estado === 'repetido') {
-      avisoExtra = '\n\n⚠️ ATENCIÓN: el PDF de Tesorería (' + check.periodoTesoreria + ') es el mismo que ya se adjuntó en el envío anterior. Verificá si ya se publicó el movimiento del mes recién cerrado.';
+      lineaPdf = '⚠️ Se adjuntará el PDF de ' + check.periodoTesoreria + ' — el mismo que ya se mandó en el envío anterior. Verificá si ya se publicó el del mes recién cerrado.';
+    } else if (check.estado === 'ok') {
+      lineaPdf = '📎 Se adjuntará el PDF de Tesorería de ' + check.periodoTesoreria + '.';
     }
-  } catch(e) { /* si falla el check, seguimos igual con el flujo normal */ }
+  } catch(e) { /* si falla el check, queda el mensaje de "no se pudo verificar" */ }
 
-  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente y las novedades cargadas.' + avisoExtra + '\n\n¿Confirmás el envío?')) return;
+  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente y las novedades cargadas.\n\n' + lineaPdf + '\n\n¿Confirmás el envío?')) return;
   document.getElementById('loadingMensual').innerText = 'Enviando...';
   try {
     const r = await llamarScript({ accion: 'enviarMensual' });
