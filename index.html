@@ -83,7 +83,7 @@
 
     .btn-admin { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid var(--lima); background: transparent; color: var(--lima); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
     .icono-admin-wrap { text-align: center; margin-top: 28px; }
-    .icono-admin { width: 26px; height: 26px; opacity: 0.55; cursor: pointer; border: none; background: transparent; padding: 0; transition: opacity 0.2s; }
+    .icono-admin { width: 52px; height: 52px; opacity: 0.55; cursor: pointer; border: none; background: transparent; padding: 0; transition: opacity 0.2s; }
     .icono-admin:hover { opacity: 0.85; }
     .btn-admin:hover { opacity: 0.75; }
 
@@ -221,6 +221,7 @@
 
     <!-- PIN -->
     <div class="screen" id="screenPin">
+      <p style="color:var(--petroleo); font-size:12px; text-align:center; opacity:0.75; margin-bottom:14px;">Acceso reservado a personal autorizado.</p>
       <div class="pin-label">PIN de administración</div>
       <input class="pin-input" type="password" inputmode="numeric" maxlength="4" id="pinInput" placeholder="····">
       <div class="pin-error" id="pinError"></div>
@@ -259,6 +260,7 @@
       </div>
       <div class="prueba-panel" id="pruebaPanel">
         <button type="button" class="btn-outline" onclick="verPreviewBoletin()">Ver vista previa del boletín</button>
+        <div id="alertaPdfTesoreria" style="display:none; margin-top:10px; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:700; text-align:center;"></div>
         <div class="preview-html-box" id="previewHtmlBox">
           <iframe id="previewIframe"></iframe>
         </div>
@@ -772,6 +774,20 @@ async function verPreviewBoletin() {
     const iframe = document.getElementById('previewIframe');
     iframe.srcdoc = r.html;
     box.style.display = 'block';
+
+    const alerta = document.getElementById('alertaPdfTesoreria');
+    if (r.pdfDisponible) {
+      alerta.style.display = 'block';
+      alerta.style.background = '#d5f5e3';
+      alerta.style.color = '#1e8449';
+      alerta.innerText = '✅ PDF de Movimiento de Tesorería encontrado — se adjuntará al enviar.';
+    } else {
+      alerta.style.display = 'block';
+      alerta.style.background = '#fdecea';
+      alerta.style.color = '#c0392b';
+      alerta.innerText = '⚠️ No se encontró un PDF de Tesorería publicado. El boletín se enviará SIN adjunto.';
+    }
+
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch(e) {
     alert('Error al generar la vista previa.');
@@ -793,7 +809,15 @@ async function enviarPrueba() {
 }
 
 async function enviarMensual() {
-  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente y las novedades cargadas.\n\n¿Confirmás el envío?')) return;
+  let avisoExtra = '';
+  try {
+    const check = await llamarScript({ accion: 'previewBoletin' });
+    if (check.ok && !check.pdfDisponible) {
+      avisoExtra = '\n\n⚠️ ATENCIÓN: no se encontró un PDF de Tesorería publicado. El boletín se enviará SIN adjunto.';
+    }
+  } catch(e) { /* si falla el check, seguimos igual con el flujo normal */ }
+
+  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente y las novedades cargadas.' + avisoExtra + '\n\n¿Confirmás el envío?')) return;
   document.getElementById('loadingMensual').innerText = 'Enviando...';
   try {
     const r = await llamarScript({ accion: 'enviarMensual' });
