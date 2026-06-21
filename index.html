@@ -82,6 +82,8 @@
     .btn-cgv:hover { opacity: 0.88; }
 
     .btn-admin { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid var(--lima); background: transparent; color: var(--lima); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-admin-sutil { display: block; width: 100%; max-width: 480px; padding: 14px; border-radius: 12px; border: 1.5px solid rgba(19,84,87,0.5); background: rgba(255,255,255,0.1); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; opacity: 0.9; transition: opacity 0.2s; }
+    .btn-admin-sutil:hover { opacity: 1; }
     .btn-admin:hover { opacity: 0.75; }
 
     .msg-pendiente { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 24px; padding: 12px 14px; color: var(--petroleo); font-size: 14px; text-align: center; display: none; margin-top: 10px; animation: destelloAzul 2s ease-in-out infinite; }
@@ -195,7 +197,7 @@
     <div class="screen" id="screenBaja">
       <div class="confirm-icon">👋</div>
       <div class="confirm-titulo">Darse de baja</div>
-      <div class="confirm-texto" style="margin-bottom:20px;">Estás por dejar de recibir el Boletín de La Eugenia Club de Campo. Podés volver a suscribirte cuando quieras.</div>
+      <div class="confirm-texto" style="margin-bottom:20px;">Estás por dejar de recibir el #BoletínMensual del Club de Campo La Eugenia. Podés volver a suscribirte cuando quieras.</div>
       <div class="msg-box" id="msgBaja"></div>
       <div class="loading" id="loadingBaja"></div>
       <button type="button" class="btn-rojo" onclick="confirmarBaja()">Sí, darme de baja</button>
@@ -362,8 +364,9 @@
   </div>
 
   <div class="btns-externos" id="btnsExternos">
+    <a class="btn-admin" href="https://script.google.com/macros/s/AKfycbw-m5ffo9Ul05FO88O-7I09_BPZrYYm4awYcQcC47pPjMQ5fV9xI-8kzkH6IKgnSJvW/exec?ver=actual" target="_blank" rel="noopener" style="margin-top:0;">Ver #BoletínMensual vigente</a>
     <a class="btn-cgv" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
-    <button type="button" class="btn-admin" onclick="mostrarPin()">Acceso reservado a personal autorizado</button>
+    <button type="button" class="btn-admin-sutil" onclick="mostrarPin()">Acceso reservado a personal autorizado</button>
   </div>
 
 <script>
