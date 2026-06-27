@@ -64,6 +64,9 @@
     .btn-vigente-accion:hover { opacity:0.8; }
     .btn-prep-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--naranja); background:transparent; color:var(--naranja); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
     .btn-prep-accion:hover { opacity:0.8; }
+    .btn-prep-fill { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--petroleo); background:var(--naranja); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; transition:transform 0.08s, opacity 0.15s; }
+    .btn-prep-fill:hover { opacity:0.88; }
+    .btn-prep-fill:active { transform:scale(0.96); }
     .btn-ia-accion { display:block; width:100%; padding:11px; border-radius:20px; border:2px solid var(--naranja); background:var(--petroleo); color:var(--naranja); font-family:'Roboto',sans-serif; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
     .btn-ia-accion:hover { opacity:0.85; }
 
@@ -96,7 +99,7 @@
     .badge-pendiente { background:#eaf4ff; color:#2471a3; font-size:9px; font-weight:900; padding:2px 8px; border-radius:10px; }
 
     /* PANELES ADMIN — NUEVO DISEÑO */
-    .bloque-admin { border-radius:14px; overflow:hidden; margin-bottom:8px; }
+    .bloque-admin { border-radius:14px; margin-bottom:8px; }
 
     /* Boletín Vigente — petróleo/lima */
     .bloque-vigente .bloque-header { background:var(--petroleo); border:2px solid var(--lima); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--lima); font-size:13px; font-weight:700; transition:transform 0.08s; }
@@ -129,7 +132,11 @@
     .bloque-flecha { font-size:10px; opacity:0.7; }
 
     /* NOVEDADES ITEMS */
-    .novedad-item { background:var(--hueso); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+    .novedad-item { background:rgba(255,255,255,0.07); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+    .bloque-prep .novedad-titulo { color:var(--naranja); }
+    .bloque-prep .novedad-desc { color:rgba(255,255,255,0.75); }
+    .bloque-prep .btn-mini { border-color:var(--naranja); color:var(--naranja); }
+    .bloque-prep .btn-mini.rojo { border-color:var(--error); color:var(--error); }
     .novedad-titulo { color:var(--petroleo); font-size:13px; font-weight:900; margin-bottom:4px; }
     .novedad-desc { color:var(--petroleo); font-size:12px; line-height:1.5; margin-bottom:8px; }
     .novedad-acciones { display:flex; gap:8px; }
@@ -166,6 +173,8 @@
 
     .btns-externos { display:none; width:100%; max-width:480px; margin-top:36px; }
     .btns-externos.visible { display:block; }
+      input[style*="#48797c"]::placeholder,
+    textarea[style*="#48797c"]::placeholder { color:rgba(255,255,255,0.4); }
   </style>
 </head>
 <body>
@@ -281,7 +290,7 @@
           <div id="estadoPdfTesoreria" class="pdf-estado">Verificando PDF de Tesorería...</div>
           <div class="loading loading-naranja" id="loadingPrep"></div>
           <div class="msg-box" id="msgPrep"></div>
-          <button type="button" class="btn-prep-accion" onclick="verPreviewBoletin()" id="btnVerPreview">Ver vista previa</button>
+          <button type="button" class="btn-prep-fill" onclick="verPreviewBoletin()" id="btnVerPreview">Ver vista previa</button>
           <div class="preview-html-box" id="previewHtmlBox">
             <iframe id="previewIframe"></iframe>
           </div>
@@ -289,33 +298,25 @@
           
           <div class="divider"></div>
           <div style="color:var(--naranja);font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:8px;">Enviar boletín de prueba</div>
-          <input type="email" id="emailPrueba" value="gacoutada@gmail.com" style="background:var(--blanco);border-color:var(--naranja);">
+          <input type="email" id="emailPrueba" value="gacoutada@gmail.com" style="background:#48797c;border-color:var(--naranja);color:var(--blanco);">
           <div class="loading loading-naranja" id="loadingPrueba"></div>
           <div class="msg-box" id="msgPrueba"></div>
           <button type="button" class="btn-prep-accion" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
-        </div>
-      </div>
 
-      <div class="divider"></div>
+          <hr style="border:none;border-top:1px solid rgba(222,175,77,0.3);margin:14px 0;">
 
-      <!-- NOVEDADES -->
-      <div class="bloque-admin bloque-novedades">
-        <div class="bloque-header" onclick="toggleBloque('panelNovedades','flechaNovedades')">
-          <span>INCLUIR NOVEDADES EN EL PRÓXIMO BOLETÍN</span>
-          <span id="flechaNovedades" class="bloque-flecha">▼</span>
-        </div>
-        <div class="bloque-panel" id="panelNovedades">
-          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
-          <div id="novedadesLista"><div class="novedades-vacio">No hay novedades cargadas.</div></div>
-          <span class="field-label">Título</span>
-          <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Julio">
-          <span class="field-label">Descripción</span>
-          <textarea id="novDescripcion" placeholder="Detalle de la novedad..."></textarea>
+          <div style="color:var(--naranja);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1.5px solid rgba(222,175,77,0.35);padding-bottom:6px;margin-bottom:10px;">Novedades del mes</div>
+          <p style="color:rgba(255,255,255,0.6);font-size:11px;margin:0 0 12px;font-style:italic;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
+          <div id="novedadesLista"><div class="novedades-vacio" style="color:rgba(255,255,255,0.5);">No hay novedades cargadas.</div></div>
+          <span style="color:var(--naranja);font-size:11px;font-weight:900;text-transform:uppercase;margin:12px 0 5px;display:block;">Título</span>
+          <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Agosto" style="background:#48797c;border-color:rgba(222,175,77,0.5);color:var(--blanco);">
+          <span style="color:var(--naranja);font-size:11px;font-weight:900;text-transform:uppercase;margin:10px 0 5px;display:block;">Descripción</span>
+          <textarea id="novDescripcion" placeholder="Detalle de la novedad..." style="background:#48797c;border-color:rgba(222,175,77,0.5);color:var(--blanco);"></textarea>
           <button type="button" class="btn-ia-accion" id="btnNovIA" onclick="corregirNovedad()">Corrección con IA ♦</button>
-          <div class="loading" id="loadingNov"></div>
+          <div class="loading loading-naranja" id="loadingNov"></div>
           <div class="msg-box" id="msgNov"></div>
-          <button type="button" class="btn-solid" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
-          <button type="button" class="btn-ghost" id="btnNovCancelar" onclick="cancelarEdicionNovedad()" style="display:none;">Cancelar edición</button>
+          <button type="button" class="btn-prep-fill" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
+          <button type="button" style="display:none;width:100%;padding:10px;border-radius:24px;border:none;background:transparent;color:rgba(255,255,255,0.6);font-family:'Roboto',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer;margin-top:4px;text-align:center;" id="btnNovCancelar" onclick="cancelarEdicionNovedad()">Cancelar edición</button>
         </div>
       </div>
 
@@ -635,7 +636,7 @@ async function verPreviewBoletin() {
     document.getElementById('previewIframe').srcdoc=r.html;
     box.style.display='block'; box.classList.add('open');
     btn.innerText='Ocultar vista previa';
-    box.scrollIntoView({behavior:'smooth',block:'start'});
+    
   } catch(e) { document.getElementById('loadingPrep').innerText=''; mostrarMsg('msgPrep','Error al cargar.','err'); }
 }
 
@@ -832,7 +833,7 @@ async function verBoletinEnviado(htmlId){
     document.getElementById('panelVigente').classList.add('open');
     document.getElementById('flechaVigente').innerText='▲';
     box.style.display='block';
-    box.scrollIntoView({behavior:'smooth',block:'start'});
+    
   }catch(e){alert('Error al cargar el boletín.');}
 }
 </script>
