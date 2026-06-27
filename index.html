@@ -22,159 +22,150 @@
     }
     body { margin: 0; min-height: 100vh; background: var(--petroleo); font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 28px 16px; }
 
-    @keyframes fadeInScreen {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes shakeError {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(4px); }
-    }
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      60% { transform: scale(1.15); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
+    @keyframes fadeInScreen { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes shakeError { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    @keyframes popIn { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.15);opacity:1} 100%{transform:scale(1);opacity:1} }
 
-    .logo-wrap img { width: 158px; height: auto; display: block; margin: 0 auto 8px; filter: drop-shadow(0 4px 7px rgba(0,0,0,0.35)); }
-    h1 { margin: 0 0 4px; color: var(--lima); font-family: Impact, sans-serif; font-size: 36px; line-height: 1; letter-spacing: 1px; text-transform: uppercase; text-align: center; white-space: nowrap; }
-    @media (max-width: 380px) { h1 { font-size: 24px; letter-spacing: 0.5px; } }
-    .club-nombre { color: #fff; font-size: 14px; font-weight: 400; text-align: center; margin-bottom: 20px; }
-    .card { background: var(--verdecl); border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 20px; box-sizing: border-box; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
-    .screen { display: none; }
-    .screen.active { display: block; animation: fadeInScreen 0.3s ease-out; }
-    .intro { color: var(--petroleo); font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 6px; }
-    .intro-baja { color: var(--petroleo); font-size: 13px; text-align: center; margin-bottom: 20px; }
-    .field-label { color: var(--petroleo); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; display: block; }
-    input[type=text], input[type=email], textarea { width: 100%; border: 2px solid var(--petroleo); border-radius: 14px; padding: 12px; background: var(--blanco); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; outline: none; }
-    input:focus, textarea:focus { border-color: var(--naranja); }
-    input.error { border-color: var(--error); animation: shakeError 0.35s ease-in-out; }
-    textarea { min-height: 100px; resize: vertical; }
+    .logo-wrap img { width:158px; height:auto; display:block; margin:0 auto 8px; filter:drop-shadow(0 4px 7px rgba(0,0,0,0.35)); }
+    h1 { margin:0 0 4px; color:var(--lima); font-family:Impact,sans-serif; font-size:36px; line-height:1; letter-spacing:1px; text-transform:uppercase; text-align:center; white-space:nowrap; }
+    @media (max-width:380px) { h1 { font-size:24px; } }
+    .club-nombre { color:#fff; font-size:14px; font-weight:400; text-align:center; margin-bottom:20px; }
+    .card { background:var(--verdecl); border-radius:24px; width:100%; max-width:480px; padding:24px 20px; box-sizing:border-box; box-shadow:0 10px 28px rgba(0,0,0,0.4); }
+    .screen { display:none; }
+    .screen.active { display:block; animation:fadeInScreen 0.3s ease-out; }
+    .intro { color:var(--petroleo); font-size:14px; line-height:1.6; text-align:center; margin-bottom:6px; }
+    .field-label { color:var(--petroleo); font-size:12px; font-weight:900; text-transform:uppercase; margin-bottom:6px; margin-top:14px; display:block; }
+    input[type=text], input[type=email], textarea { width:100%; border:2px solid var(--petroleo); border-radius:14px; padding:12px; background:var(--blanco); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:15px; outline:none; }
+    input:focus, textarea:focus { border-color:var(--naranja); }
+    input.error { border-color:var(--error); animation:shakeError 0.35s ease-in-out; }
+    textarea { min-height:100px; resize:vertical; }
 
-    .btn-solid, .btn-susc, .btn-azul, .btn-rojo, .btn-outline, .btn-cgv, .btn-admin {
+    /* BOTONES BASE */
+    .btn-solid, .btn-susc, .btn-outline, .btn-cgv, .btn-admin, .btn-rojo, .btn-vigente-accion, .btn-prep-accion, .btn-ia-accion {
       transition: transform 0.08s, box-shadow 0.08s, opacity 0.15s;
     }
-    .btn-solid:active, .btn-susc:active, .btn-azul:active, .btn-rojo:active, .btn-outline:active, .btn-cgv:active, .btn-admin:active {
-      transform: scale(0.96);
-    }
+    .btn-solid:active, .btn-susc:active, .btn-outline:active, .btn-rojo:active, .btn-vigente-accion:active, .btn-prep-accion:active, .btn-ia-accion:active { transform:scale(0.96); }
 
-    .btn-solid { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; text-decoration: none; }
-    .btn-solid:hover { opacity: 0.88; }
+    .btn-solid { display:block; width:100%; padding:14px; border-radius:24px; border:2px solid var(--petroleo); background:var(--naranja); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:15px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:16px; text-align:center; text-decoration:none; }
+    .btn-solid:hover { opacity:0.88; }
+    .btn-susc { display:block; width:100%; padding:14px; border-radius:24px; border:2px solid var(--petroleo); background:var(--naranja); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:15px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:16px; text-align:center; }
+    .btn-susc:hover { opacity:0.88; }
+    .btn-rojo { display:block; width:100%; padding:14px; border-radius:24px; border:2px solid var(--error); background:var(--error); color:var(--blanco); font-family:'Roboto',sans-serif; font-size:15px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-outline { display:block; width:100%; padding:14px; border-radius:24px; border:2px solid var(--petroleo); background:transparent; color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:15px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-outline:hover { background:var(--petroleo); color:var(--naranja); }
+    .btn-ghost { display:block; width:100%; padding:10px; border-radius:24px; border:none; background:transparent; color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; cursor:pointer; margin-top:4px; text-align:center; }
+    .btn-cgv { display:block; width:100%; max-width:480px; padding:16px; border-radius:12px; border:2px solid var(--petroleo); background:var(--lima); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:14px; text-align:center; text-decoration:none; }
+    .btn-cgv:hover { opacity:0.88; }
+    .btn-admin { display:block; width:100%; max-width:480px; padding:16px; border-radius:12px; border:2px solid var(--lima); background:transparent; color:var(--lima); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-admin:hover { opacity:0.75; }
 
-    .btn-susc { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 16px; text-align: center; }
-    .btn-susc:hover { opacity: 0.88; }
+    /* BOTONES PANEL ADMIN */
+    .btn-vigente-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--lima); background:transparent; color:var(--lima); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-vigente-accion:hover { opacity:0.8; }
+    .btn-prep-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--naranja); background:transparent; color:var(--naranja); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-prep-accion:hover { opacity:0.8; }
+    .btn-ia-accion { display:block; width:100%; padding:11px; border-radius:20px; border:2px solid var(--naranja); background:var(--petroleo); color:var(--naranja); font-family:'Roboto',sans-serif; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-ia-accion:hover { opacity:0.85; }
 
-    .btn-azul { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
-    .btn-azul:hover { opacity: 0.88; }
+    .icono-admin-wrap { text-align:center; margin-top:28px; }
+    .icono-admin { width:52px; height:52px; opacity:0.55; cursor:pointer; border:none; background:transparent; padding:0; transition:opacity 0.2s; }
+    .icono-admin:hover { opacity:0.85; }
 
-    .btn-rojo { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--error); background: var(--error); color: var(--blanco); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
-    .btn-rojo:hover { opacity: 0.88; }
+    .msg-pendiente { background:var(--blanco); border:2px solid var(--petroleo); border-radius:24px; padding:12px 14px; color:var(--petroleo); font-size:14px; text-align:center; display:none; margin-top:10px; }
+    .pin-label { text-align:center; color:var(--petroleo); font-size:13px; font-weight:900; text-transform:uppercase; margin-bottom:10px; }
+    .pin-input { display:block; width:100%; text-align:center; font-size:28px; font-weight:900; letter-spacing:12px; border:2px solid var(--petroleo); border-radius:16px; padding:12px; background:var(--blanco); color:var(--petroleo); outline:none; margin-bottom:12px; }
+    .pin-input.error { animation:shakeError 0.35s ease-in-out; border-color:var(--error); }
+    .pin-error { text-align:center; color:var(--error); font-size:13px; font-weight:700; min-height:18px; margin-bottom:8px; }
 
-    .btn-outline { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
-    .btn-outline:hover { background: var(--petroleo); color: var(--naranja); }
+    /* STATS */
+    .stat-row { display:flex; gap:8px; margin-bottom:16px; }
+    .stat-box { flex:1; background:var(--petroleo); border:2px solid var(--lima); border-radius:14px; padding:10px 6px; text-align:center; }
+    .stat-num { font-size:22px; font-weight:900; color:var(--lima); }
+    .stat-label { font-size:9px; font-weight:700; color:var(--lima); text-transform:uppercase; opacity:0.85; }
 
-    .btn-ghost { display: block; width: 100%; padding: 10px; border-radius: 24px; border: none; background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 4px; text-align: center; }
+    /* LISTAS */
+    .mini-toggle { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; background:var(--blanco); border-radius:10px; margin-bottom:2px; cursor:pointer; font-size:11px; font-weight:900; color:var(--negro); text-transform:uppercase; transition:transform 0.08s; }
+    .mini-toggle:active { transform:scale(0.97); }
+    .mini-flecha { font-size:10px; opacity:0.6; }
+    .mini-panel { display:none; background:var(--blanco); border-radius:0 0 10px 10px; max-height:160px; overflow-y:auto; margin-bottom:6px; }
+    .mini-panel.open { display:block; }
+    .suscriptor-item { display:flex; justify-content:space-between; align-items:center; padding:5px 12px; border-bottom:1px solid var(--lima); font-size:11px; color:var(--petroleo); }
+    .suscriptor-item:last-child { border-bottom:none; }
+    .badge-activo { background:#d5f5e3; color:#1e8449; font-size:9px; font-weight:900; padding:2px 8px; border-radius:10px; }
+    .badge-baja { background:#fdebd0; color:#a04000; font-size:9px; font-weight:900; padding:2px 8px; border-radius:10px; }
+    .badge-pendiente { background:#eaf4ff; color:#2471a3; font-size:9px; font-weight:900; padding:2px 8px; border-radius:10px; }
 
-    .btn-cgv { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid var(--petroleo); background: var(--lima); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 14px; text-align: center; text-decoration: none; }
-    .btn-cgv:hover { opacity: 0.88; }
+    /* PANELES ADMIN — NUEVO DISEÑO */
+    .bloque-admin { border-radius:14px; overflow:hidden; margin-bottom:8px; }
 
-    .btn-admin { display: block; width: 100%; max-width: 480px; padding: 16px; border-radius: 12px; border: 2px solid var(--lima); background: transparent; color: var(--lima); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; }
-    .icono-admin-wrap { text-align: center; margin-top: 28px; }
-    .icono-admin { width: 52px; height: 52px; opacity: 0.55; cursor: pointer; border: none; background: transparent; padding: 0; transition: opacity 0.2s; }
-    .icono-admin:hover { opacity: 0.85; }
-    .btn-admin:hover { opacity: 0.75; }
+    /* Boletín Vigente — petróleo/lima */
+    .bloque-vigente .bloque-header { background:var(--petroleo); border:2px solid var(--lima); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--lima); font-size:13px; font-weight:700; transition:transform 0.08s; }
+    .bloque-vigente .bloque-header:active { transform:scale(0.98); }
+    .bloque-vigente .bloque-panel { background:var(--petroleo); border:2px solid var(--lima); border-top:none; border-radius:0 0 14px 14px; padding:14px; display:none; }
+    .bloque-vigente .bloque-panel.open { display:block; }
+    .bloque-vigente .link-corto { color:var(--lima); font-size:11px; text-align:center; margin-top:8px; opacity:0.8; }
+    .bloque-vigente .link-corto a { color:var(--lima); }
 
-    .msg-pendiente { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 24px; padding: 12px 14px; color: var(--petroleo); font-size: 14px; text-align: center; display: none; margin-top: 10px; animation: destelloAzul 2s ease-in-out infinite; }
-    @keyframes destelloAzul { 0%,100%{box-shadow:0 0 0 rgba(19,84,87,0)} 50%{box-shadow:0 0 14px rgba(19,84,87,0.4)} }
+    /* Boletín en Preparación — petróleo/naranja */
+    .bloque-prep .bloque-header { background:var(--petroleo); border:2px solid var(--naranja); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--naranja); font-size:13px; font-weight:700; transition:transform 0.08s; }
+    .bloque-prep .bloque-header:active { transform:scale(0.98); }
+    .bloque-prep .bloque-panel { background:var(--petroleo); border:2px solid var(--naranja); border-top:none; border-radius:0 0 14px 14px; padding:14px; display:none; }
+    .bloque-prep .bloque-panel.open { display:block; }
 
-    .pin-label { text-align: center; color: var(--petroleo); font-size: 13px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
-    .pin-input { display: block; width: 100%; text-align: center; font-size: 28px; font-weight: 900; letter-spacing: 12px; border: 2px solid var(--petroleo); border-radius: 16px; padding: 12px; background: var(--blanco); color: var(--petroleo); outline: none; margin-bottom: 12px; }
-    .pin-input.error { animation: shakeError 0.35s ease-in-out; border-color: var(--error); }
-    .pin-error { text-align: center; color: var(--error); font-size: 13px; font-weight: 700; min-height: 18px; margin-bottom: 8px; }
+    /* Novedades — naranja/petroleo */
+    .bloque-novedades .bloque-header { background:var(--naranja); border:2px solid var(--petroleo); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--petroleo); font-size:13px; font-weight:700; transition:transform 0.08s; }
+    .bloque-novedades .bloque-header:active { transform:scale(0.98); }
+    .bloque-novedades .bloque-panel { background:var(--blanco); border:2px solid var(--petroleo); border-top:none; border-radius:0 0 14px 14px; padding:14px; display:none; }
+    .bloque-novedades .bloque-panel.open { display:block; }
+    .bloque-novedades .field-label { color:var(--petroleo); }
 
-    .stat-row { display: flex; gap: 8px; margin-bottom: 16px; }
-    .stat-box { flex: 1; background: var(--petroleo); border: 2px solid var(--lima); border-radius: 14px; padding: 10px 6px; text-align: center; }
-    .stat-num { font-size: 22px; font-weight: 900; color: var(--lima); }
-    .stat-label { font-size: 9px; font-weight: 700; color: var(--lima); text-transform: uppercase; opacity: 0.85; }
+    /* Resto — blanco/petroleo */
+    .bloque-std .bloque-header { background:var(--blanco); border:2px solid var(--petroleo); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--petroleo); font-size:13px; font-weight:700; transition:transform 0.08s; }
+    .bloque-std .bloque-header:active { transform:scale(0.98); }
+    .bloque-std .bloque-panel { background:var(--blanco); border:2px solid var(--petroleo); border-top:none; border-radius:0 0 14px 14px; padding:14px; display:none; }
+    .bloque-std .bloque-panel.open { display:block; }
+    .bloque-std .field-label { color:var(--petroleo); }
 
-    .lista-toggle { background: var(--blanco); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--petroleo); font-size: 13px; font-weight: 700; }
-    .suscriptor-list { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--blanco); border-radius: 0 0 14px 14px; margin-bottom: 14px; }
-    .suscriptor-list.open { max-height: 300px; overflow-y: auto; padding: 8px 10px; }
-    .suscriptor-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--lima); font-size: 12px; color: var(--petroleo); }
-    .suscriptor-item:last-child { border-bottom: none; }
-    .badge-activo { background: #d5f5e3; color: #1e8449; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
-    .badge-baja { background: #fdebd0; color: #a04000; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
-    .badge-pendiente { background: #eaf4ff; color: #2471a3; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
+    .bloque-flecha { font-size:10px; opacity:0.7; }
 
-    .divider { border: none; border-top: 1.5px solid #9bb583; margin: 18px 0; }
-    .section-title { color: var(--negro); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+    /* NOVEDADES ITEMS */
+    .novedad-item { background:var(--hueso); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+    .novedad-titulo { color:var(--petroleo); font-size:13px; font-weight:900; margin-bottom:4px; }
+    .novedad-desc { color:var(--petroleo); font-size:12px; line-height:1.5; margin-bottom:8px; }
+    .novedad-acciones { display:flex; gap:8px; }
+    .btn-mini { flex:1; padding:7px; border-radius:14px; border:1.5px solid var(--petroleo); background:transparent; color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer; }
+    .btn-mini:hover { opacity:0.7; }
+    .btn-mini.rojo { border-color:var(--error); color:var(--error); }
+    .novedades-vacio { color:var(--petroleo); font-size:12px; opacity:0.7; text-align:center; padding:10px; }
 
-    .msg-box { background: var(--blanco); border-radius: 14px; padding: 12px 14px; color: var(--petroleo); font-size: 14px; text-align: center; display: none; margin-top: 10px; }
-    .msg-box.ok { border: 2px solid #1e8449; color: #1e8449; }
-    .msg-box.err { border: 2px solid var(--error); color: var(--error); }
-    .loading { text-align: center; color: var(--petroleo); font-size: 13px; font-weight: 700; min-height: 18px; margin: 8px 0; }
+    .divider { border:none; border-top:1.5px solid #9bb583; margin:18px 0; }
+    .msg-box { background:var(--blanco); border-radius:14px; padding:12px 14px; color:var(--petroleo); font-size:14px; text-align:center; display:none; margin-top:10px; }
+    .msg-box.ok { border:2px solid #1e8449; color:#1e8449; }
+    .msg-box.err { border:2px solid var(--error); color:var(--error); }
+    .loading { text-align:center; color:var(--petroleo); font-size:13px; font-weight:700; min-height:18px; margin:8px 0; }
+    .loading-lima { color:var(--lima); }
+    .loading-naranja { color:var(--naranja); }
 
-    .preview-box { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; padding: 16px; margin-top: 12px; display: none; }
-    .preview-titulo { color: var(--petroleo); font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
-    .preview-cuerpo { color: var(--petroleo); font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
+    .preview-box { background:var(--blanco); border:2px solid var(--petroleo); border-radius:14px; padding:16px; margin-top:12px; display:none; }
+    .preview-titulo { color:var(--petroleo); font-size:11px; font-weight:900; text-transform:uppercase; margin-bottom:8px; }
+    .preview-cuerpo { color:var(--petroleo); font-size:12px; line-height:1.6; white-space:pre-wrap; }
 
-    .confirm-icon { font-size: 60px; text-align: center; margin-bottom: 16px; animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .confirm-titulo { color: var(--negro); font-family: Impact, sans-serif; font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 12px; }
-    .confirm-texto { color: var(--petroleo); font-size: 14px; text-align: center; line-height: 1.6; }
+    .preview-html-box { background:var(--blanco); border:2px solid var(--petroleo); border-radius:14px; margin-top:12px; display:none; overflow:hidden; }
+    .preview-html-box iframe { width:100%; height:480px; border:none; display:block; }
 
-    .lista-wrap { margin-bottom: 14px; }
-    .lista-seccion { margin-bottom: 10px; }
-    .lista-seccion-titulo { background: var(--blanco); border-radius: 10px 10px 0 0; padding: 8px 12px; font-size: 11px; font-weight: 900; color: var(--petroleo); text-transform: uppercase; }
-    .lista-seccion-items { background: var(--blanco); border-radius: 0 0 10px 10px; max-height: 180px; overflow-y: auto; }
-    .lista-seccion-vacia { padding: 8px 12px; font-size: 12px; color: var(--petroleo); opacity: 0.6; }
+    .confirm-icon { font-size:60px; text-align:center; margin-bottom:16px; animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+    .confirm-titulo { color:var(--negro); font-family:Impact,sans-serif; font-size:24px; text-align:center; text-transform:uppercase; margin-bottom:12px; }
+    .confirm-texto { color:var(--petroleo); font-size:14px; text-align:center; line-height:1.6; }
 
-    .mini-toggle { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; background: var(--blanco); border-radius: 10px; margin-bottom: 2px; cursor: pointer; font-size: 11px; font-weight: 900; color: var(--negro); text-transform: uppercase; transition: transform 0.08s; }
-    .mini-toggle:active { transform: scale(0.97); }
-    .mini-flecha { font-size: 10px; opacity: 0.6; }
-    .mini-panel { display: none; background: var(--blanco); border-radius: 0 0 10px 10px; max-height: 160px; overflow-y: auto; margin-bottom: 6px; }
-    .mini-panel.open { display: block; }
+    .stat-origen { text-align:center; color:var(--petroleo); font-size:11px; font-weight:700; margin:-10px 0 16px; opacity:0.8; }
 
-    .gestionar-toggle { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--negro); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
-    .gestionar-toggle:active { transform: scale(0.98); }
-    .gestionar-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
-    .gestionar-panel.open { display: block; }
-    .gestionar-panel .field-label { color: var(--petroleo); }
+    .pdf-estado { border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:12px; line-height:1.5; text-align:center; }
 
-    .prueba-toggle { background: var(--petroleo); border: 2px solid var(--lima); border-radius: 14px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--lima); font-size: 13px; font-weight: 700; transition: transform 0.08s; }
-    .prueba-toggle:active { transform: scale(0.98); }
-    .prueba-panel { background: var(--blanco); border: 2px solid var(--petroleo); border-top: none; border-radius: 0 0 14px 14px; padding: 14px; margin-bottom: 4px; display: none; }
-    .prueba-panel.open { display: block; }
+    .url-copiable { background:rgba(196,223,87,0.15); border:1px solid var(--lima); border-radius:8px; padding:8px 12px; color:var(--lima); font-size:11px; font-family:monospace; word-break:break-all; margin-top:10px; cursor:pointer; text-align:center; }
+    .url-copiable:hover { background:rgba(196,223,87,0.25); }
 
-    .btn-prueba-dorado { display: block; width: 100%; padding: 14px; border-radius: 24px; border: 2px solid var(--petroleo); background: var(--naranja); color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; transition: transform 0.08s, opacity 0.15s; }
-    .btn-prueba-dorado:hover { opacity: 0.88; }
-    .btn-prueba-dorado:active { transform: scale(0.96); }
-
-    .btns-externos { display: none; width: 100%; max-width: 480px; margin-top: 36px; }
-    .btns-externos.visible { display: block; }
-    .btns-externos .btn-cgv { margin-top: 10px; }
-
-    /* NOVEDADES */
-    .novedad-item {
-      background: var(--blanco);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 8px;
-    }
-    .novedad-titulo { color: var(--negro); font-size: 13px; font-weight: 900; margin-bottom: 4px; }
-    .novedad-desc { color: var(--petroleo); font-size: 12px; line-height: 1.5; margin-bottom: 8px; }
-    .novedad-acciones { display: flex; gap: 8px; }
-    .btn-mini { flex: 1; padding: 7px; border-radius: 14px; border: 1.5px solid var(--petroleo); background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; }
-    .btn-mini:hover { opacity: 0.7; }
-    .btn-mini.rojo { border-color: var(--error); color: var(--error); }
-    .novedades-vacio { color: var(--petroleo); font-size: 12px; opacity: 0.7; text-align: center; padding: 10px; }
-    .btn-ia { display: block; width: 100%; padding: 11px; border-radius: 20px; border: 2px solid var(--petroleo); background: transparent; color: var(--petroleo); font-family: 'Roboto', sans-serif; font-size: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; text-align: center; transition: opacity 0.2s, background 0.15s, color 0.15s; }
-    .btn-ia:hover { background: var(--petroleo); color: var(--naranja); }
-    .btn-ia.on { background: var(--petroleo); color: var(--naranja); }
-    .preview-html-box { background: var(--blanco); border: 2px solid var(--petroleo); border-radius: 14px; margin-top: 12px; display: none; overflow: hidden; }
-    .preview-html-box iframe { width: 100%; height: 480px; border: none; display: block; }
+    .btns-externos { display:none; width:100%; max-width:480px; margin-top:36px; }
+    .btns-externos.visible { display:block; }
   </style>
 </head>
 <body>
@@ -184,7 +175,7 @@
 
   <div class="card">
 
-    <!-- CONFIRMACIÓN -->
+    <!-- CONFIRMACIÓN SUSCRIPCIÓN -->
     <div class="screen" id="screenConfirmado">
       <div class="confirm-icon">✅</div>
       <div class="confirm-titulo">¡Suscripción confirmada!</div>
@@ -197,14 +188,14 @@
     <div class="screen" id="screenBaja">
       <div class="confirm-icon">👋</div>
       <div class="confirm-titulo">Darse de baja</div>
-      <div class="confirm-texto" style="margin-bottom:20px;">Estás por dejar de recibir el #BoletínMensual del Club de Campo La Eugenia. Podés volver a suscribirte cuando quieras.</div>
+      <div class="confirm-texto" style="margin-bottom:20px;">Estás por dejar de recibir el #BoletínMensual del Club de Campo La Eugenia.</div>
       <div class="msg-box" id="msgBaja"></div>
       <div class="loading" id="loadingBaja"></div>
       <button type="button" class="btn-rojo" onclick="confirmarBaja()">Sí, darme de baja</button>
       <button type="button" class="btn-outline" style="margin-top:10px;" onclick="volverPublico()">Cancelar</button>
     </div>
 
-    <!-- SUSCRIPCIÓN -->
+    <!-- SUSCRIPCIÓN PÚBLICA -->
     <div class="screen active" id="screenPublico">
       <div class="intro">Recibí todos los meses el valor de la cuota social junto a otras novedades del club directamente en tu correo.</div>
       <span class="field-label">Nombre y apellido / Razón social *</span>
@@ -220,7 +211,7 @@
 
     <!-- PIN -->
     <div class="screen" id="screenPin">
-      <p style="color:var(--petroleo); font-size:12px; text-align:center; opacity:0.75; margin-bottom:14px;">Acceso reservado a personal autorizado.</p>
+      <p style="color:var(--petroleo);font-size:12px;text-align:center;opacity:0.75;margin-bottom:14px;">Acceso reservado a personal autorizado.</p>
       <div class="pin-label">PIN de administración</div>
       <input class="pin-input" type="password" inputmode="numeric" maxlength="4" id="pinInput" placeholder="····">
       <div class="pin-error" id="pinError"></div>
@@ -230,138 +221,186 @@
 
     <!-- ADMIN -->
     <div class="screen" id="screenAdmin">
+
+      <!-- STATS -->
       <div class="stat-row">
         <div class="stat-box"><div class="stat-num" id="statActivos">—</div><div class="stat-label">Activos</div></div>
         <div class="stat-box"><div class="stat-num" id="statPendientes">—</div><div class="stat-label">Pendientes</div></div>
         <div class="stat-box"><div class="stat-num" id="statBajas">—</div><div class="stat-label">Bajas</div></div>
       </div>
-      <div id="statOrigen" style="text-align:center; color:var(--petroleo); font-size:11px; font-weight:700; margin:-10px 0 16px; opacity:0.8;"></div>
-
-      <div class="lista-wrap" id="listaWrap">
-        <div class="mini-toggle" onclick="toggleMini('secActivos','flechaActivos')">
-          <span id="labelActivos">Activos</span><span id="flechaActivos" class="mini-flecha">▼</span>
-        </div>
+      <div class="stat-origen" id="statOrigen"></div>
+      <div class="lista-wrap">
+        <div class="mini-toggle" onclick="toggleMini('secActivos','flechaActivos')"><span id="labelActivos">Activos</span><span id="flechaActivos" class="mini-flecha">▼</span></div>
         <div class="mini-panel" id="secActivos"></div>
-        <div class="mini-toggle" onclick="toggleMini('secPendientes','flechaPendientes')">
-          <span id="labelPendientes">Pendientes</span><span id="flechaPendientes" class="mini-flecha">▼</span>
-        </div>
+        <div class="mini-toggle" onclick="toggleMini('secPendientes','flechaPendientes')"><span id="labelPendientes">Pendientes</span><span id="flechaPendientes" class="mini-flecha">▼</span></div>
         <div class="mini-panel" id="secPendientes"></div>
-        <div class="mini-toggle" onclick="toggleMini('secBajas','flechaBajas')">
-          <span id="labelBajas">Bajas</span><span id="flechaBajas" class="mini-flecha">▼</span>
-        </div>
+        <div class="mini-toggle" onclick="toggleMini('secBajas','flechaBajas')"><span id="labelBajas">Bajas</span><span id="flechaBajas" class="mini-flecha">▼</span></div>
         <div class="mini-panel" id="secBajas"></div>
       </div>
 
-      <hr class="divider">
-      <div class="prueba-toggle" onclick="togglePrueba()">
-        <span>VISTA PREVIA Y PRUEBA</span>
-        <span id="pruebaFlecha">▼</span>
-      </div>
-      <div class="prueba-panel" id="pruebaPanel">
-        <div id="estadoPdfTesoreria" style="border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:12px; line-height:1.5; text-align:center;">
-          Verificando PDF de Tesorería...
+      <div class="divider"></div>
+
+      <!-- BOLETÍN VIGENTE -->
+      <div class="bloque-admin bloque-vigente">
+        <div class="bloque-header" onclick="toggleBloque('panelVigente','flechaVigente')">
+          <span>BOLETÍN VIGENTE</span>
+          <span id="flechaVigente" class="bloque-flecha">▼</span>
         </div>
-        <button type="button" class="btn-outline" onclick="verPreviewBoletin()" id="btnVerPreview">Ver vista previa del boletín</button>
-        <div class="preview-html-box" id="previewHtmlBox">
-          <iframe id="previewIframe"></iframe>
+        <div class="bloque-panel" id="panelVigente">
+          <div class="loading loading-lima" id="loadingVigente"></div>
+          <div class="msg-box" id="msgVigente"></div>
+          <button type="button" class="btn-vigente-accion" onclick="verBoletinVigente()">Ver boletín vigente</button>
+          <div class="preview-html-box" id="previewVigenteBox">
+            <iframe id="previewVigenteIframe"></iframe>
+          </div>
+          <div class="link-corto" style="margin-top:12px;">
+            Link público: <a href="https://clubdecampolaeugenia.github.io/boletin-la-eugenia/ver" target="_blank">clubdecampolaeugenia.github.io/boletin-la-eugenia/ver</a>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- REENVÍO INDIVIDUAL -->
+          <div style="color:var(--lima);font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:8px;">Reenviar a un suscriptor específico</div>
+          <p style="color:var(--lima);font-size:11px;margin:0 0 10px;opacity:0.75;">Para quien diga no haber recibido el boletín del mes vigente.</p>
+          <input type="email" id="emailReenvio" placeholder="email@ejemplo.com" style="background:var(--blanco);border-color:var(--lima);">
+          <div class="loading loading-lima" id="loadingReenvio"></div>
+          <div class="msg-box" id="msgReenvio"></div>
+          <button type="button" class="btn-vigente-accion" onclick="reenviarIndividual()">Reenviar boletín vigente</button>
         </div>
-
-        <hr class="divider">
-
-        <span class="field-label">Enviar boletín de prueba a</span>
-        <input type="email" id="emailPrueba" value="gacoutada@gmail.com">
-        <div class="loading" id="loadingPrueba"></div>
-        <div class="msg-box" id="msgPrueba"></div>
-        <button type="button" class="btn-prueba-dorado" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
       </div>
 
-      <hr class="divider">
-      <div class="gestionar-toggle" onclick="toggleGestionar()">
-        <span>AGREGAR O QUITAR SUSCRIPTOR MANUALMENTE</span>
-        <span id="gestionarFlecha">▼</span>
-      </div>
-      <div class="gestionar-panel" id="gestionarPanel">
-        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este método no requiere confirmación del email — el suscriptor queda activo de inmediato.</p>
-        <span class="field-label">Nombre y apellido / Razón social</span>
-        <input type="text" id="adminNombre" placeholder="Ej: María González">
-        <span class="field-label">Email *</span>
-        <input type="email" id="adminEmail" placeholder="email@ejemplo.com">
-        <div class="loading" id="loadingAdmin"></div>
-        <div class="msg-box" id="msgAdmin"></div>
-        <button type="button" class="btn-solid" onclick="agregarManual()">Agregar suscriptor</button>
-        <div style="border-top:1px solid #9bb583;margin:16px 0;"></div>
-        <span class="field-label">Email a desuscribir</span>
-        <input type="email" id="bajaManualEmail" placeholder="email@ejemplo.com">
-        <div class="loading" id="loadingBajaManual"></div>
-        <div class="msg-box" id="msgBajaManual"></div>
-        <button type="button" class="btn-solid" onclick="desuscribirManual()">Quitar suscriptor</button>
-      </div>
+      <div class="divider"></div>
 
-      <hr class="divider">
-      <div class="gestionar-toggle" onclick="toggleNovedades()">
-        <span>INCLUIR NOVEDADES EN EL PRÓXIMO BOLETÍN</span>
-        <span id="novedadesFlecha">▼</span>
-      </div>
-      <div class="gestionar-panel" id="novedadesPanel">
-        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
-
-        <div id="novedadesLista"><div class="novedades-vacio">No hay novedades cargadas.</div></div>
-
-        <span class="field-label">Título</span>
-        <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Julio">
-        <span class="field-label">Descripción</span>
-        <textarea id="novDescripcion" placeholder="Detalle de la novedad..."></textarea>
-        <button type="button" class="btn-ia" id="btnNovIA" onclick="corregirNovedad()">Corrección con IA ♦</button>
-        <div class="loading" id="loadingNov"></div>
-        <div class="msg-box" id="msgNov"></div>
-        <button type="button" class="btn-solid" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
-        <button type="button" class="btn-ghost" id="btnNovCancelar" onclick="cancelarEdicionNovedad()" style="display:none;">Cancelar edición</button>
-      </div>
-
-      <hr class="divider">
-      <div class="gestionar-toggle" onclick="toggleComunicado()">
-        <span>COMUNICADO LIBRE</span>
-        <span id="comunicadoFlecha">▼</span>
-      </div>
-      <div class="gestionar-panel" id="comunicadoPanel">
-        <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este apartado es para enviar un email a todos los suscriptores, por fuera del #BoletínMensual.</p>
-        <span class="field-label">Asunto</span>
-        <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
-        <span class="field-label">Mensaje</span>
-        <textarea id="commCuerpo" placeholder="Escribí el mensaje..." oninput="actualizarPreview()"></textarea>
-        <button type="button" class="btn-ia" id="btnCommIA" onclick="corregirComunicado()">Corrección con IA ♦</button>
-        <div class="loading" id="loadingCommIA"></div>
-        <div class="preview-box" id="previewBox">
-          <div class="preview-titulo">Vista previa</div>
-          <div class="preview-cuerpo" id="previewCuerpo"></div>
+      <!-- BOLETÍN EN PREPARACIÓN -->
+      <div class="bloque-admin bloque-prep">
+        <div class="bloque-header" onclick="toggleBloque('panelPrep','flechaPrep')">
+          <span>BOLETÍN EN PREPARACIÓN</span>
+          <span id="flechaPrep" class="bloque-flecha">▼</span>
         </div>
-        <div class="loading" id="loadingComm"></div>
-        <div class="msg-box" id="msgComm"></div>
-        <button type="button" class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
+        <div class="bloque-panel" id="panelPrep">
+          <div id="estadoPdfTesoreria" class="pdf-estado">Verificando PDF de Tesorería...</div>
+          <div class="loading loading-naranja" id="loadingPrep"></div>
+          <div class="msg-box" id="msgPrep"></div>
+          <button type="button" class="btn-prep-accion" onclick="verPreviewBoletin()" id="btnVerPreview">Ver vista previa</button>
+          <div class="preview-html-box" id="previewHtmlBox">
+            <iframe id="previewIframe"></iframe>
+          </div>
+          <button type="button" class="btn-prep-accion" onclick="copiarUrlPreview()" style="margin-top:8px;">Copiar URL para compartir con CD</button>
+          <div id="urlPreviewBox" class="url-copiable" style="display:none;" onclick="copiarTexto(this.innerText, 'urlPreviewBox')"></div>
+          <div class="divider"></div>
+          <div style="color:var(--naranja);font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:8px;">Enviar boletín de prueba</div>
+          <input type="email" id="emailPrueba" value="gacoutada@gmail.com" style="background:var(--blanco);border-color:var(--naranja);">
+          <div class="loading loading-naranja" id="loadingPrueba"></div>
+          <div class="msg-box" id="msgPrueba"></div>
+          <button type="button" class="btn-prep-accion" onclick="enviarPrueba()">🧪 Enviar boletín de prueba</button>
+        </div>
       </div>
 
-      <hr class="divider">
-      <div class="gestionar-toggle" onclick="toggleEnviarMensual()">
-        <span>ENVIAR MANUALMENTE #BOLETÍNMENSUAL</span>
-        <span id="enviarMensualFlecha">▼</span>
-      </div>
-      <div class="gestionar-panel" id="enviarMensualPanel">
-        <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Este botón está pensado para cuando el envío automático del día 1 falla. Envía a todos los suscriptores activos el #BoletínMensual del mes con la cuota vigente en el DASHBOARD y las novedades cargadas arriba.</p>
-        <div class="loading" id="loadingMensual"></div>
-        <div class="msg-box" id="msgMensual"></div>
-        <button type="button" class="btn-azul" onclick="enviarMensual()">Enviar manualmente #BoletínMensual</button>
+      <div class="divider"></div>
+
+      <!-- NOVEDADES -->
+      <div class="bloque-admin bloque-novedades">
+        <div class="bloque-header" onclick="toggleBloque('panelNovedades','flechaNovedades')">
+          <span>INCLUIR NOVEDADES EN EL PRÓXIMO BOLETÍN</span>
+          <span id="flechaNovedades" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelNovedades">
+          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Lo que cargues acá se incluye en el próximo #BoletínMensual y se borra automáticamente después de enviarse.</p>
+          <div id="novedadesLista"><div class="novedades-vacio">No hay novedades cargadas.</div></div>
+          <span class="field-label">Título</span>
+          <input type="text" id="novTitulo" placeholder="Ej: Reunión de socios — Julio">
+          <span class="field-label">Descripción</span>
+          <textarea id="novDescripcion" placeholder="Detalle de la novedad..."></textarea>
+          <button type="button" class="btn-ia-accion" id="btnNovIA" onclick="corregirNovedad()">Corrección con IA ♦</button>
+          <div class="loading" id="loadingNov"></div>
+          <div class="msg-box" id="msgNov"></div>
+          <button type="button" class="btn-solid" id="btnNovAccion" onclick="guardarNovedad()">Agregar novedad</button>
+          <button type="button" class="btn-ghost" id="btnNovCancelar" onclick="cancelarEdicionNovedad()" style="display:none;">Cancelar edición</button>
+        </div>
       </div>
 
-      <hr class="divider">
-      <div class="gestionar-toggle" onclick="toggleHistorial()">
-        <span>Últimos 5 #BoletinesMensuales enviados</span>
-        <span id="historialFlecha">▼</span>
-      </div>
-      <div class="gestionar-panel" id="historialPanel" style="display:none;">
-        <div id="logEnvios" style="font-size:12px;color:var(--petroleo);line-height:1.6;">Cargando...</div>
+      <div class="divider"></div>
+
+      <!-- COMUNICADO LIBRE -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelComunicado','flechaComunicado')">
+          <span>COMUNICADO LIBRE</span>
+          <span id="flechaComunicado" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelComunicado">
+          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Para enviar un email a todos los suscriptores, por fuera del #BoletínMensual.</p>
+          <span class="field-label">Asunto</span>
+          <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
+          <span class="field-label">Mensaje</span>
+          <textarea id="commCuerpo" placeholder="Escribí el mensaje..." oninput="actualizarPreview()"></textarea>
+          <button type="button" class="btn-ia-accion" id="btnCommIA" onclick="corregirComunicado()">Corrección con IA ♦</button>
+          <div class="loading" id="loadingCommIA"></div>
+          <div class="preview-box" id="previewBox">
+            <div class="preview-titulo">Vista previa</div>
+            <div class="preview-cuerpo" id="previewCuerpo"></div>
+          </div>
+          <div class="loading" id="loadingComm"></div>
+          <div class="msg-box" id="msgComm"></div>
+          <button type="button" class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
+        </div>
       </div>
 
-      <hr class="divider">
+      <div class="divider"></div>
+
+      <!-- ENVÍO MANUAL -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelEnvioMensual','flechaEnvioMensual')">
+          <span>ENVÍO MANUAL #BOLETÍNMENSUAL</span>
+          <span id="flechaEnvioMensual" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelEnvioMensual">
+          <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Para usar solo si el envío automático del día 1 falla.</p>
+          <div class="loading" id="loadingMensual"></div>
+          <div class="msg-box" id="msgMensual"></div>
+          <button type="button" class="btn-solid" onclick="enviarMensual()">Enviar #BoletínMensual a todos los suscriptores</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- AGREGAR / QUITAR SUSCRIPTORES -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelGestionar','flechaGestionar')">
+          <span>AGREGAR O QUITAR SUSCRIPTOR</span>
+          <span id="flechaGestionar" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelGestionar">
+          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este método no requiere confirmación — el suscriptor queda activo de inmediato.</p>
+          <span class="field-label">Nombre y apellido / Razón social</span>
+          <input type="text" id="adminNombre" placeholder="Ej: María González">
+          <span class="field-label">Email *</span>
+          <input type="email" id="adminEmail" placeholder="email@ejemplo.com">
+          <div class="loading" id="loadingAdmin"></div>
+          <div class="msg-box" id="msgAdmin"></div>
+          <button type="button" class="btn-solid" onclick="agregarManual()">Agregar suscriptor</button>
+          <div style="border-top:1px solid #9bb583;margin:16px 0;"></div>
+          <span class="field-label">Email a desuscribir</span>
+          <input type="email" id="bajaManualEmail" placeholder="email@ejemplo.com">
+          <div class="loading" id="loadingBajaManual"></div>
+          <div class="msg-box" id="msgBajaManual"></div>
+          <button type="button" class="btn-solid" onclick="desuscribirManual()">Quitar suscriptor</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- HISTORIAL -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelHistorial','flechaHistorial'); if(!historialCargado){cargarLog();historialCargado=true;}">
+          <span>Últimos #BoletinesMensuales enviados</span>
+          <span id="flechaHistorial" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelHistorial">
+          <div id="logEnvios" style="font-size:12px;color:var(--petroleo);line-height:1.6;">Cargando...</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
       <button type="button" class="btn-outline" onclick="cerrarAdmin()">Volver al inicio</button>
     </div>
 
@@ -371,8 +410,8 @@
     <a class="btn-admin" href="https://clubdecampolaeugenia.github.io/boletin-la-eugenia/ver" target="_blank" rel="noopener">Ver #BoletínMensual vigente</a>
     <a class="btn-cgv" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
     <div class="icono-admin-wrap">
-      <button type="button" class="icono-admin" onclick="mostrarPin()" aria-label="Acceso reservado a personal autorizado" title="Acceso reservado a personal autorizado">
-        <img src="https://i.imgur.com/SAsEouk.png" alt="" style="width:100%; height:100%; display:block;">
+      <button type="button" class="icono-admin" onclick="mostrarPin()" aria-label="Acceso administración">
+        <img src="https://i.imgur.com/SAsEouk.png" alt="" style="width:100%;height:100%;display:block;">
       </button>
     </div>
   </div>
@@ -385,64 +424,45 @@ const URL_BOLETIN = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/'
 
 let emailParaBaja = '';
 let novedadEditandoId = null;
-let novedadCorregidaIA = false;
+let historialCargado = false;
 
 window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
   const esBaja = params.get('baja');
   const emailParam = params.get('email');
-  if (token) {
-    confirmarToken(token);
-    ocultarBtnsExternos();
-  } else if (esBaja && emailParam) {
-    emailParaBaja = decodeURIComponent(emailParam);
-    mostrarScreen('screenBaja');
-    ocultarBtnsExternos();
-  } else {
-    mostrarBtnsExternos();
-  }
+  if (token) { confirmarToken(token); ocultarBtnsExternos(); }
+  else if (esBaja && emailParam) { emailParaBaja = decodeURIComponent(emailParam); mostrarScreen('screenBaja'); ocultarBtnsExternos(); }
+  else { mostrarBtnsExternos(); }
 });
 
 function mostrarBtnsExternos() { document.getElementById('btnsExternos').classList.add('visible'); }
 function ocultarBtnsExternos() { document.getElementById('btnsExternos').classList.remove('visible'); }
 
 async function confirmarToken(token) {
-  try {
-    const r = await llamarScript({ accion: 'confirmar', token });
-    mostrarScreen(r.ok ? 'screenConfirmado' : 'screenPublico');
-  } catch(e) { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+  try { const r = await llamarScript({ accion:'confirmar', token }); mostrarScreen(r.ok?'screenConfirmado':'screenPublico'); }
+  catch(e) { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
 }
 
 async function confirmarBaja() {
-  if (!emailParaBaja) { mostrarMsg('msgBaja', 'No se encontró el email.', 'err'); return; }
+  if (!emailParaBaja) { mostrarMsg('msgBaja','No se encontró el email.','err'); return; }
   document.getElementById('loadingBaja').innerText = 'Procesando...';
   try {
-    const r = await llamarScript({ accion: 'baja', email: emailParaBaja });
+    const r = await llamarScript({ accion:'baja', email:emailParaBaja });
     document.getElementById('loadingBaja').innerText = '';
-    mostrarMsg('msgBaja', r.mensaje, r.ok ? 'ok' : 'err');
-  } catch(e) {
-    document.getElementById('loadingBaja').innerText = '';
-    mostrarMsg('msgBaja', 'Error. Intentá de nuevo.', 'err');
-  }
+    mostrarMsg('msgBaja', r.mensaje, r.ok?'ok':'err');
+  } catch(e) { document.getElementById('loadingBaja').innerText=''; mostrarMsg('msgBaja','Error. Intentá de nuevo.','err'); }
 }
 
-function capitalizarNombre(input) {
-  input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
-}
-function filtrarNombre(input) {
-  input.value = input.value.replace(/[0-9]/g, '');
-}
+function capitalizarNombre(input) { input.value = input.value.replace(/\b\w/g, c=>c.toUpperCase()); }
+function filtrarNombre(input) { input.value = input.value.replace(/[0-9]/g,''); }
 function validarEmail(input) {
   const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
-  input.classList.toggle('error', input.value.length > 0 && !ok);
+  input.classList.toggle('error', input.value.length>0 && !ok);
 }
 
-function mostrarScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function mostrarPin() { mostrarScreen('screenPin'); ocultarBtnsExternos(); document.getElementById('pinInput').value = ''; document.getElementById('pinError').innerText = ''; }
+function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function mostrarPin() { mostrarScreen('screenPin'); ocultarBtnsExternos(); document.getElementById('pinInput').value=''; document.getElementById('pinError').innerText=''; }
 function volverPublico() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
 function cerrarAdmin() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
 
@@ -451,177 +471,210 @@ function verificarPin() {
     mostrarScreen('screenAdmin');
     ocultarBtnsExternos();
     cargarSuscriptores();
-    cargarLog();
     cargarNovedades();
     chequearPdfTesoreria();
   } else {
     document.getElementById('pinError').innerText = 'PIN incorrecto.';
     document.getElementById('pinInput').value = '';
-    const pinEl = document.getElementById('pinInput');
-    pinEl.classList.add('error');
-    setTimeout(() => pinEl.classList.remove('error'), 400);
+    const el = document.getElementById('pinInput');
+    el.classList.add('error');
+    setTimeout(()=>el.classList.remove('error'),400);
   }
 }
-document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verificarPin(); });
+document.getElementById('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') verificarPin(); });
 
 function toggleMini(panelId, flechaId) {
-  const panel = document.getElementById(panelId);
-  const flecha = document.getElementById(flechaId);
+  const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
   panel.classList.toggle('open');
-  flecha.innerText = panel.classList.contains('open') ? '▲' : '▼';
+  flecha.innerText = panel.classList.contains('open')?'▲':'▼';
 }
 
-function togglePanel(panelId, flechaId) {
-  const panel = document.getElementById(panelId);
-  const flecha = document.getElementById(flechaId);
+function toggleBloque(panelId, flechaId) {
+  const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
   const isOpen = panel.classList.contains('open');
   panel.classList.toggle('open');
-  flecha.innerText = isOpen ? '▼' : '▲';
-}
-
-function toggleGestionar() { togglePanel('gestionarPanel', 'gestionarFlecha'); }
-function toggleNovedades() { togglePanel('novedadesPanel', 'novedadesFlecha'); }
-function toggleComunicado() { togglePanel('comunicadoPanel', 'comunicadoFlecha'); }
-function togglePrueba() { togglePanel('pruebaPanel', 'pruebaFlecha'); }
-function toggleEnviarMensual() { togglePanel('enviarMensualPanel', 'enviarMensualFlecha'); }
-
-function toggleHistorial() {
-  const panel = document.getElementById('historialPanel');
-  const flecha = document.getElementById('historialFlecha');
-  const isOpen = panel.style.display !== 'none';
-  panel.style.display = isOpen ? 'none' : 'block';
-  flecha.innerText = isOpen ? '▼' : '▲';
+  flecha.innerText = isOpen?'▼':'▲';
 }
 
 async function llamarScript(params) {
   return new Promise((resolve) => {
-    const callbackName = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+    const cbName = 'cb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
     const url = new URL(SCRIPT_URL);
-    Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
-    url.searchParams.append('callback', callbackName);
-    window[callbackName] = function(data) {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      resolve(data);
-    };
+    Object.entries(params).forEach(([k,v])=>url.searchParams.append(k,v));
+    url.searchParams.append('callback',cbName);
+    window[cbName] = function(data) { delete window[cbName]; document.body.removeChild(script); resolve(data); };
     const script = document.createElement('script');
     script.src = url.toString();
-    script.onerror = () => resolve({ ok: false, mensaje: 'Error de conexión.' });
+    script.onerror = ()=>resolve({ok:false,mensaje:'Error de conexión.'});
     document.body.appendChild(script);
   });
 }
 
 function mostrarMsg(id, texto, tipo) {
-  const el = document.getElementById(id);
-  el.innerText = texto;
-  el.className = 'msg-box ' + tipo;
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 6000);
+  const el=document.getElementById(id);
+  el.innerText=texto; el.className='msg-box '+tipo; el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; },6000);
+}
+
+function copiarTexto(texto, btnId) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(()=>{
+      const el=document.getElementById(btnId);
+      const orig=el.innerText; el.innerText='✅ Copiado';
+      setTimeout(()=>{ el.innerText=orig; },2000);
+    });
+  }
 }
 
 async function suscribir() {
-  const email = document.getElementById('suscEmail').value.trim();
-  const nombre = document.getElementById('suscNombre').value.trim();
-  if (!nombre) { mostrarMsg('msgSusc', 'Ingresá tu nombre, apellido o razón social.', 'err'); marcarError('suscNombre'); return; }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc', 'Ingresá un email válido.', 'err'); marcarError('suscEmail'); return; }
-  document.getElementById('loadingSusc').innerText = 'Procesando...';
+  const email=document.getElementById('suscEmail').value.trim(), nombre=document.getElementById('suscNombre').value.trim();
+  if (!nombre) { mostrarMsg('msgSusc','Ingresá tu nombre.','err'); marcarError('suscNombre'); return; }
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc','Ingresá un email válido.','err'); marcarError('suscEmail'); return; }
+  document.getElementById('loadingSusc').innerText='Procesando...';
   try {
-    const r = await llamarScript({ accion: 'suscribir', email, nombre });
-    document.getElementById('loadingSusc').innerText = '';
-    if (r.ok) {
-      document.getElementById('msgPendiente').style.display = 'block';
-      document.getElementById('suscEmail').value = '';
-      document.getElementById('suscNombre').value = '';
-    } else {
-      mostrarMsg('msgSusc', r.mensaje, 'err');
-    }
-  } catch(e) {
-    document.getElementById('loadingSusc').innerText = '';
-    mostrarMsg('msgSusc', 'Error. Intentá de nuevo.', 'err');
-  }
+    const r = await llamarScript({accion:'suscribir',email,nombre});
+    document.getElementById('loadingSusc').innerText='';
+    if (r.ok) { document.getElementById('msgPendiente').style.display='block'; document.getElementById('suscEmail').value=''; document.getElementById('suscNombre').value=''; }
+    else mostrarMsg('msgSusc',r.mensaje,'err');
+  } catch(e) { document.getElementById('loadingSusc').innerText=''; mostrarMsg('msgSusc','Error. Intentá de nuevo.','err'); }
 }
 
-function marcarError(id) {
-  const el = document.getElementById(id);
-  el.classList.add('error');
-  setTimeout(() => el.classList.remove('error'), 400);
-}
+function marcarError(id) { const el=document.getElementById(id); el.classList.add('error'); setTimeout(()=>el.classList.remove('error'),400); }
 
 async function cargarSuscriptores() {
   try {
-    const r = await llamarScript({ accion: 'listar' });
-    document.getElementById('statActivos').innerText = r.activos;
-    document.getElementById('statPendientes').innerText = r.pendientes || 0;
-    document.getElementById('statBajas').innerText = r.bajas;
-
-    const web = r.activosWeb || 0;
-    const manual = r.activosManual || 0;
-    document.getElementById('statOrigen').innerText = `${web} vía web · ${manual} manual/importación`;
-
-    const activos = r.suscriptores.filter(s => s.estado === 'activo');
-    const pendientes = r.suscriptores.filter(s => s.estado === 'pendiente');
-    const bajas = r.suscriptores.filter(s => s.estado === 'baja');
-
-    document.getElementById('labelActivos').innerText = `Activos (${activos.length})`;
-    document.getElementById('labelPendientes').innerText = `Pendientes (${pendientes.length})`;
-    document.getElementById('labelBajas').innerText = `Bajas (${bajas.length})`;
-
-    function origenAbrev(origen) {
-      if (origen === 'web') return 'W';
-      if (origen === 'importacion') return 'I';
-      return 'M';
+    const r = await llamarScript({accion:'listar'});
+    document.getElementById('statActivos').innerText=r.activos;
+    document.getElementById('statPendientes').innerText=r.pendientes||0;
+    document.getElementById('statBajas').innerText=r.bajas;
+    document.getElementById('statOrigen').innerText=(r.activosWeb||0)+' vía web · '+(r.activosManual||0)+' manual/importación';
+    const activos=r.suscriptores.filter(s=>s.estado==='activo');
+    const pendientes=r.suscriptores.filter(s=>s.estado==='pendiente');
+    const bajas=r.suscriptores.filter(s=>s.estado==='baja');
+    document.getElementById('labelActivos').innerText='Activos ('+activos.length+')';
+    document.getElementById('labelPendientes').innerText='Pendientes ('+pendientes.length+')';
+    document.getElementById('labelBajas').innerText='Bajas ('+bajas.length+')';
+    function oa(o){return o==='web'?'W':o==='importacion'?'I':'M';}
+    function rm(id,items,bc,bl){
+      const el=document.getElementById(id);
+      if(!items.length){el.innerHTML='<div style="padding:6px 12px;font-size:11px;opacity:0.6;">Sin registros.</div>';return;}
+      el.innerHTML=items.map(s=>`<div class="suscriptor-item"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-size:11px;">${s.nombre?s.nombre+' — ':''}${s.email}</span><span style="flex-shrink:0;margin-left:6px;font-size:9px;opacity:0.55;" title="${s.origen}">${oa(s.origen)}</span><span class="badge-${bc}" style="flex-shrink:0;margin-left:4px;">${bl}</span></div>`).join('');
     }
-
-    function renderMini(id, items, badgeClass, badgeLabel) {
-      const el = document.getElementById(id);
-      if (items.length === 0) { el.innerHTML = '<div style="padding:6px 12px;font-size:11px;opacity:0.6;">Sin registros.</div>'; return; }
-      el.innerHTML = items.map(s => `
-        <div class="suscriptor-item" style="padding:5px 12px;">
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-size:11px;">${s.nombre ? s.nombre + ' — ' : ''}${s.email}</span>
-          <span style="flex-shrink:0;margin-left:6px;font-size:9px;opacity:0.55;font-weight:900;" title="${s.origen}">${origenAbrev(s.origen)}</span>
-          <span class="badge-${badgeClass}" style="flex-shrink:0;margin-left:4px;font-size:9px;">${badgeLabel}</span>
-        </div>`).join('');
-    }
-
-    renderMini('secActivos', activos, 'activo', 'Activo');
-    renderMini('secPendientes', pendientes, 'pendiente', 'Pendiente');
-    renderMini('secBajas', bajas, 'baja', 'Baja');
-
-  } catch(e) {
-    document.getElementById('secActivos').innerHTML = '<div style="color:#c0392b;font-size:13px;padding:10px;">Error cargando lista.</div>';
-  }
+    rm('secActivos',activos,'activo','Activo');
+    rm('secPendientes',pendientes,'pendiente','Pendiente');
+    rm('secBajas',bajas,'baja','Baja');
+  } catch(e) { document.getElementById('secActivos').innerHTML='<div style="color:#c0392b;font-size:13px;padding:10px;">Error cargando lista.</div>'; }
 }
 
 async function agregarManual() {
-  const email = document.getElementById('adminEmail').value.trim();
-  const nombre = document.getElementById('adminNombre').value.trim();
-  if (!email) { mostrarMsg('msgAdmin', 'Ingresá el email.', 'err'); marcarError('adminEmail'); return; }
-  document.getElementById('loadingAdmin').innerText = 'Agregando...';
+  const email=document.getElementById('adminEmail').value.trim(), nombre=document.getElementById('adminNombre').value.trim();
+  if (!email){mostrarMsg('msgAdmin','Ingresá el email.','err');marcarError('adminEmail');return;}
+  document.getElementById('loadingAdmin').innerText='Agregando...';
   try {
-    const r = await llamarScript({ accion: 'agregarManual', email, nombre });
-    document.getElementById('loadingAdmin').innerText = '';
-    mostrarMsg('msgAdmin', r.mensaje, r.ok ? 'ok' : 'err');
-    if (r.ok) { document.getElementById('adminEmail').value = ''; document.getElementById('adminNombre').value = ''; cargarSuscriptores(); }
-  } catch(e) {
-    document.getElementById('loadingAdmin').innerText = '';
-    mostrarMsg('msgAdmin', 'Error. Intentá de nuevo.', 'err');
-  }
+    const r=await llamarScript({accion:'agregarManual',email,nombre});
+    document.getElementById('loadingAdmin').innerText='';
+    mostrarMsg('msgAdmin',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){document.getElementById('adminEmail').value='';document.getElementById('adminNombre').value='';cargarSuscriptores();}
+  } catch(e){document.getElementById('loadingAdmin').innerText='';mostrarMsg('msgAdmin','Error.','err');}
 }
 
 async function desuscribirManual() {
-  const email = document.getElementById('bajaManualEmail').value.trim();
-  if (!email) { mostrarMsg('msgBajaManual', 'Ingresá el email.', 'err'); marcarError('bajaManualEmail'); return; }
-  if (!confirm(`¿Dar de baja a ${email}?`)) return;
-  document.getElementById('loadingBajaManual').innerText = 'Procesando...';
+  const email=document.getElementById('bajaManualEmail').value.trim();
+  if(!email){mostrarMsg('msgBajaManual','Ingresá el email.','err');marcarError('bajaManualEmail');return;}
+  if(!confirm('¿Dar de baja a '+email+'?')) return;
+  document.getElementById('loadingBajaManual').innerText='Procesando...';
   try {
-    const r = await llamarScript({ accion: 'baja', email });
-    document.getElementById('loadingBajaManual').innerText = '';
-    mostrarMsg('msgBajaManual', r.mensaje, r.ok ? 'ok' : 'err');
-    if (r.ok) { document.getElementById('bajaManualEmail').value = ''; cargarSuscriptores(); }
-  } catch(e) {
-    document.getElementById('loadingBajaManual').innerText = '';
-    mostrarMsg('msgBajaManual', 'Error. Intentá de nuevo.', 'err');
-  }
+    const r=await llamarScript({accion:'baja',email});
+    document.getElementById('loadingBajaManual').innerText='';
+    mostrarMsg('msgBajaManual',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){document.getElementById('bajaManualEmail').value='';cargarSuscriptores();}
+  } catch(e){document.getElementById('loadingBajaManual').innerText='';mostrarMsg('msgBajaManual','Error.','err');}
+}
+
+// ============================================================
+// BOLETÍN VIGENTE
+// ============================================================
+async function verBoletinVigente() {
+  const box=document.getElementById('previewVigenteBox'), btn=document.getElementById('panelVigente').querySelector('.btn-vigente-accion');
+  if (box.style.display==='block') { box.style.display='none'; btn.innerText='Ver boletín vigente'; return; }
+  document.getElementById('loadingVigente').innerText='Cargando...';
+  try {
+    const r=await llamarScript({accion:'boletinVigente'});
+    document.getElementById('loadingVigente').innerText='';
+    if (!r.ok) { mostrarMsg('msgVigente',r.mensaje,'err'); return; }
+    document.getElementById('previewVigenteIframe').srcdoc=r.html;
+    box.style.display='block';
+    btn.innerText='Ocultar boletín vigente';
+  } catch(e) { document.getElementById('loadingVigente').innerText=''; mostrarMsg('msgVigente','Error al cargar.','err'); }
+}
+
+async function reenviarIndividual() {
+  const email=document.getElementById('emailReenvio').value.trim();
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgReenvio','Ingresá un email válido.','err'); marcarError('emailReenvio'); return; }
+  if (!confirm('¿Reenviar el boletín vigente a '+email+'?')) return;
+  document.getElementById('loadingReenvio').innerText='Enviando...';
+  try {
+    const r=await llamarScript({accion:'reenviarIndividual',email});
+    document.getElementById('loadingReenvio').innerText='';
+    mostrarMsg('msgReenvio',r.mensaje,r.ok?'ok':'err');
+    if (r.ok) document.getElementById('emailReenvio').value='';
+  } catch(e) { document.getElementById('loadingReenvio').innerText=''; mostrarMsg('msgReenvio','Error.','err'); }
+}
+
+// ============================================================
+// BOLETÍN EN PREPARACIÓN
+// ============================================================
+async function verPreviewBoletin() {
+  const box=document.getElementById('previewHtmlBox'), btn=document.getElementById('btnVerPreview');
+  if (box.classList.contains('open')) { box.classList.remove('open'); box.style.display='none'; btn.innerText='Ver vista previa'; return; }
+  document.getElementById('loadingPrep').innerText='Cargando vista previa...';
+  try {
+    const r=await llamarScript({accion:'previewBoletin'});
+    document.getElementById('loadingPrep').innerText='';
+    if (!r.ok) { mostrarMsg('msgPrep',r.mensaje,'err'); return; }
+    document.getElementById('previewIframe').srcdoc=r.html;
+    box.style.display='block'; box.classList.add('open');
+    btn.innerText='Ocultar vista previa';
+    box.scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e) { document.getElementById('loadingPrep').innerText=''; mostrarMsg('msgPrep','Error al cargar.','err'); }
+}
+
+async function copiarUrlPreview() {
+  try {
+    const r=await llamarScript({accion:'urlPreviewAdmin'});
+    if (!r.ok) { mostrarMsg('msgPrep',r.mensaje,'err'); return; }
+    const box=document.getElementById('urlPreviewBox');
+    box.innerText=r.url; box.style.display='block';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(r.url).then(()=>{ box.innerText='✅ URL copiada: '+r.url; setTimeout(()=>{box.innerText=r.url;},3000); });
+    }
+  } catch(e) { mostrarMsg('msgPrep','Error al obtener URL.','err'); }
+}
+
+async function chequearPdfTesoreria() {
+  const el=document.getElementById('estadoPdfTesoreria');
+  try {
+    const r=await llamarScript({accion:'chequearEstadoPdfTesoreria'});
+    if (r.estado==='ok') {
+      const link=r.urlVisual?`<a href="${r.urlVisual}" target="_blank" style="color:var(--petroleo);text-decoration:underline;font-weight:900;">Ver PDF</a>`:'';
+      el.style.cssText='background:var(--verdecl);color:var(--petroleo);border:1.5px solid var(--petroleo);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;text-align:center;';
+      el.innerHTML='✅ PDF de Tesorería listo — período: <b>'+r.periodoTesoreria+'</b>. '+link;
+    } else {
+      el.style.cssText='background:var(--naranja);color:var(--negro);border:1.5px solid var(--negro);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;text-align:center;';
+      el.innerHTML=r.estado==='repetido'?'⚠️ Mismo PDF (<b>'+r.periodoTesoreria+'</b>) que el envío anterior.':'⚠️ No se encontró PDF de Tesorería. El boletín se enviará sin adjunto.';
+    }
+  } catch(e) { el.innerText='⚠️ No se pudo verificar el PDF de Tesorería.'; }
+}
+
+async function enviarPrueba() {
+  const email=document.getElementById('emailPrueba').value.trim();
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){mostrarMsg('msgPrueba','Ingresá un email válido.','err');marcarError('emailPrueba');return;}
+  document.getElementById('loadingPrueba').innerText='Enviando prueba...';
+  try {
+    const r=await llamarScript({accion:'enviarBoletinPrueba',email});
+    document.getElementById('loadingPrueba').innerText='';
+    mostrarMsg('msgPrueba',r.mensaje,r.ok?'ok':'err');
+  } catch(e){document.getElementById('loadingPrueba').innerText='';mostrarMsg('msgPrueba','Error.','err');}
 }
 
 // ============================================================
@@ -629,332 +682,147 @@ async function desuscribirManual() {
 // ============================================================
 async function cargarNovedades() {
   try {
-    const r = await llamarScript({ accion: 'listarNovedades' });
-    const el = document.getElementById('novedadesLista');
-    if (!r.novedades || r.novedades.length === 0) {
-      el.innerHTML = '<div class="novedades-vacio">No hay novedades cargadas.</div>';
-      return;
-    }
-    el.innerHTML = r.novedades.map(n => `
-      <div class="novedad-item">
-        <div class="novedad-titulo">${escaparTexto(n.titulo)}</div>
-        <div class="novedad-desc">${escaparTexto(n.descripcion)}</div>
-        <div class="novedad-acciones">
-          <button type="button" class="btn-mini" onclick="editarNovedadUI('${n.id}', '${escaparAtributo(n.titulo)}', '${escaparAtributo(n.descripcion)}')">Editar</button>
-          <button type="button" class="btn-mini rojo" onclick="eliminarNovedadUI('${n.id}')">Eliminar</button>
-        </div>
-      </div>
-    `).join('');
-  } catch(e) {
-    document.getElementById('novedadesLista').innerHTML = '<div class="novedades-vacio">Error cargando novedades.</div>';
-  }
+    const r=await llamarScript({accion:'listarNovedades'});
+    const el=document.getElementById('novedadesLista');
+    if (!r.novedades||r.novedades.length===0){el.innerHTML='<div class="novedades-vacio">No hay novedades cargadas.</div>';return;}
+    el.innerHTML=r.novedades.map(n=>`<div class="novedad-item"><div class="novedad-titulo">${esc(n.titulo)}</div><div class="novedad-desc">${esc(n.descripcion)}</div><div class="novedad-acciones"><button type="button" class="btn-mini" onclick="editarNovedadUI('${n.id}','${ea(n.titulo)}','${ea(n.descripcion)}')">Editar</button><button type="button" class="btn-mini rojo" onclick="eliminarNovedadUI('${n.id}')">Eliminar</button></div></div>`).join('');
+  } catch(e){document.getElementById('novedadesLista').innerHTML='<div class="novedades-vacio">Error cargando novedades.</div>';}
 }
+function esc(t){const d=document.createElement('div');d.innerText=t||'';return d.innerHTML;}
+function ea(t){return(t||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 
-function escaparTexto(t) {
-  const div = document.createElement('div');
-  div.innerText = t || '';
-  return div.innerHTML;
+function editarNovedadUI(id,titulo,descripcion){
+  novedadEditandoId=id;
+  document.getElementById('novTitulo').value=titulo;
+  document.getElementById('novDescripcion').value=descripcion;
+  document.getElementById('btnNovAccion').innerText='Guardar cambios';
+  document.getElementById('btnNovCancelar').style.display='block';
+  document.getElementById('novTitulo').scrollIntoView({behavior:'smooth',block:'center'});
 }
-function escaparAtributo(t) {
-  return (t || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+function cancelarEdicionNovedad(){
+  novedadEditandoId=null;
+  document.getElementById('novTitulo').value='';
+  document.getElementById('novDescripcion').value='';
+  document.getElementById('btnNovAccion').innerText='Agregar novedad';
+  document.getElementById('btnNovCancelar').style.display='none';
 }
-
-function editarNovedadUI(id, titulo, descripcion) {
-  novedadEditandoId = id;
-  document.getElementById('novTitulo').value = titulo;
-  document.getElementById('novDescripcion').value = descripcion;
-  document.getElementById('btnNovAccion').innerText = 'Guardar cambios';
-  document.getElementById('btnNovCancelar').style.display = 'block';
-  document.getElementById('novTitulo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+async function eliminarNovedadUI(id){
+  if(!confirm('¿Eliminar esta novedad?'))return;
+  try{const r=await llamarScript({accion:'eliminarNovedad',id});if(r.ok)cargarNovedades();else mostrarMsg('msgNov',r.mensaje,'err');}
+  catch(e){mostrarMsg('msgNov','Error al eliminar.','err');}
 }
-
-function cancelarEdicionNovedad() {
-  novedadEditandoId = null;
-  document.getElementById('novTitulo').value = '';
-  document.getElementById('novDescripcion').value = '';
-  document.getElementById('btnNovAccion').innerText = 'Agregar novedad';
-  document.getElementById('btnNovCancelar').style.display = 'none';
-  document.getElementById('btnNovIA').classList.remove('on');
-  novedadCorregidaIA = false;
+async function guardarNovedad(){
+  const titulo=document.getElementById('novTitulo').value.trim(), descripcion=document.getElementById('novDescripcion').value.trim();
+  if(!titulo){mostrarMsg('msgNov','Ingresá un título.','err');marcarError('novTitulo');return;}
+  if(!descripcion){mostrarMsg('msgNov','Ingresá una descripción.','err');marcarError('novDescripcion');return;}
+  document.getElementById('loadingNov').innerText='Guardando...';
+  try{
+    const r=await llamarScript(novedadEditandoId?{accion:'editarNovedad',id:novedadEditandoId,titulo,descripcion}:{accion:'agregarNovedad',titulo,descripcion});
+    document.getElementById('loadingNov').innerText='';
+    mostrarMsg('msgNov',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){cancelarEdicionNovedad();cargarNovedades();}
+  }catch(e){document.getElementById('loadingNov').innerText='';mostrarMsg('msgNov','Error al guardar.','err');}
 }
-
-async function eliminarNovedadUI(id) {
-  if (!confirm('¿Eliminar esta novedad?')) return;
-  try {
-    const r = await llamarScript({ accion: 'eliminarNovedad', id });
-    if (r.ok) cargarNovedades();
-    else mostrarMsg('msgNov', r.mensaje, 'err');
-  } catch(e) {
-    mostrarMsg('msgNov', 'Error al eliminar.', 'err');
-  }
-}
-
-async function guardarNovedad() {
-  const titulo = document.getElementById('novTitulo').value.trim();
-  const descripcion = document.getElementById('novDescripcion').value.trim();
-  if (!titulo) { mostrarMsg('msgNov', 'Ingresá un título.', 'err'); marcarError('novTitulo'); return; }
-  if (!descripcion) { mostrarMsg('msgNov', 'Ingresá una descripción.', 'err'); marcarError('novDescripcion'); return; }
-
-  document.getElementById('loadingNov').innerText = 'Guardando...';
-  try {
-    let r;
-    if (novedadEditandoId) {
-      r = await llamarScript({ accion: 'editarNovedad', id: novedadEditandoId, titulo, descripcion });
-    } else {
-      r = await llamarScript({ accion: 'agregarNovedad', titulo, descripcion });
-    }
-    document.getElementById('loadingNov').innerText = '';
-    mostrarMsg('msgNov', r.mensaje, r.ok ? 'ok' : 'err');
-    if (r.ok) {
-      cancelarEdicionNovedad();
-      cargarNovedades();
-    }
-  } catch(e) {
-    document.getElementById('loadingNov').innerText = '';
-    mostrarMsg('msgNov', 'Error al guardar.', 'err');
-  }
-}
-
-async function corregirNovedad() {
-  const titulo = document.getElementById('novTitulo').value.trim();
-  const descripcion = document.getElementById('novDescripcion').value.trim();
-  if (!titulo || !descripcion) { mostrarMsg('msgNov', 'Completá título y descripción antes de corregir.', 'err'); return; }
-
-  document.getElementById('btnNovIA').classList.add('on');
-  document.getElementById('loadingNov').innerText = 'Corrigiendo con IA...';
-  try {
-    const r = await llamarScript({ accion: 'corregirNovedadIA', titulo, descripcion });
-    document.getElementById('loadingNov').innerText = '';
-    if (r.ok) {
-      document.getElementById('novTitulo').value = r.titulo;
-      document.getElementById('novDescripcion').value = r.descripcion;
-      novedadCorregidaIA = true;
-    } else {
-      mostrarMsg('msgNov', r.mensaje, 'err');
-      document.getElementById('btnNovIA').classList.remove('on');
-    }
-  } catch(e) {
-    document.getElementById('loadingNov').innerText = '';
-    mostrarMsg('msgNov', 'Error al corregir.', 'err');
-    document.getElementById('btnNovIA').classList.remove('on');
-  }
-}
-
-async function corregirComunicado() {
-  const asunto = document.getElementById('commAsunto').value.trim();
-  const cuerpo = document.getElementById('commCuerpo').value.trim();
-  if (!asunto || !cuerpo) { mostrarMsg('msgComm', 'Completá el asunto y el mensaje antes de corregir.', 'err'); return; }
-
-  document.getElementById('btnCommIA').classList.add('on');
-  document.getElementById('loadingCommIA').innerText = 'Corrigiendo con IA...';
-  try {
-    const r = await llamarScript({ accion: 'corregirComunicadoIA', asunto, cuerpo });
-    document.getElementById('loadingCommIA').innerText = '';
-    if (r.ok) {
-      document.getElementById('commAsunto').value = r.asunto;
-      document.getElementById('commCuerpo').value = r.cuerpo;
-      actualizarPreview();
-    } else {
-      mostrarMsg('msgComm', r.mensaje, 'err');
-      document.getElementById('btnCommIA').classList.remove('on');
-    }
-  } catch(e) {
-    document.getElementById('loadingCommIA').innerText = '';
-    mostrarMsg('msgComm', 'Error al corregir.', 'err');
-    document.getElementById('btnCommIA').classList.remove('on');
-  }
+async function corregirNovedad(){
+  const titulo=document.getElementById('novTitulo').value.trim(), descripcion=document.getElementById('novDescripcion').value.trim();
+  if(!titulo||!descripcion){mostrarMsg('msgNov','Completá título y descripción antes de corregir.','err');return;}
+  document.getElementById('loadingNov').innerText='Corrigiendo con IA...';
+  try{
+    const r=await llamarScript({accion:'corregirNovedadIA',titulo,descripcion});
+    document.getElementById('loadingNov').innerText='';
+    if(r.ok){document.getElementById('novTitulo').value=r.titulo;document.getElementById('novDescripcion').value=r.descripcion;}
+    else mostrarMsg('msgNov',r.mensaje,'err');
+  }catch(e){document.getElementById('loadingNov').innerText='';mostrarMsg('msgNov','Error.','err');}
 }
 
 // ============================================================
-// PREVIEW Y PRUEBA
+// COMUNICADO LIBRE
 // ============================================================
-async function verPreviewBoletin() {
-  const box = document.getElementById('previewHtmlBox');
-  const btn = document.getElementById('btnVerPreview');
-
-  // Si ya está abierto, lo cerramos (toggle)
-  if (box.classList.contains('open')) {
-    box.classList.remove('open');
-    box.style.display = 'none';
-    btn.innerText = 'Ver vista previa del boletín';
-    return;
-  }
-
-  try {
-    const r = await llamarScript({ accion: 'previewBoletin' });
-    if (!r.ok) { alert(r.mensaje); return; }
-    const iframe = document.getElementById('previewIframe');
-    iframe.srcdoc = r.html;
-    box.style.display = 'block';
-    box.classList.add('open');
-    btn.innerText = 'Ocultar vista previa';
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch(e) {
-    alert('Error al generar la vista previa.');
-  }
+async function corregirComunicado(){
+  const asunto=document.getElementById('commAsunto').value.trim(), cuerpo=document.getElementById('commCuerpo').value.trim();
+  if(!asunto||!cuerpo){mostrarMsg('msgComm','Completá el asunto y el mensaje antes de corregir.','err');return;}
+  document.getElementById('loadingCommIA').innerText='Corrigiendo con IA...';
+  try{
+    const r=await llamarScript({accion:'corregirComunicadoIA',asunto,cuerpo});
+    document.getElementById('loadingCommIA').innerText='';
+    if(r.ok){document.getElementById('commAsunto').value=r.asunto;document.getElementById('commCuerpo').value=r.cuerpo;actualizarPreview();}
+    else mostrarMsg('msgComm',r.mensaje,'err');
+  }catch(e){document.getElementById('loadingCommIA').innerText='';mostrarMsg('msgComm','Error.','err');}
+}
+function actualizarPreview(){
+  const asunto=document.getElementById('commAsunto').value.trim(), cuerpo=document.getElementById('commCuerpo').value.trim();
+  const preview=document.getElementById('previewBox');
+  if(!asunto&&!cuerpo){preview.style.display='none';return;}
+  preview.style.display='block';
+  document.getElementById('previewCuerpo').innerText=(asunto?'Asunto: '+asunto+'\n'+'─'.repeat(30)+'\n\n':'')+cuerpo+'\n\n──────────────────────────\nAtentos saludos,\n'+NOMBRE_CLUB;
+}
+async function enviarComunicado(){
+  const asunto=document.getElementById('commAsunto').value.trim(), cuerpo=document.getElementById('commCuerpo').value.trim();
+  if(!asunto||!cuerpo){mostrarMsg('msgComm','Completá el asunto y el mensaje.','err');return;}
+  if(!confirm('¿Enviar a todos los suscriptores activos?\n\nAsunto: '+asunto))return;
+  document.getElementById('loadingComm').innerText='Enviando...';
+  try{
+    const r=await llamarScript({accion:'enviarComunicado',asunto,cuerpo});
+    document.getElementById('loadingComm').innerText='';
+    mostrarMsg('msgComm',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){document.getElementById('commAsunto').value='';document.getElementById('commCuerpo').value='';document.getElementById('previewBox').style.display='none';}
+  }catch(e){document.getElementById('loadingComm').innerText='';mostrarMsg('msgComm','Error.','err');}
 }
 
-// Estado del PDF de Tesorería — siempre visible, se carga al entrar al panel admin
-async function chequearPdfTesoreria() {
-  const el = document.getElementById('estadoPdfTesoreria');
-  try {
-    const r = await llamarScript({ accion: 'chequearEstadoPdfTesoreria' });
-
-    if (r.estado === 'ok') {
-      const linkPdf = r.urlVisual ? `<a href="${r.urlVisual}" target="_blank" style="color:var(--petroleo); text-decoration:underline; font-weight:900;">Ver el PDF</a>` : '';
-      el.style.background = 'var(--verdecl)';
-      el.style.color = 'var(--petroleo)';
-      el.style.border = '1.5px solid var(--petroleo)';
-      el.innerHTML = `✅ PDF de Tesorería listo — período: <b>${r.periodoTesoreria}</b>. ${linkPdf}`;
-    } else if (r.estado === 'repetido') {
-      const linkPdf = r.urlVisual ? `<a href="${r.urlVisual}" target="_blank" style="color:var(--negro); text-decoration:underline; font-weight:900;">Ver el PDF</a>` : '';
-      el.style.background = 'var(--naranja)';
-      el.style.color = 'var(--negro)';
-      el.style.border = '1.5px solid var(--negro)';
-      el.innerHTML = `⚠️ Es el mismo PDF (<b>${r.periodoTesoreria}</b>) ya adjuntado en el envío anterior. ${linkPdf}`;
-    } else {
-      el.style.background = 'var(--naranja)';
-      el.style.color = 'var(--negro)';
-      el.style.border = '1.5px solid var(--negro)';
-      el.innerHTML = '⚠️ No se encontró un PDF de Tesorería publicado. El boletín se enviará sin adjunto.';
-    }
-  } catch(e) {
-    el.style.background = 'var(--naranja)';
-    el.style.color = 'var(--negro)';
-    el.innerText = '⚠️ No se pudo verificar el estado del PDF de Tesorería.';
-  }
+// ============================================================
+// ENVÍO MANUAL
+// ============================================================
+async function enviarMensual(){
+  let lineaPdf='⚠️ No se pudo verificar el PDF de Tesorería.';
+  try{
+    const check=await llamarScript({accion:'chequearEstadoPdfTesoreria'});
+    if(check.estado==='faltante') lineaPdf='⚠️ No se encontró PDF de Tesorería. Se enviará SIN adjunto.';
+    else if(check.estado==='repetido') lineaPdf='⚠️ Se adjuntará el PDF de '+check.periodoTesoreria+' — mismo que el envío anterior.';
+    else if(check.estado==='ok') lineaPdf='📎 Se adjuntará el PDF de Tesorería de '+check.periodoTesoreria+'.';
+  }catch(e){}
+  if(!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual.\n\n'+lineaPdf+'\n\n¿Confirmás el envío?'))return;
+  document.getElementById('loadingMensual').innerText='Enviando...';
+  try{
+    const r=await llamarScript({accion:'enviarMensual'});
+    document.getElementById('loadingMensual').innerText='';
+    mostrarMsg('msgMensual',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){cargarLog();cargarNovedades();chequearPdfTesoreria();}
+  }catch(e){document.getElementById('loadingMensual').innerText='';mostrarMsg('msgMensual','Error.','err');}
 }
 
-async function enviarPrueba() {
-  const email = document.getElementById('emailPrueba').value.trim();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgPrueba', 'Ingresá un email válido.', 'err'); marcarError('emailPrueba'); return; }
-  document.getElementById('loadingPrueba').innerText = 'Enviando prueba...';
-  try {
-    const r = await llamarScript({ accion: 'enviarBoletinPrueba', email });
-    document.getElementById('loadingPrueba').innerText = '';
-    mostrarMsg('msgPrueba', r.mensaje, r.ok ? 'ok' : 'err');
-  } catch(e) {
-    document.getElementById('loadingPrueba').innerText = '';
-    mostrarMsg('msgPrueba', 'Error al enviar la prueba.', 'err');
-  }
+// ============================================================
+// HISTORIAL
+// ============================================================
+async function cargarLog(){
+  try{
+    const r=await llamarScript({accion:'logEnvios'});
+    const el=document.getElementById('logEnvios');
+    if(!r.envios||r.envios.length===0){el.innerText='Sin envíos registrados aún.';return;}
+    const porAnio={};
+    r.envios.forEach(e=>{const f=new Date(e.fecha),a=f.getFullYear();if(!porAnio[a])porAnio[a]=[];porAnio[a].push(e);});
+    el.innerHTML=Object.keys(porAnio).sort((a,b)=>b-a).map(anio=>`<div style="font-weight:900;color:var(--petroleo);margin:8px 0 4px;font-size:13px;">${anio}</div>${porAnio[anio].map(e=>{
+      const fecha=new Date(e.fecha);
+      const fs=fecha.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})+', '+fecha.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+      const tag=e.origen==='automatico'?'<span style="color:#1e8449;font-size:10px;">(Automático)</span>':'<span style="color:#2471a3;font-size:10px;">(Manual)</span>';
+      const asunto=e.tipo==='mensual'?'#BoletínMensual — '+e.asunto.replace('Cuota social — ',''):'Comunicado — '+e.asunto;
+      const btn=(e.tipo==='mensual'&&e.htmlId)?`<button type="button" onclick="verBoletinEnviado('${e.htmlId}')" style="background:transparent;border:1.5px solid var(--petroleo);color:var(--petroleo);font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 10px;border-radius:10px;cursor:pointer;margin-left:6px;">Ver</button>`:'';
+      return`<div style="padding:5px 0;border-bottom:1px solid var(--lima);font-size:12px;color:var(--petroleo);"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;"><span>${asunto} ${tag}</span>${btn}</div><span style="opacity:0.6;font-size:11px;">${fs}</span></div>`;
+    }).join('')}`).join('');
+  }catch(e){document.getElementById('logEnvios').innerText='Error cargando historial.';}
 }
 
-async function enviarMensual() {
-  let lineaPdf = '⚠️ No se pudo verificar el estado del PDF de Tesorería.';
-  try {
-    const check = await llamarScript({ accion: 'chequearEstadoPdfTesoreria' });
-    if (check.estado === 'faltante') {
-      lineaPdf = '⚠️ No se encontró un PDF de Tesorería publicado. Se enviará SIN adjunto.';
-    } else if (check.estado === 'repetido') {
-      lineaPdf = '⚠️ Se adjuntará el PDF de ' + check.periodoTesoreria + ' — el mismo que ya se mandó en el envío anterior. Verificá si ya se publicó el del mes recién cerrado.';
-    } else if (check.estado === 'ok') {
-      lineaPdf = '📎 Se adjuntará el PDF de Tesorería de ' + check.periodoTesoreria + '.';
-    }
-  } catch(e) { /* si falla el check, queda el mensaje de "no se pudo verificar" */ }
-
-  if (!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual con la cuota social vigente y las novedades cargadas.\n\n' + lineaPdf + '\n\n¿Confirmás el envío?')) return;
-  document.getElementById('loadingMensual').innerText = 'Enviando...';
-  try {
-    const r = await llamarScript({ accion: 'enviarMensual' });
-    document.getElementById('loadingMensual').innerText = '';
-    mostrarMsg('msgMensual', r.mensaje, r.ok ? 'ok' : 'err');
-    if (r.ok) {
-      cargarLog();
-      cargarNovedades();
-      chequearPdfTesoreria();
-    }
-  } catch(e) {
-    document.getElementById('loadingMensual').innerText = '';
-    mostrarMsg('msgMensual', 'Error al enviar.', 'err');
-  }
-}
-
-function actualizarPreview() {
-  const asunto = document.getElementById('commAsunto').value.trim();
-  const cuerpo = document.getElementById('commCuerpo').value.trim();
-  const preview = document.getElementById('previewBox');
-  if (!asunto && !cuerpo) { preview.style.display = 'none'; return; }
-  preview.style.display = 'block';
-  const firma = `\n\n──────────────────────────\nAtentos saludos,\n${NOMBRE_CLUB}`;
-  document.getElementById('previewCuerpo').innerText =
-    (asunto ? `Asunto: ${asunto}\n${'─'.repeat(30)}\n\n` : '') + cuerpo + firma;
-}
-
-async function enviarComunicado() {
-  const asunto = document.getElementById('commAsunto').value.trim();
-  const cuerpo = document.getElementById('commCuerpo').value.trim();
-  if (!asunto || !cuerpo) { mostrarMsg('msgComm', 'Completá el asunto y el mensaje.', 'err'); return; }
-  if (!confirm(`¿Enviar este comunicado a todos los suscriptores activos?\n\nAsunto: ${asunto}`)) return;
-  document.getElementById('loadingComm').innerText = 'Enviando...';
-  try {
-    const r = await llamarScript({ accion: 'enviarComunicado', asunto, cuerpo });
-    document.getElementById('loadingComm').innerText = '';
-    mostrarMsg('msgComm', r.mensaje, r.ok ? 'ok' : 'err');
-    if (r.ok) {
-      document.getElementById('commAsunto').value = '';
-      document.getElementById('commCuerpo').value = '';
-      document.getElementById('previewBox').style.display = 'none';
-      cargarLog();
-    }
-  } catch(e) {
-    document.getElementById('loadingComm').innerText = '';
-    mostrarMsg('msgComm', 'Error al enviar.', 'err');
-  }
-}
-
-async function cargarLog() {
-  try {
-    const r = await llamarScript({ accion: 'logEnvios' });
-    const el = document.getElementById('logEnvios');
-    if (!r.envios || r.envios.length === 0) { el.innerText = 'Sin envíos registrados aún.'; return; }
-
-    const porAnio = {};
-    r.envios.forEach(e => {
-      const fecha = new Date(e.fecha);
-      const anio = fecha.getFullYear();
-      if (!porAnio[anio]) porAnio[anio] = [];
-      porAnio[anio].push(e);
-    });
-
-    el.innerHTML = Object.keys(porAnio).sort((a,b) => b-a).map(anio => `
-      <div style="font-weight:900;color:#135457;margin:8px 0 4px;font-size:13px;">${anio}</div>
-      ${porAnio[anio].map(e => {
-        const fecha = new Date(e.fecha);
-        const fechaStr = fecha.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'}) + ', ' + fecha.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-        const esAuto = e.origen === 'automatico';
-        const esMensual = e.tipo === 'mensual';
-        const tag = esAuto ? '<span style="color:#1e8449;font-size:10px;">(Automático)</span>' : '<span style="color:#2471a3;font-size:10px;">(Manual)</span>';
-        const asuntoMostrar = esMensual 
-          ? `#BoletínMensual — Cuota Social — ${e.asunto.replace('Cuota social — ','')}`
-          : `Comunicado — ${e.asunto}`;
-        const btnVer = (esMensual && e.htmlId)
-          ? `<button type="button" onclick="verBoletinEnviado('${e.htmlId}')" style="background:transparent;border:1.5px solid #135457;color:#135457;font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 10px;border-radius:10px;cursor:pointer;margin-left:6px;">Ver</button>`
-          : '';
-        return `<div style="padding:5px 0;border-bottom:1px solid #c4df57;font-size:12px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-            <span>${asuntoMostrar} ${tag}</span>${btnVer}
-          </div>
-          <span style="opacity:0.6;font-size:11px;">${fechaStr}</span>
-        </div>`;
-      }).join('')}
-    `).join('');
-  } catch(e) {
-    document.getElementById('logEnvios').innerText = 'Error cargando historial.';
-  }
-}
-
-async function verBoletinEnviado(htmlId) {
-  try {
-    const r = await llamarScript({ accion: 'obtenerHTMLEnvio', id: htmlId });
-    if (!r.ok) { alert(r.mensaje); return; }
-    const box = document.getElementById('previewHtmlBox');
-    const iframe = document.getElementById('previewIframe');
-    iframe.srcdoc = r.html;
-    box.style.display = 'block';
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch(e) {
-    alert('Error al cargar el boletín enviado.');
-  }
+async function verBoletinEnviado(htmlId){
+  try{
+    const r=await llamarScript({accion:'obtenerHTMLEnvio',id:htmlId});
+    if(!r.ok){alert(r.mensaje);return;}
+    const box=document.getElementById('previewVigenteBox');
+    document.getElementById('previewVigenteIframe').srcdoc=r.html;
+    // Abre el panel vigente si está cerrado
+    document.getElementById('panelVigente').classList.add('open');
+    document.getElementById('flechaVigente').innerText='▲';
+    box.style.display='block';
+    box.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){alert('Error al cargar el boletín.');}
 }
 </script>
 </body>
