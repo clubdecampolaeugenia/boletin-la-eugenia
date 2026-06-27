@@ -60,7 +60,7 @@
     .btn-admin:hover { opacity:0.75; }
 
     /* BOTONES PANEL ADMIN */
-    .btn-vigente-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--lima); background:transparent; color:var(--lima); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-vigente-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--petroleo); background:var(--lima); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
     .btn-vigente-accion:hover { opacity:0.8; }
     .btn-prep-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--naranja); background:transparent; color:var(--naranja); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
     .btn-prep-accion:hover { opacity:0.8; }
@@ -286,7 +286,7 @@
             <iframe id="previewIframe"></iframe>
           </div>
           <button type="button" class="btn-prep-accion" onclick="copiarUrlPreview()" style="margin-top:8px;">Copiar URL para compartir con CD</button>
-          <div id="urlPreviewBox" class="url-copiable" style="display:none;" onclick="copiarTexto(this.innerText, 'urlPreviewBox')"></div>
+          
           <div class="divider"></div>
           <div style="color:var(--naranja);font-size:12px;font-weight:900;text-transform:uppercase;margin-bottom:8px;">Enviar boletín de prueba</div>
           <input type="email" id="emailPrueba" value="gacoutada@gmail.com" style="background:var(--blanco);border-color:var(--naranja);">
@@ -640,13 +640,24 @@ async function verPreviewBoletin() {
 }
 
 async function copiarUrlPreview() {
+  const btn = document.querySelector('#panelPrep .btn-prep-accion[onclick="copiarUrlPreview()"]');
   try {
     const r=await llamarScript({accion:'urlPreviewAdmin'});
     if (!r.ok) { mostrarMsg('msgPrep',r.mensaje,'err'); return; }
-    const box=document.getElementById('urlPreviewBox');
-    box.innerText=r.url; box.style.display='block';
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(r.url).then(()=>{ box.innerText='✅ URL copiada: '+r.url; setTimeout(()=>{box.innerText=r.url;},3000); });
+      navigator.clipboard.writeText(r.url).then(()=>{
+        if (btn) {
+          const orig = btn.innerText;
+          btn.style.borderColor = 'var(--lima)';
+          btn.style.color = 'var(--lima)';
+          btn.innerText = '✅ Copiado';
+          setTimeout(()=>{
+            btn.innerText = orig;
+            btn.style.borderColor = '';
+            btn.style.color = '';
+          }, 2000);
+        }
+      });
     }
   } catch(e) { mostrarMsg('msgPrep','Error al obtener URL.','err'); }
 }
