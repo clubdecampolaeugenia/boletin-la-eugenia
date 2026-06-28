@@ -299,22 +299,14 @@
           <div class="loading loading-lima" id="loadingReenvio"></div>
           <div class="msg-box" id="msgReenvio"></div>
           <button type="button" class="btn-v-ghost" onclick="reenviarIndividual()">Reenviar boletín vigente</button>
-        </div>
-      </div>
 
-      <div class="divider"></div>
+          <hr style="border:none;border-top:1px solid rgba(196,223,87,0.25);margin:14px 0;">
 
-      <!-- ENVÍO MANUAL -->
-      <div class="bloque-admin bloque-std">
-        <div class="bloque-header" onclick="toggleBloque('panelEnvioMensual','flechaEnvioMensual')">
-          <span>ENVÍO MANUAL #BOLETÍNMENSUAL</span>
-          <span id="flechaEnvioMensual" class="bloque-flecha">▼</span>
-        </div>
-        <div class="bloque-panel" id="panelEnvioMensual">
-          <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Para usar solo si el envío automático del día 1 falla.</p>
-          <div class="loading" id="loadingMensual"></div>
+          <div style="color:var(--lima);font-size:11px;font-weight:900;text-transform:uppercase;margin-bottom:8px;">Enviar a todos los suscriptores</div>
+          <p style="color:var(--lima);font-size:11px;margin:0 0 10px;opacity:0.75;">Para usar solo si el envío automático del día 1 falla.</p>
+          <div class="loading loading-lima" id="loadingMensual"></div>
           <div class="msg-box" id="msgMensual"></div>
-          <button type="button" class="btn-solid" onclick="enviarMensual()">Enviar #BoletínMensual a todos los suscriptores</button>
+          <button type="button" class="btn-v-ghost" onclick="enviarMensual()">Enviar #BoletínMensual a todos los suscriptores</button>
         </div>
       </div>
 
@@ -518,18 +510,30 @@ function toggleMini(panelId, flechaId) {
 function toggleBloque(panelId, flechaId) {
   const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
   const isOpen = panel.classList.contains('open');
+
+  // Guardar posición del header antes de cualquier cambio
+  const header = flecha ? flecha.closest('.bloque-header') : null;
+  const headerTop = header ? header.getBoundingClientRect().top : null;
+
   // Cerrar todos los paneles abiertos antes de abrir el nuevo
   if (!isOpen) {
-    document.querySelectorAll('.bloque-panel.open').forEach(p => {
-      p.classList.remove('open');
-    });
-    document.querySelectorAll('.bloque-flecha').forEach(f => {
-      f.innerText = '▼';
-    });
-    // Cerrar también mini-paneles de listas si hay alguno abierto
+    document.querySelectorAll('.bloque-panel.open').forEach(p => { p.classList.remove('open'); });
+    document.querySelectorAll('.bloque-flecha').forEach(f => { f.innerText = '▼'; });
   }
+
   panel.classList.toggle('open');
   flecha.innerText = isOpen ? '▼' : '▲';
+
+  // Compensar el scroll para que el header quede en el mismo lugar
+  if (!isOpen && header && headerTop !== null) {
+    requestAnimationFrame(() => {
+      const newHeaderTop = header.getBoundingClientRect().top;
+      const diff = newHeaderTop - headerTop;
+      if (Math.abs(diff) > 2) {
+        window.scrollBy({ top: diff, behavior: 'instant' });
+      }
+    });
+  }
 }
 
 async function llamarScript(params) {
