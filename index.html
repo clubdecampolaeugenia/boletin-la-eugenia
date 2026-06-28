@@ -62,6 +62,9 @@
     /* BOTONES PANEL ADMIN */
     .btn-vigente-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--petroleo); background:var(--lima); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
     .btn-vigente-accion:hover { opacity:0.8; }
+    .btn-v-ghost { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--lima); background:transparent; color:var(--lima); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; transition:transform 0.08s, opacity 0.15s; }
+    .btn-v-ghost:hover { opacity:0.8; }
+    .btn-v-ghost:active { transform:scale(0.96); }
     .btn-prep-accion { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--naranja); background:transparent; color:var(--naranja); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
     .btn-prep-accion:hover { opacity:0.8; }
     .btn-prep-fill { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--petroleo); background:var(--naranja); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; transition:transform 0.08s, opacity 0.15s; }
@@ -122,6 +125,26 @@
     .bloque-novedades .bloque-panel.open { display:block; }
     .bloque-novedades .field-label { color:var(--petroleo); }
 
+    /* Comunicado libre — petroleo/hueso */
+    .bloque-com .bloque-header { background:var(--petroleo); border:2px solid var(--hueso); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--hueso); font-size:13px; font-weight:700; transition:transform 0.08s; }
+    .bloque-com .bloque-header:active { transform:scale(0.98); }
+    .bloque-com .bloque-panel { background:var(--petroleo); border:2px solid var(--hueso); border-top:none; border-radius:0 0 14px 14px; padding:14px; display:none; }
+    .bloque-com .bloque-panel.open { display:block; }
+    .bloque-com .field-label { color:var(--hueso); }
+    .bloque-com input, .bloque-com textarea { background:#48797c; border-color:rgba(245,243,236,0.4); color:var(--blanco); }
+    .bloque-com input::placeholder, .bloque-com textarea::placeholder { color:rgba(255,255,255,0.4); }
+    .bloque-com input:focus, .bloque-com textarea:focus { border-color:var(--hueso); }
+    .bloque-com .preview-box { background:rgba(255,255,255,0.08); border-color:rgba(245,243,236,0.3); }
+    .bloque-com .preview-titulo { color:var(--hueso); }
+    .bloque-com .preview-cuerpo { color:rgba(255,255,255,0.8); }
+    .btn-com-fill { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--petroleo); background:var(--hueso); color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; transition:transform 0.08s, opacity 0.15s; }
+    .btn-com-fill:hover { opacity:0.88; }
+    .btn-com-fill:active { transform:scale(0.96); }
+    .btn-com-ghost { display:block; width:100%; padding:13px; border-radius:24px; border:2px solid var(--hueso); background:transparent; color:var(--hueso); font-family:'Roboto',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; transition:transform 0.08s, opacity 0.15s; }
+    .btn-com-ghost:hover { opacity:0.8; }
+    .btn-ia-com { display:block; width:100%; padding:11px; border-radius:20px; border:2px solid var(--hueso); background:var(--petroleo); color:var(--hueso); font-family:'Roboto',sans-serif; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:10px; text-align:center; }
+    .btn-ia-com:hover { opacity:0.85; }
+
     /* Resto — blanco/petroleo */
     .bloque-std .bloque-header { background:var(--blanco); border:2px solid var(--petroleo); border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--petroleo); font-size:13px; font-weight:700; transition:transform 0.08s; }
     .bloque-std .bloque-header:active { transform:scale(0.98); }
@@ -136,13 +159,13 @@
     .bloque-prep .novedad-titulo { color:var(--naranja); }
     .bloque-prep .novedad-desc { color:rgba(255,255,255,0.75); }
     .bloque-prep .btn-mini { border-color:var(--naranja); color:var(--naranja); }
-    .bloque-prep .btn-mini.rojo { border-color:var(--error); color:var(--error); }
+    .bloque-prep .btn-mini.rojo { border-color:var(--hueso); color:var(--hueso); }
     .novedad-titulo { color:var(--petroleo); font-size:13px; font-weight:900; margin-bottom:4px; }
     .novedad-desc { color:var(--petroleo); font-size:12px; line-height:1.5; margin-bottom:8px; }
     .novedad-acciones { display:flex; gap:8px; }
     .btn-mini { flex:1; padding:7px; border-radius:14px; border:1.5px solid var(--petroleo); background:transparent; color:var(--petroleo); font-family:'Roboto',sans-serif; font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer; }
     .btn-mini:hover { opacity:0.7; }
-    .btn-mini.rojo { border-color:var(--error); color:var(--error); }
+    .btn-mini.rojo { border-color:var(--hueso); color:var(--hueso); }
     .novedades-vacio { color:var(--petroleo); font-size:12px; opacity:0.7; text-align:center; padding:10px; }
 
     .divider { border:none; border-top:1.5px solid #9bb583; margin:18px 0; }
@@ -274,11 +297,30 @@
           <input type="email" id="emailReenvio" placeholder="email@ejemplo.com" style="background:var(--blanco);border-color:var(--lima);">
           <div class="loading loading-lima" id="loadingReenvio"></div>
           <div class="msg-box" id="msgReenvio"></div>
-          <button type="button" class="btn-vigente-accion" onclick="reenviarIndividual()">Reenviar boletín vigente</button>
+          <button type="button" class="btn-v-ghost" onclick="reenviarIndividual()">Reenviar boletín vigente</button>
         </div>
       </div>
 
       <div class="divider"></div>
+
+      <div class="divider"></div>
+
+            <!-- ENVÍO MANUAL -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelEnvioMensual','flechaEnvioMensual')">
+          <span>ENVÍO MANUAL #BOLETÍNMENSUAL</span>
+          <span id="flechaEnvioMensual" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelEnvioMensual">
+          <p style="color:var(--petroleo);font-size:13px;margin:0 0 10px;">Para usar solo si el envío automático del día 1 falla.</p>
+          <div class="loading" id="loadingMensual"></div>
+          <div class="msg-box" id="msgMensual"></div>
+          <button type="button" class="btn-solid" onclick="enviarMensual()">Enviar #BoletínMensual a todos los suscriptores</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
 
       <!-- BOLETÍN EN PREPARACIÓN -->
       <div class="bloque-admin bloque-prep">
@@ -323,7 +365,7 @@
       <div class="divider"></div>
 
       <!-- COMUNICADO LIBRE -->
-      <div class="bloque-admin bloque-std">
+      <div class="bloque-admin bloque-com">
         <div class="bloque-header" onclick="toggleBloque('panelComunicado','flechaComunicado')">
           <span>COMUNICADO LIBRE</span>
           <span id="flechaComunicado" class="bloque-flecha">▼</span>
@@ -334,7 +376,7 @@
           <input type="text" id="commAsunto" placeholder="Ej: Convocatoria a Asamblea" oninput="actualizarPreview()">
           <span class="field-label">Mensaje</span>
           <textarea id="commCuerpo" placeholder="Escribí el mensaje..." oninput="actualizarPreview()"></textarea>
-          <button type="button" class="btn-ia-accion" id="btnCommIA" onclick="corregirComunicado()">Corrección con IA ♦</button>
+          <button type="button" class="btn-ia-com" id="btnCommIA" onclick="corregirComunicado()">Corrección con IA ♦</button>
           <div class="loading" id="loadingCommIA"></div>
           <div class="preview-box" id="previewBox">
             <div class="preview-titulo">Vista previa</div>
@@ -342,7 +384,7 @@
           </div>
           <div class="loading" id="loadingComm"></div>
           <div class="msg-box" id="msgComm"></div>
-          <button type="button" class="btn-solid" onclick="enviarComunicado()">Enviar a todos</button>
+          <button type="button" class="btn-com-fill" onclick="enviarComunicado()">Enviar a todos</button>
         </div>
       </div>
 
@@ -493,8 +535,502 @@ function toggleMini(panelId, flechaId) {
 function toggleBloque(panelId, flechaId) {
   const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
   const isOpen = panel.classList.contains('open');
+  // Cerrar todos los paneles abiertos antes de abrir el nuevo
+  if (!isOpen) {
+    document.querySelectorAll('.bloque-panel.open').forEach(p => {
+      p.classList.remove('open');
+    });
+    document.querySelectorAll('.bloque-flecha').forEach(f => {
+      f.innerText = '▼';
+    });
+    // Cerrar también mini-paneles de listas si hay alguno abierto
+  }
   panel.classList.toggle('open');
-  flecha.innerText = isOpen?'▼':'▲';
+  flecha.innerText = isOpen ? '▼' : '▲';
+}
+
+async function llamarScript(params) {
+  return new Promise((resolve) => {
+    const cbName = 'cb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    const url = new URL(SCRIPT_URL);
+    Object.entries(params).forEach(([k,v])=>url.searchParams.append(k,v));
+    url.searchParams.append('callback',cbName);
+    window[cbName] = function(data) { delete window[cbName]; document.body.removeChild(script); resolve(data); };
+    const script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = ()=>resolve({ok:false,mensaje:'Error de conexión.'});
+    document.body.appendChild(script);
+  });
+}
+
+function mostrarMsg(id, texto, tipo) {
+  const el=document.getElementById(id);
+  el.innerText=texto; el.className='msg-box '+tipo; el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; },6000);
+}
+
+function copiarTexto(texto, btnId) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(()=>{
+      const el=document.getElementById(btnId);
+      const orig=el.innerText; el.innerText='✅ Copiado';
+      setTimeout(()=>{ el.innerText=orig; },2000);
+    });
+  }
+}
+
+async function suscribir() {
+  const email=document.getElementById('suscEmail').value.trim(), nombre=document.getElementById('suscNombre').value.trim();
+  if (!nombre) { mostrarMsg('msgSusc','Ingresá tu nombre.','err'); marcarError('suscNombre'); return; }
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgSusc','Ingresá un email válido.','err'); marcarError('suscEmail'); return; }
+  document.getElementById('loadingSusc').innerText='Procesando...';
+  try {
+    const r = await llamarScript({accion:'suscribir',email,nombre});
+    document.getElementById('loadingSusc').innerText='';
+    if (r.ok) { document.getElementById('msgPendiente').style.display='block'; document.getElementById('suscEmail').value=''; document.getElementById('suscNombre').value=''; }
+    else mostrarMsg('msgSusc',r.mensaje,'err');
+  } catch(e) { document.getElementById('loadingSusc').innerText=''; mostrarMsg('msgSusc','Error. Intentá de nuevo.','err'); }
+}
+
+function marcarError(id) { const el=document.getElementById(id); el.classList.add('error'); setTimeout(()=>el.classList.remove('error'),400); }
+
+async function cargarSuscriptores() {
+  try {
+    const r = await llamarScript({accion:'listar'});
+    document.getElementById('statActivos').innerText=r.activos;
+    document.getElementById('statPendientes').innerText=r.pendientes||0;
+    document.getElementById('statBajas').innerText=r.bajas;
+    document.getElementById('statOrigen').innerText=(r.activosWeb||0)+' vía web · '+(r.activosManual||0)+' manual/importación';
+    const activos=r.suscriptores.filter(s=>s.estado==='activo');
+    const pendientes=r.suscriptores.filter(s=>s.estado==='pendiente');
+    const bajas=r.suscriptores.filter(s=>s.estado==='baja');
+    document.getElementById('labelActivos').innerText='Activos ('+activos.length+')';
+    document.getElementById('labelPendientes').innerText='Pendientes ('+pendientes.length+')';
+    document.getElementById('labelBajas').innerText='Bajas ('+bajas.length+')';
+    function oa(o){return o==='web'?'W':o==='importacion'?'I':'M';}
+    function rm(id,items,bc,bl){
+      const el=document.getElementById(id);
+      if(!items.length){el.innerHTML='<div style="padding:6px 12px;font-size:11px;opacity:0.6;">Sin registros.</div>';return;}
+      el.innerHTML=items.map(s=>`<div class="suscriptor-item"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-size:11px;">${s.nombre?s.nombre+' — ':''}${s.email}</span><span style="flex-shrink:0;margin-left:6px;font-size:9px;opacity:0.55;" title="${s.origen}">${oa(s.origen)}</span><span class="badge-${bc}" style="flex-shrink:0;margin-left:4px;">${bl}</span></div>`).join('');
+    }
+    rm('secActivos',activos,'activo','Activo');
+    rm('secPendientes',pendientes,'pendiente','Pendiente');
+    rm('secBajas',bajas,'baja','Baja');
+  } catch(e) { document.getElementById('secActivos').innerHTML='<div style="color:#c0392b;font-size:13px;padding:10px;">Error cargando lista.</div>'; }
+}
+
+async function agregarManual() {
+  const email=document.getElementById('adminEmail').value.trim(), nombre=document.getElementById('adminNombre').value.trim();
+  if (!email){mostrarMsg('msgAdmin','Ingresá el email.','err');marcarError('adminEmail');return;}
+  document.getElementById('loadingAdmin').innerText='Agregando...';
+  try {
+    const r=await llamarScript({accion:'agregarManual',email,nombre});
+    document.getElementById('loadingAdmin').innerText='';
+    mostrarMsg('msgAdmin',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){document.getElementById('adminEmail').value='';document.getElementById('adminNombre').value='';cargarSuscriptores();}
+  } catch(e){document.getElementById('loadingAdmin').innerText='';mostrarMsg('msgAdmin','Error.','err');}
+}
+
+async function desuscribirManual() {
+  const email=document.getElementById('bajaManualEmail').value.trim();
+  if(!email){mostrarMsg('msgBajaManual','Ingresá el email.','err');marcarError('bajaManualEmail');return;}
+  if(!confirm('¿Dar de baja a '+email+'?')) return;
+  document.getElementById('loadingBajaManual').innerText='Procesando...';
+  try {
+    const r=await llamarScript({accion:'baja',email});
+    document.getElementById('loadingBajaManual').innerText='';
+    mostrarMsg('msgBajaManual',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){document.getElementById('bajaManualEmail').value='';cargarSuscriptores();}
+  } catch(e){document.getElementById('loadingBajaManual').innerText='';mostrarMsg('msgBajaManual','Error.','err');}
+}
+
+// ============================================================
+// BOLETÍN VIGENTE
+// ============================================================
+async function verBoletinVigente() {
+  const box=document.getElementById('previewVigenteBox'), btn=document.getElementById('panelVigente').querySelector('.btn-vigente-accion');
+  if (box.style.display==='block') { box.style.display='none'; btn.innerText='Ver boletín vigente'; return; }
+  document.getElementById('loadingVigente').innerText='Cargando...';
+  try {
+    const r=await llamarScript({accion:'boletinVigente'});
+    document.getElementById('loadingVigente').innerText='';
+    if (!r.ok) { mostrarMsg('msgVigente',r.mensaje,'err'); return; }
+    document.getElementById('previewVigenteIframe').srcdoc=r.html;
+    box.style.display='block';
+    btn.innerText='Ocultar boletín vigente';
+  } catch(e) { document.getElementById('loadingVigente').innerText=''; mostrarMsg('msgVigente','Error al cargar.','err'); }
+}
+
+async function reenviarIndividual() {
+  const email=document.getElementById('emailReenvio').value.trim();
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarMsg('msgReenvio','Ingresá un email válido.','err'); marcarError('emailReenvio'); return; }
+  if (!confirm('¿Reenviar el boletín vigente a '+email+'?')) return;
+  document.getElementById('loadingReenvio').innerText='Enviando...';
+  try {
+    const r=await llamarScript({accion:'reenviarIndividual',email});
+    document.getElementById('loadingReenvio').innerText='';
+    mostrarMsg('msgReenvio',r.mensaje,r.ok?'ok':'err');
+    if (r.ok) document.getElementById('emailReenvio').value='';
+  } catch(e) { document.getElementById('loadingReenvio').innerText=''; mostrarMsg('msgReenvio','Error.','err'); }
+}
+
+// ============================================================
+// BOLETÍN EN PREPARACIÓN
+// ============================================================
+async function verPreviewBoletin() {
+  const box=document.getElementById('previewHtmlBox'), btn=document.getElementById('btnVerPreview');
+  if (box.classList.contains('open')) { box.classList.remove('open'); box.style.display='none'; btn.innerText='Ver vista previa'; return; }
+  document.getElementById('loadingPrep').innerText='Cargando vista previa...';
+  try {
+    const r=await llamarScript({accion:'previewBoletin'});
+    document.getElementById('loadingPrep').innerText='';
+    if (!r.ok) { mostrarMsg('msgPrep',r.mensaje,'err'); return; }
+    document.getElementById('previewIframe').srcdoc=r.html;
+    box.style.display='block'; box.classList.add('open');
+    btn.innerText='Ocultar vista previa';
+    
+  } catch(e) { document.getElementById('loadingPrep').innerText=''; mostrarMsg('msgPrep','Error al cargar.','err'); }
+}
+
+async function copiarUrlPreview() {
+  const btn = document.querySelector('#panelPrep .btn-prep-accion[onclick="copiarUrlPreview()"]');
+  try {
+    const r=await llamarScript({accion:'urlPreviewAdmin'});
+    if (!r.ok) { mostrarMsg('msgPrep',r.mensaje,'err'); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(r.url).then(()=>{
+        if (btn) {
+          const orig = btn.innerText;
+          btn.style.borderColor = 'var(--lima)';
+          btn.style.color = 'var(--lima)';
+          btn.innerText = '✅ Copiado';
+          setTimeout(()=>{
+            btn.innerText = orig;
+            btn.style.borderColor = '';
+            btn.style.color = '';
+          }, 2000);
+        }
+      });
+    }
+  } catch(e) { mostrarMsg('msgPrep','Error al obtener URL.','err'); }
+}
+
+async function chequearPdfTesoreria() {
+  const el=document.getElementById('estadoPdfTesoreria');
+  try {
+    const r=await llamarScript({accion:'chequearEstadoPdfTesoreria'});
+    if (r.estado==='ok') {
+      const link=r.urlVisual?`<a href="${r.urlVisual}" target="_blank" style="color:var(--petroleo);text-decoration:underline;font-weight:900;">Ver PDF</a>`:'';
+      el.style.cssText='background:var(--verdecl);color:var(--petroleo);border:1.5px solid var(--petroleo);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;text-align:center;';
+      el.innerHTML='✅ PDF de Tesorería listo — período: <b>'+r.periodoTesoreria+'</b>. '+link;
+    } else {
+      el.style.cssText='background:var(--naranja);color:var(--negro);border:1.5px solid var(--negro);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;text-align:center;';
+      el.innerHTML=r.estado==='repetido'?'⚠️ Mismo PDF (<b>'+r.periodoTesoreria+'</b>) que el envío anterior.':'⚠️ No se encontró PDF de Tesorería. El boletín se enviará sin adjunto.';
+    }
+  } catch(e) { el.innerText='⚠️ No se pudo verificar el PDF de Tesorería.'; }
+}
+
+async function enviarPrueba() {
+  const email=document.getElementById('emailPrueba').value.trim();
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){mostrarMsg('msgPrueba','Ingresá un email válido.','err');marcarError('emailPrueba');return;}
+  document.getElementById('loadingPrueba').innerText='Enviando prueba...';
+  try {
+    const r=await llamarScript({accion:'enviarBoletinPrueba',email});
+    document.getElementById('loadingPrueba').innerText='';
+    mostrarMsg('msgPrueba',r.mensaje,r.ok?'ok':'err');
+  } catch(e){document.getElementById('loadingPrueba').innerText='';mostrarMsg('msgPrueba','Error.','err');}
+}
+
+// ============================================================
+// NOVEDADES
+// ============================================================
+async function cargarNovedades() {
+  try {
+    const r=await llamarScript({accion:'listarNovedades'});
+    const el=document.getElementById('novedadesLista');
+    if (!r.novedades||r.novedades.length===0){el.innerHTML='<div class="novedades-vacio">No hay novedades cargadas.</div>';return;}
+    el.innerHTML=r.novedades.map(n=>`<div class="novedad-item"><div class="novedad-titulo">${esc(n.titulo)}</div><div class="novedad-desc">${esc(n.descripcion)}</div><div class="novedad-acciones"><button type="button" class="btn-mini" onclick="editarNovedadUI('${n.id}','${ea(n.titulo)}','${ea(n.descripcion)}')">Editar</button><button type="button" class="btn-mini rojo" onclick="eliminarNovedadUI('${n.id}')">Eliminar</button></div></div>`).join('');
+  } catch(e){document.getElementById('novedadesLista').innerHTML='<div class="novedades-vacio">Error cargando novedades.</div>';}
+}
+function esc(t){const d=document.createElement('div');d.innerText=t||'';return d.innerHTML;}
+function ea(t){return(t||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+
+function editarNovedadUI(id,titulo,descripcion){
+  novedadEditandoId=id;
+  document.getElementById('novTitulo').value=titulo;
+  document.getElementById('novDescripcion').value=descripcion;
+  document.getElementById('btnNovAccion').innerText='Guardar cambios';
+  document.getElementById('btnNovCancelar').style.display='block';
+  document.getElementById('novTitulo').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelarEdicionNovedad(){
+  novedadEditandoId=null;
+  document.getElementById('novTitulo').value='';
+  document.getElementById('novDescripcion').value='';
+  document.getElementById('btnNovAccion').innerText='Agregar novedad';
+  document.getElementById('btnNovCancelar').style.display='none';
+}
+async function eliminarNovedadUI(id){
+  if(!confirm('¿Eliminar esta novedad?'))return;
+  try{const r=await llamarScript({accion:'eliminarNovedad',id});if(r.ok)cargarNovedades();else mostrarMsg('msgNov',r.mensaje,'err');}
+  catch(e){mostrarMsg('msgNov','Error al eliminar.','err');}
+}
+async function guardarNovedad(){
+  const titulo=document.getElementById('novTitulo').value.trim(), descripcion=document.getElementById('novDescripcion').value.trim();
+  if(!titulo){mostrarMsg('msgNov','Ingresá un título.','err');marcarError('novTitulo');return;}
+  if(!descripcion){mostrarMsg('msgNov','Ingresá una descripción.','err');marcarError('novDescripcion');return;}
+  document.getElementById('loadingNov').innerText='Guardando...';
+  try{
+    const r=await llamarScript(novedadEditandoId?{accion:'editarNovedad',id:novedadEditandoId,titulo,descripcion}:{accion:'agregarNovedad',titulo,descripcion});
+    document.getElementById('loadingNov').innerText='';
+    mostrarMsg('msgNov',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){cancelarEdicionNovedad();cargarNovedades();}
+  }catch(e){document.getElementById('loadingNov').innerText='';mostrarMsg('msgNov','Error al guardar.','err');}
+}
+async function corregirNovedad(){
+  const titulo=document.getElementById('novTitulo').value.trim(), descripcion=document.getElementById('novDescripcion').value.trim();
+  if(!titulo||!descripcion){mostrarMsg('msgNov','Completá título y descripción antes de corregir.','err');return;}
+  document.getElementById('loadingNov').innerText='Corrigiendo con IA...';
+  try{
+    const r=await llamarScript({accion:'corregirNovedadIA',titulo,descripcion});
+    document.getElementById('loadingNov').innerText='';
+    if(r.ok){document.getElementById('novTitulo').value=r.titulo;document.getElementById('novDescripcion').value=r.descripcion;}
+    else mostrarMsg('msgNov',r.mensaje,'err');
+  }catch(e){document.getElementById('loadingNov').innerText='';mostrarMsg('msgNov','Error.','err');}
+}
+
+// ============================================================
+// COMUNICADO LIBRE
+// ============================================================
+async function corregirComunicado(){
+  const asunto=document.getElementById('commAsunto').value.trim(), cuerpo=document.getElementById('commCuerpo').value.trim();
+  if(!asunto||!cuerpo){mostrarMsg('msgComm','Completá el asunto y el mensaje antes de corregir.','err');return;}
+  document.getElementById('loadingCommIA').innerText='Corrigiendo con IA...';
+  try{
+    const r=await llamarScript({accion:'corregirComunicadoIA',asunto,cuerpo});
+    document.getElementById('loadingCommIA').innerText='';
+    if(r.ok){document.getElementById('commAsunto').value=r.asunto;document.getElementById('commCuerpo').value=r.cuerpo;actualizarPreview();}
+    else mostrarMsg('msgComm',r.mensaje,'err');
+  }catch(e){document.getElementById('loadingCommIA').innerText='';mostrarMsg('msgComm','Error.','err');}
+}
+function actualizarPreview(){
+  const asunto=document.getElementById('commAsunto').value.trim(), cuerpo=document.getElementById('commCuerpo').value.trim();
+  const preview=document.getElementById('previewBox');
+  if(!asunto&&!cuerpo){preview.style.display='none';return;}
+  preview.style.display='block';
+  document.getElementById('previewCuerpo').innerText=(asunto?'Asunto: '+asunto+'\n'+'─'.repeat(30)+'\n\n':'')+cuerpo+'\n\n──────────────────────────\nAtentos saludos,\n'+NOMBRE_CLUB;
+}
+async function enviarComunicado(){
+  const asunto=document.getElementById('commAsunto').value.trim(), cuerpo=document.getElementById('commCuerpo').value.trim();
+  if(!asunto||!cuerpo){mostrarMsg('msgComm','Completá el asunto y el mensaje.','err');return;}
+  if(!confirm('¿Enviar a todos los suscriptores activos?\n\nAsunto: '+asunto))return;
+  document.getElementById('loadingComm').innerText='Enviando...';
+  try{
+    const r=await llamarScript({accion:'enviarComunicado',asunto,cuerpo});
+    document.getElementById('loadingComm').innerText='';
+    mostrarMsg('msgComm',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){document.getElementById('commAsunto').value='';document.getElementById('commCuerpo').value='';document.getElementById('previewBox').style.display='none';}
+  }catch(e){document.getElementById('loadingComm').innerText='';mostrarMsg('msgComm','Error.','err');}
+}
+
+// ============================================================
+// ENVÍO MANUAL
+// ============================================================
+async function enviarMensual(){
+  let lineaPdf='⚠️ No se pudo verificar el PDF de Tesorería.';
+  try{
+    const check=await llamarScript({accion:'chequearEstadoPdfTesoreria'});
+    if(check.estado==='faltante') lineaPdf='⚠️ No se encontró PDF de Tesorería. Se enviará SIN adjunto.';
+    else if(check.estado==='repetido') lineaPdf='⚠️ Se adjuntará el PDF de '+check.periodoTesoreria+' — mismo que el envío anterior.';
+    else if(check.estado==='ok') lineaPdf='📎 Se adjuntará el PDF de Tesorería de '+check.periodoTesoreria+'.';
+  }catch(e){}
+  if(!confirm('⚠️ Estás por enviar manualmente a todos los suscriptores el #BoletínMensual.\n\n'+lineaPdf+'\n\n¿Confirmás el envío?'))return;
+  document.getElementById('loadingMensual').innerText='Enviando...';
+  try{
+    const r=await llamarScript({accion:'enviarMensual'});
+    document.getElementById('loadingMensual').innerText='';
+    mostrarMsg('msgMensual',r.mensaje,r.ok?'ok':'err');
+    if(r.ok){cargarLog();cargarNovedades();chequearPdfTesoreria();}
+  }catch(e){document.getElementById('loadingMensual').innerText='';mostrarMsg('msgMensual','Error.','err');}
+}
+
+// ============================================================
+// HISTORIAL
+// ============================================================
+async function cargarLog(){
+  try{
+    const r=await llamarScript({accion:'logEnvios'});
+    const el=document.getElementById('logEnvios');
+    if(!r.envios||r.envios.length===0){el.innerText='Sin envíos registrados aún.';return;}
+    const porAnio={};
+    r.envios.forEach(e=>{const f=new Date(e.fecha),a=f.getFullYear();if(!porAnio[a])porAnio[a]=[];porAnio[a].push(e);});
+    el.innerHTML=Object.keys(porAnio).sort((a,b)=>b-a).map(anio=>`<div style="font-weight:900;color:var(--petroleo);margin:8px 0 4px;font-size:13px;">${anio}</div>${porAnio[anio].map(e=>{
+      const fecha=new Date(e.fecha);
+      const fs=fecha.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})+', '+fecha.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+      const tag=e.origen==='automatico'?'<span style="color:#1e8449;font-size:10px;">(Automático)</span>':'<span style="color:#2471a3;font-size:10px;">(Manual)</span>';
+      const asunto=e.tipo==='mensual'?'#BoletínMensual — '+e.asunto.replace('Cuota social — ',''):'Comunicado — '+e.asunto;
+      const btn=(e.tipo==='mensual'&&e.htmlId)?`<button type="button" onclick="verBoletinEnviado('${e.htmlId}')" style="background:transparent;border:1.5px solid var(--petroleo);color:var(--petroleo);font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 10px;border-radius:10px;cursor:pointer;margin-left:6px;">Ver</button>`:'';
+      return`<div style="padding:5px 0;border-bottom:1px solid var(--lima);font-size:12px;color:var(--petroleo);"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;"><span>${asunto} ${tag}</span>${btn}</div><span style="opacity:0.6;font-size:11px;">${fs}</span></div>`;
+    }).join('')}`).join('');
+  }catch(e){document.getElementById('logEnvios').innerText='Error cargando historial.';}
+}
+
+async function verBoletinEnviado(htmlId){
+  try{
+    const r=await llamarScript({accion:'obtenerHTMLEnvio',id:htmlId});
+    if(!r.ok){alert(r.mensaje);return;}
+    const box=document.getElementById('previewVigenteBox');
+    document.getElementById('previewVigenteIframe').srcdoc=r.html;
+    // Abre el panel vigente si está cerrado
+    document.getElementById('panelVigente').classList.add('open');
+    document.getElementById('flechaVigente').innerText='▲';
+    box.style.display='block';
+    
+  }catch(e){alert('Error al cargar el boletín.');}
+}
+</script>
+</body>
+</html>      <!-- AGREGAR / QUITAR SUSCRIPTORES -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelGestionar','flechaGestionar')">
+          <span>AGREGAR O QUITAR SUSCRIPTOR</span>
+          <span id="flechaGestionar" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelGestionar">
+          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Este método no requiere confirmación — el suscriptor queda activo de inmediato.</p>
+          <span class="field-label">Nombre y apellido / Razón social</span>
+          <input type="text" id="adminNombre" placeholder="Ej: María González">
+          <span class="field-label">Email *</span>
+          <input type="email" id="adminEmail" placeholder="email@ejemplo.com">
+          <div class="loading" id="loadingAdmin"></div>
+          <div class="msg-box" id="msgAdmin"></div>
+          <button type="button" class="btn-solid" onclick="agregarManual()">Agregar suscriptor</button>
+          <div style="border-top:1px solid #9bb583;margin:16px 0;"></div>
+          <span class="field-label">Email a desuscribir</span>
+          <input type="email" id="bajaManualEmail" placeholder="email@ejemplo.com">
+          <div class="loading" id="loadingBajaManual"></div>
+          <div class="msg-box" id="msgBajaManual"></div>
+          <button type="button" class="btn-solid" onclick="desuscribirManual()">Quitar suscriptor</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- HISTORIAL -->
+      <div class="bloque-admin bloque-std">
+        <div class="bloque-header" onclick="toggleBloque('panelHistorial','flechaHistorial'); if(!historialCargado){cargarLog();historialCargado=true;}">
+          <span>Últimos #BoletinesMensuales enviados</span>
+          <span id="flechaHistorial" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelHistorial">
+          <div id="logEnvios" style="font-size:12px;color:var(--petroleo);line-height:1.6;">Cargando...</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <button type="button" class="btn-outline" onclick="cerrarAdmin()">Volver al inicio</button>
+    </div>
+
+  </div>
+
+  <div class="btns-externos" id="btnsExternos">
+    <a class="btn-admin" href="https://clubdecampolaeugenia.github.io/boletin-la-eugenia/ver" target="_blank" rel="noopener">Ver #BoletínMensual vigente</a>
+    <a class="btn-cgv" href="https://clubdecampolaeugenia.taplink.site/" target="_blank">Ir al Centro de Gestión Vecinal</a>
+    <div class="icono-admin-wrap">
+      <button type="button" class="icono-admin" onclick="mostrarPin()" aria-label="Acceso administración">
+        <img src="https://i.imgur.com/SAsEouk.png" alt="" style="width:100%;height:100%;display:block;">
+      </button>
+    </div>
+  </div>
+
+<script>
+const PIN = '1112';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-m5ffo9Ul05FO88O-7I09_BPZrYYm4awYcQcC47pPjMQ5fV9xI-8kzkH6IKgnSJvW/exec';
+const NOMBRE_CLUB = 'La Eugenia Club de Campo';
+const URL_BOLETIN = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/';
+
+let emailParaBaja = '';
+let novedadEditandoId = null;
+let historialCargado = false;
+
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const esBaja = params.get('baja');
+  const emailParam = params.get('email');
+  if (token) { confirmarToken(token); ocultarBtnsExternos(); }
+  else if (esBaja && emailParam) { emailParaBaja = decodeURIComponent(emailParam); mostrarScreen('screenBaja'); ocultarBtnsExternos(); }
+  else { mostrarBtnsExternos(); }
+});
+
+function mostrarBtnsExternos() { document.getElementById('btnsExternos').classList.add('visible'); }
+function ocultarBtnsExternos() { document.getElementById('btnsExternos').classList.remove('visible'); }
+
+async function confirmarToken(token) {
+  try { const r = await llamarScript({ accion:'confirmar', token }); mostrarScreen(r.ok?'screenConfirmado':'screenPublico'); }
+  catch(e) { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+}
+
+async function confirmarBaja() {
+  if (!emailParaBaja) { mostrarMsg('msgBaja','No se encontró el email.','err'); return; }
+  document.getElementById('loadingBaja').innerText = 'Procesando...';
+  try {
+    const r = await llamarScript({ accion:'baja', email:emailParaBaja });
+    document.getElementById('loadingBaja').innerText = '';
+    mostrarMsg('msgBaja', r.mensaje, r.ok?'ok':'err');
+  } catch(e) { document.getElementById('loadingBaja').innerText=''; mostrarMsg('msgBaja','Error. Intentá de nuevo.','err'); }
+}
+
+function capitalizarNombre(input) { input.value = input.value.replace(/\b\w/g, c=>c.toUpperCase()); }
+function filtrarNombre(input) { input.value = input.value.replace(/[0-9]/g,''); }
+function validarEmail(input) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  input.classList.toggle('error', input.value.length>0 && !ok);
+}
+
+function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function mostrarPin() { mostrarScreen('screenPin'); ocultarBtnsExternos(); document.getElementById('pinInput').value=''; document.getElementById('pinError').innerText=''; }
+function volverPublico() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+function cerrarAdmin() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
+
+function verificarPin() {
+  if (document.getElementById('pinInput').value === PIN) {
+    mostrarScreen('screenAdmin');
+    ocultarBtnsExternos();
+    cargarSuscriptores();
+    cargarNovedades();
+    chequearPdfTesoreria();
+  } else {
+    document.getElementById('pinError').innerText = 'PIN incorrecto.';
+    document.getElementById('pinInput').value = '';
+    const el = document.getElementById('pinInput');
+    el.classList.add('error');
+    setTimeout(()=>el.classList.remove('error'),400);
+  }
+}
+document.getElementById('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') verificarPin(); });
+
+function toggleMini(panelId, flechaId) {
+  const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
+  panel.classList.toggle('open');
+  flecha.innerText = panel.classList.contains('open')?'▲':'▼';
+}
+
+function toggleBloque(panelId, flechaId) {
+  const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
+  const isOpen = panel.classList.contains('open');
+  // Cerrar todos los paneles abiertos antes de abrir el nuevo
+  if (!isOpen) {
+    document.querySelectorAll('.bloque-panel.open').forEach(p => {
+      p.classList.remove('open');
+    });
+    document.querySelectorAll('.bloque-flecha').forEach(f => {
+      f.innerText = '▼';
+    });
+    // Cerrar también mini-paneles de listas si hay alguno abierto
+  }
+  panel.classList.toggle('open');
+  flecha.innerText = isOpen ? '▼' : '▲';
 }
 
 async function llamarScript(params) {
