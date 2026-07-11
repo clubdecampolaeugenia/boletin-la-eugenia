@@ -483,17 +483,24 @@ function validarEmail(input) {
 }
 
 function mostrarScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function mostrarPin() { mostrarScreen('screenPin'); ocultarBtnsExternos(); document.getElementById('pinInput').value=''; document.getElementById('pinError').innerText=''; }
+function mostrarPin() {
+  if (localStorage.getItem('cgv_admin_ok') === '1') { entrarAlAdmin(); return; }
+  mostrarScreen('screenPin'); ocultarBtnsExternos(); document.getElementById('pinInput').value=''; document.getElementById('pinError').innerText='';
+}
+function entrarAlAdmin() {
+  mostrarScreen('screenAdmin');
+  ocultarBtnsExternos();
+  cargarSuscriptores();
+  cargarNovedades();
+  chequearPdfTesoreria();
+}
 function volverPublico() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
 function cerrarAdmin() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
 
 function verificarPin() {
   if (document.getElementById('pinInput').value === PIN) {
-    mostrarScreen('screenAdmin');
-    ocultarBtnsExternos();
-    cargarSuscriptores();
-    cargarNovedades();
-    chequearPdfTesoreria();
+    localStorage.setItem('cgv_admin_ok', '1');
+    entrarAlAdmin();
   } else {
     document.getElementById('pinError').innerText = 'PIN incorrecto.';
     document.getElementById('pinInput').value = '';
@@ -503,6 +510,18 @@ function verificarPin() {
   }
 }
 document.getElementById('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') verificarPin(); });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') === '1') {
+    if (localStorage.getItem('cgv_admin_ok') === '1') {
+      entrarAlAdmin();
+    } else {
+      mostrarScreen('screenPin');
+      ocultarBtnsExternos();
+    }
+  }
+});
 
 function toggleMini(panelId, flechaId) {
   const panel=document.getElementById(panelId), flecha=document.getElementById(flechaId);
