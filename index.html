@@ -438,7 +438,7 @@
   </div>
 
 <script>
-const PIN = '1112';
+const PINES_VALIDOS = ['1112', '1923'];
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-m5ffo9Ul05FO88O-7I09_BPZrYYm4awYcQcC47pPjMQ5fV9xI-8kzkH6IKgnSJvW/exec';
 const NOMBRE_CLUB = 'La Eugenia Club de Campo';
 const URL_BOLETIN = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/';
@@ -498,7 +498,7 @@ function volverPublico() { mostrarScreen('screenPublico'); mostrarBtnsExternos()
 function cerrarAdmin() { mostrarScreen('screenPublico'); mostrarBtnsExternos(); }
 
 function verificarPin() {
-  if (document.getElementById('pinInput').value === PIN) {
+  if (PINES_VALIDOS.includes(document.getElementById('pinInput').value)) {
     localStorage.setItem('cgv_admin_ok', '1');
     entrarAlAdmin();
   } else {
@@ -514,7 +514,9 @@ document.getElementById('pinInput').addEventListener('keydown', e=>{ if(e.key===
 document.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('admin') === '1') {
-    if (localStorage.getItem('cgv_admin_ok') === '1') {
+    const pinUrl = params.get('pin');
+    if (localStorage.getItem('cgv_admin_ok') === '1' || (pinUrl && PINES_VALIDOS.includes(pinUrl))) {
+      localStorage.setItem('cgv_admin_ok', '1');
       entrarAlAdmin();
     } else {
       mostrarScreen('screenPin');
