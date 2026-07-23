@@ -406,12 +406,12 @@ const URL_BOLETIN = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/'
 let historialCargado = false;
 
 window.addEventListener('load', async () => {
-  const savedPin = sessionStorage.getItem('cgv_pin');
+  const savedPin = localStorage.getItem('cgv_pin');
   if (savedPin) {
     PIN_SESION = savedPin;
     const r = await llamarScript({accion:'listar'});
     if (r && r.ok) { entrarAlAdmin(); return; }
-    sessionStorage.removeItem('cgv_pin');
+    localStorage.removeItem('cgv_pin');
     PIN_SESION = '';
   }
   mostrarScreen('screenPin');
@@ -427,7 +427,7 @@ function entrarAlAdmin() {
 }
 
 function cerrarSesion() {
-  sessionStorage.removeItem('cgv_pin');
+  localStorage.removeItem('cgv_pin');
   PIN_SESION = '';
   window.location.href = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/';
 }
@@ -438,7 +438,7 @@ async function verificarPin() {
   PIN_SESION = intento;
   const r = await llamarScript({accion:'listar'});
   if (r && r.ok) {
-    sessionStorage.setItem('cgv_pin', intento);
+    localStorage.setItem('cgv_pin', intento);
     entrarAlAdmin();
   } else {
     PIN_SESION = '';
