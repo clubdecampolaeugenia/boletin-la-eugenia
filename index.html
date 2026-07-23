@@ -759,9 +759,19 @@ async function cargarNovedades() {
   try {
     const r=await llamarScript({accion:'listarNovedades'});
     const el=document.getElementById('novedadesLista');
-    if (!r.novedades||r.novedades.length===0){el.innerHTML='<div class="novedades-vacio">No hay novedades cargadas.</div>';return;}
-    el.innerHTML=r.novedades.map(n=>`<div class="novedad-item"><div class="novedad-titulo">${esc(n.titulo)}</div><div class="novedad-desc">${esc(n.descripcion)}</div><div class="novedad-acciones"><button type="button" class="btn-mini" onclick="editarNovedadUI('${n.id}','${ea(n.titulo)}','${ea(n.descripcion)}')">Editar</button><button type="button" class="btn-mini rojo" onclick="eliminarNovedadUI('${n.id}')">Eliminar</button></div></div>`).join('');
+    if (!r.novedades||r.novedades.length===0){el.innerHTML='<div class="novedades-vacio">No hay novedades cargadas.</div>';window._novedadesActuales=[];return;}
+    window._novedadesActuales=r.novedades;
+    el.innerHTML=r.novedades.map((n,i)=>`<div class="novedad-item"><div class="novedad-titulo">${esc(n.titulo)}</div><div class="novedad-desc">${esc(n.descripcion)}</div><div class="novedad-acciones"><button type="button" class="btn-mini" ${i===0?'disabled style="opacity:0.35;"':''} onclick="moverNovedad(${i},-1)">&uarr;</button><button type="button" class="btn-mini" ${i===r.novedades.length-1?'disabled style="opacity:0.35;"':''} onclick="moverNovedad(${i},1)">&darr;</button><button type="button" class="btn-mini" onclick="editarNovedadUI('${n.id}','${ea(n.titulo)}','${ea(n.descripcion)}')">Editar</button><button type="button" class="btn-mini rojo" onclick="eliminarNovedadUI('${n.id}')">Eliminar</button></div></div>`).join('');
   } catch(e){document.getElementById('novedadesLista').innerHTML='<div class="novedades-vacio">Error cargando novedades.</div>';}
+}
+async function moverNovedad(index,dir){
+  const lista=window._novedadesActuales;
+  const nuevoIndex=index+dir;
+  if(!lista||nuevoIndex<0||nuevoIndex>=lista.length)return;
+  const tmp=lista[index]; lista[index]=lista[nuevoIndex]; lista[nuevoIndex]=tmp;
+  const orden=lista.map(n=>n.id).join(',');
+  try{await llamarScript({accion:'reordenarNovedades',orden});}catch(e){}
+  cargarNovedades();
 }
 function esc(t){const d=document.createElement('div');d.innerText=t||'';return d.innerHTML;}
 function ea(t){return(t||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
