@@ -136,6 +136,16 @@
     .bloque-com .field-label { color:var(--hueso); }
     .bloque-com input, .bloque-com textarea { background:var(--hueso); border-color:rgba(245,243,236,0.5); color:var(--petroleo); }
     .bloque-com input::placeholder, .bloque-com textarea::placeholder { color:rgba(19,84,87,0.45); }
+
+    /* Convocatoria a Asamblea — petroleo/#a9c4cf, distinto de Comunicado */
+    .bloque-conv .bloque-header { background:var(--petroleo); border:2px solid #a9c4cf; border-radius:14px 14px 0 0; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:#a9c4cf; font-size:13px; font-weight:700; transition:transform 0.08s; }
+    .bloque-conv .bloque-header:active { transform:scale(0.98); }
+    .bloque-conv .bloque-panel { background:var(--petroleo); border:2px solid #a9c4cf; border-top:none; border-radius:0 0 14px 14px; padding:14px; display:none; }
+    .bloque-conv .bloque-panel.open { display:block; }
+    .bloque-conv .field-label { color:#a9c4cf; }
+    .bloque-conv input { background:var(--hueso); border-color:rgba(169,196,207,0.5); color:var(--petroleo); }
+    .bloque-conv input::placeholder { color:rgba(19,84,87,0.45); }
+    .bloque-conv p, .bloque-conv a { color:#a9c4cf; }
     .bloque-com input:focus, .bloque-com textarea:focus { border-color:var(--blanco); outline:none; }
     .bloque-com .preview-box { background:rgba(255,255,255,0.08); border-color:rgba(245,243,236,0.3); }
     .bloque-com .preview-titulo { color:var(--hueso); }
@@ -369,13 +379,15 @@
       <div class="divider"></div>
 
       <!-- CONVOCATORIA A ASAMBLEA -->
-      <div class="bloque-admin bloque-com">
+      <div class="bloque-admin bloque-conv">
         <div class="bloque-header" onclick="toggleBloque('panelConvocatoria','flechaConvocatoria')">
           <span>CONVOCATORIA A ASAMBLEA</span>
           <span id="flechaConvocatoria" class="bloque-flecha">▼</span>
         </div>
         <div class="bloque-panel" id="panelConvocatoria">
-          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Trae la fecha, hora, lugar y Orden del Día en vivo desde Gestión Institucional. Probá primero antes de mandarla a todos.</p>
+          <p style="font-size:11px;margin:0 0 10px;opacity:0.85;font-style:italic;">Trae la fecha, hora, lugar y Orden del Día en vivo desde la app de Gestión Institucional — si cambiás algo ahí, este link se actualiza solo (los mails ya enviados no).</p>
+          <a href="https://script.google.com/macros/s/AKfycbw-m5ffo9Ul05FO88O-7I09_BPZrYYm4awYcQcC47pPjMQ5fV9xI-8kzkH6IKgnSJvW/exec?ver=convocatoria" target="_blank" id="linkPreviewConv" style="display:block; font-size:11px; text-decoration:underline; margin-bottom:6px; word-break:break-all;">👁️ Ver preview / consultar en vivo</a>
+          <button type="button" class="btn-outline" style="font-size:11px; padding:8px; margin-bottom:14px;" onclick="copiarLinkConvocatoria()">Copiar link de preview</button>
           <span class="field-label">Email de prueba</span>
           <input type="email" id="convEmailPrueba" placeholder="tu-email@ejemplo.com">
           <div class="loading" id="loadingConvPrueba"></div>
@@ -869,6 +881,13 @@ async function enviarConvocatoriaMasivaUI(){
     document.getElementById('loadingConvMasiva').innerText='';
     mostrarMsg('msgConvMasiva',r.mensaje,r.ok?'ok':'err');
   }catch(e){document.getElementById('loadingConvMasiva').innerText='';mostrarMsg('msgConvMasiva','Error.','err');}
+}
+
+function copiarLinkConvocatoria(){
+  const link = document.getElementById('linkPreviewConv').href;
+  navigator.clipboard.writeText(link).then(()=>{
+    mostrarMsg('msgConvPrueba','Link copiado.','ok');
+  });
 }
 
 // ============================================================
