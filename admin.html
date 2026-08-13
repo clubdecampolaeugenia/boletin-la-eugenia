@@ -456,7 +456,7 @@ const URL_BOLETIN = 'https://clubdecampolaeugenia.github.io/boletin-la-eugenia/'
 
 let historialCargado = false;
 
-window.addEventListener('load', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const savedPin = localStorage.getItem('cgv_pin');
   if (savedPin) {
     PIN_SESION = savedPin;
