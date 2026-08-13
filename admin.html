@@ -368,6 +368,28 @@
 
       <div class="divider"></div>
 
+      <!-- CONVOCATORIA A ASAMBLEA -->
+      <div class="bloque-admin bloque-com">
+        <div class="bloque-header" onclick="toggleBloque('panelConvocatoria','flechaConvocatoria')">
+          <span>CONVOCATORIA A ASAMBLEA</span>
+          <span id="flechaConvocatoria" class="bloque-flecha">▼</span>
+        </div>
+        <div class="bloque-panel" id="panelConvocatoria">
+          <p style="color:var(--petroleo);font-size:11px;margin:0 0 14px;opacity:0.75;font-style:italic;">Trae la fecha, hora, lugar y Orden del Día en vivo desde Gestión Institucional. Probá primero antes de mandarla a todos.</p>
+          <span class="field-label">Email de prueba</span>
+          <input type="email" id="convEmailPrueba" placeholder="tu-email@ejemplo.com">
+          <div class="loading" id="loadingConvPrueba"></div>
+          <div class="msg-box" id="msgConvPrueba"></div>
+          <button type="button" class="btn-solid" onclick="enviarConvocatoriaPruebaUI()">Enviar prueba</button>
+          <div style="border-top:1px solid #9bb583;margin:16px 0;"></div>
+          <div class="loading" id="loadingConvMasiva"></div>
+          <div class="msg-box" id="msgConvMasiva"></div>
+          <button type="button" class="btn-com-fill" onclick="enviarConvocatoriaMasivaUI()">Enviar a todos los suscriptores</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
       <!-- AGREGAR / QUITAR SUSCRIPTORES -->
       <div class="bloque-admin bloque-std">
         <div class="bloque-header" onclick="toggleBloque('panelGestionar','flechaGestionar')">
@@ -821,6 +843,32 @@ async function enviarComunicado(){
     mostrarMsg('msgComm',r.mensaje,r.ok?'ok':'err');
     if(r.ok){document.getElementById('commAsunto').value='';document.getElementById('commCuerpo').value='';document.getElementById('previewBox').style.display='none';}
   }catch(e){document.getElementById('loadingComm').innerText='';mostrarMsg('msgComm','Error.','err');}
+}
+
+// ============================================================
+// CONVOCATORIA A ASAMBLEA
+// ============================================================
+
+async function enviarConvocatoriaPruebaUI(){
+  const email=document.getElementById('convEmailPrueba').value.trim();
+  if(!email||!email.includes('@')){mostrarMsg('msgConvPrueba','Email inválido.','err');return;}
+  document.getElementById('loadingConvPrueba').innerText='Enviando...';
+  try{
+    const r=await llamarScript({accion:'enviarConvocatoriaPrueba',email});
+    document.getElementById('loadingConvPrueba').innerText='';
+    mostrarMsg('msgConvPrueba',r.mensaje,r.ok?'ok':'err');
+  }catch(e){document.getElementById('loadingConvPrueba').innerText='';mostrarMsg('msgConvPrueba','Error.','err');}
+}
+
+async function enviarConvocatoriaMasivaUI(){
+  if(!confirm('Esto manda la Convocatoria a Asamblea a TODOS los suscriptores activos (244 personas). Es un envío real, no una prueba. ¿Ya probaste el email y está todo correcto?'))return;
+  if(!confirm('Confirmación final: ¿enviar la Convocatoria ahora a todos los suscriptores?'))return;
+  document.getElementById('loadingConvMasiva').innerText='Enviando...';
+  try{
+    const r=await llamarScript({accion:'enviarConvocatoriaMasiva'});
+    document.getElementById('loadingConvMasiva').innerText='';
+    mostrarMsg('msgConvMasiva',r.mensaje,r.ok?'ok':'err');
+  }catch(e){document.getElementById('loadingConvMasiva').innerText='';mostrarMsg('msgConvMasiva','Error.','err');}
 }
 
 // ============================================================
