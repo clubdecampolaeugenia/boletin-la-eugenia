@@ -449,7 +449,7 @@ window.addEventListener('load', async () => {
   const savedPin = localStorage.getItem('cgv_pin');
   if (savedPin) {
     PIN_SESION = savedPin;
-    const r = await llamarScript({accion:'listar'});
+    const r = await llamarScript({accion:'validarPinLigero'});
     if (r && r.ok) { entrarAlAdmin(); return; }
     localStorage.removeItem('cgv_pin');
     PIN_SESION = '';
@@ -476,7 +476,7 @@ async function verificarPin() {
   const intento = document.getElementById('pinInput').value;
   document.getElementById('pinError').innerText = '';
   PIN_SESION = intento;
-  const r = await llamarScript({accion:'listar'});
+  const r = await llamarScript({accion:'validarPinLigero'});
   if (r && r.ok) {
     localStorage.setItem('cgv_pin', intento);
     entrarAlAdmin();
